@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.hardware.components.capacitor &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../../" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script src="../../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.hardware.components.capacitor</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.views.gtk3.hardware.components.capacitor.py is part of the</span>
+<span class="c1">#       RAMSTK Project.</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2020 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;Capacitor Work View Panels.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3</span> <span class="kn">import</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.widgets</span> <span class="kn">import</span> <span class="n">RAMSTKComboBox</span><span class="p">,</span> <span class="n">RAMSTKEntry</span>
+
+<span class="c1"># RAMSTK Local Imports</span>
+<span class="kn">from</span> <span class="nn">.panels</span> <span class="kn">import</span> <span class="n">RAMSTKAssessmentInputPanel</span><span class="p">,</span> <span class="n">RAMSTKAssessmentResultPanel</span>
+
+
+<div class="viewcode-block" id="AssessmentInputPanel"><a class="viewcode-back" href="../../../../../../api/ramstk.views.gtk3.hardware.components.html#ramstk.views.gtk3.hardware.components.capacitor.AssessmentInputPanel">[docs]</a><span class="k">class</span> <span class="nc">AssessmentInputPanel</span><span class="p">(</span><span class="n">RAMSTKAssessmentInputPanel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Display Capacitor assessment input attribute data.</span>
+
+<span class="sd">    The Capacitor assessment input view displays all the assessment inputs for</span>
+<span class="sd">    the selected capacitor.  This includes, currently, inputs for</span>
+<span class="sd">    MIL-HDBK-217FN2 parts count and part stress analyses.  The attributes of a</span>
+<span class="sd">    Capacitor assessment input view are:</span>
+
+<span class="sd">    :cvar dict _dic_quality: dictionary of MIL-HDBK-217 capacitor quality</span>
+<span class="sd">        levels.  Key is capacitor subcategory ID; values are lists of quality</span>
+<span class="sd">        levels.</span>
+<span class="sd">    :cvar dict _dic_specifications: dictionary of capacitor MIL-SPECs.  Key is</span>
+<span class="sd">        capacitor subcategory ID; values are lists of specifications.</span>
+<span class="sd">    :cvar dict _dic_styles: dictionary of capacitor styles defined in the</span>
+<span class="sd">        MIL-SPECs.  Key is capacitor subcategory ID; values are lists of</span>
+<span class="sd">        styles.</span>
+
+<span class="sd">    :ivar list _lst_labels: list of label text to display for the capacitor</span>
+<span class="sd">        MIL-HDBK-217 input parameters.</span>
+<span class="sd">    :ivar _lst_widgets: the list of widgets to display in the panel.  These</span>
+<span class="sd">        are listed in the order they should appear on the panel.</span>
+
+<span class="sd">    :ivar cmbConfiguration: select and display the configuration of the</span>
+<span class="sd">        capacitor.</span>
+<span class="sd">    :ivar cmbConstruction: select and display the method of construction of the</span>
+<span class="sd">        capacitor.</span>
+<span class="sd">    :ivar cmbSpecification: select and display the governing specification of</span>
+<span class="sd">        the capacitor.</span>
+<span class="sd">    :ivar cmbStyle: select and display the style of the capacitor.</span>
+<span class="sd">    :ivar txtCapacitance: enter and display the capacitance rating of the</span>
+<span class="sd">        capacitor.</span>
+<span class="sd">    :ivar txtESR: enter and display the equivalent series resistance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Define private dictionary class attributes.</span>
+    <span class="n">_dic_quality</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-SPEC&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Lower&#39;</span><span class="p">)]],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;M&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Non-Established Reliability&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Lower&#39;</span><span class="p">)]],</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;MIL-C-19978 Non-Established Reliability&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Lower&#39;</span><span class="p">)]</span>
+        <span class="p">],</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;MIL-C-18312 Non-Established Reliability&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Lower&#39;</span><span class="p">)]</span>
+        <span class="p">],</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Lower&#39;</span><span class="p">)]],</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Lower&#39;</span><span class="p">)]],</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;MIL-C-5 Non-Established Reliability, Dipped&#39;</span><span class="p">)],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;MIL-C-5 Non-Established Reliability, Molded&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Lower&#39;</span><span class="p">)]</span>
+        <span class="p">],</span>
+        <span class="mi">8</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-C-10950&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Lower&#39;</span><span class="p">)]],</span>
+        <span class="mi">9</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;MIL-C-11272 Non-Established Reliability&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Lower&#39;</span><span class="p">)]</span>
+        <span class="p">],</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;MIL-C-11015 Non-Established Reliability&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Lower&#39;</span><span class="p">)]</span>
+        <span class="p">],</span>
+        <span class="mi">11</span><span class="p">:</span>
+        <span class="p">[</span><span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Non-Established Reliability&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Lower&#39;</span><span class="p">)]],</span>
+        <span class="mi">12</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Lower&#39;</span><span class="p">)]],</span>
+        <span class="mi">13</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;MIL-C-3965 Non-Established Reliability&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Lower&#39;</span><span class="p">)]</span>
+        <span class="p">],</span>
+        <span class="mi">14</span><span class="p">:</span>
+        <span class="p">[</span><span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Non-Established Reliability&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Lower&#39;</span><span class="p">)]],</span>
+        <span class="mi">15</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-SPEC&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Lower&#39;</span><span class="p">)]],</span>
+        <span class="mi">16</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-SPEC&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Lower&#39;</span><span class="p">)]],</span>
+        <span class="mi">17</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-SPEC&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Lower&#39;</span><span class="p">)]],</span>
+        <span class="mi">18</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-SPEC&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Lower&#39;</span><span class="p">)]],</span>
+        <span class="mi">19</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-SPEC&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Lower&#39;</span><span class="p">)]]</span>
+    <span class="p">}</span>
+
+    <span class="n">_dic_specifications</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-C-25&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;MIL-C-12889&#39;</span><span class="p">]],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-C-11693&#39;</span><span class="p">]],</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-C-14157&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;MIL-C-19978&#39;</span><span class="p">]],</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-C-18312&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;MIL-C-39022&#39;</span><span class="p">]],</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-C-55514&#39;</span><span class="p">]],</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-C-83421&#39;</span><span class="p">]],</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-C-5&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;MIL-C-39001&#39;</span><span class="p">]],</span>
+        <span class="mi">8</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-C-10950&#39;</span><span class="p">]],</span>
+        <span class="mi">9</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-C-11272&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;MIL-C-23269&#39;</span><span class="p">]],</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-C-11015&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;MIL-C-39014&#39;</span><span class="p">]],</span>
+        <span class="mi">11</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-C-20&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;MIL-C-55681&#39;</span><span class="p">]],</span>
+        <span class="mi">12</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-C-39003&#39;</span><span class="p">]],</span>
+        <span class="mi">13</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-C-3965&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;MIL-C-39006&#39;</span><span class="p">]],</span>
+        <span class="mi">14</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-C-39018&#39;</span><span class="p">]],</span>
+        <span class="mi">15</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-C-62&#39;</span><span class="p">]],</span>
+        <span class="mi">16</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-C-81&#39;</span><span class="p">]],</span>
+        <span class="mi">17</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-C-14409&#39;</span><span class="p">]],</span>
+        <span class="mi">18</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-C-92&#39;</span><span class="p">]],</span>
+        <span class="mi">19</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;MIL-C-23183&#39;</span><span class="p">]]</span>
+    <span class="p">}</span>
+
+    <span class="n">_dic_styles</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[[[</span><span class="s1">&#39;CP4&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CP5&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CP8&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CP9&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CP10&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CP11&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CP12&#39;</span><span class="p">],</span>
+             <span class="p">[</span><span class="s1">&#39;CP13&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CP25&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CP26&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CP27&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CP28&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CP29&#39;</span><span class="p">],</span>
+             <span class="p">[</span><span class="s1">&#39;CP40&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CP41&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CP67&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CP69&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CP70&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CP72&#39;</span><span class="p">],</span>
+             <span class="p">[</span><span class="s1">&#39;CP75&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CP76&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CP77&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CP78&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CP80&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CP81&#39;</span><span class="p">],</span>
+             <span class="p">[</span><span class="s1">&#39;CP82&#39;</span><span class="p">]],</span> <span class="p">[[</span><span class="s1">&#39;CA&#39;</span><span class="p">]]],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic E&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic K&#39;</span><span class="p">)],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic P&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic W&#39;</span><span class="p">)]],</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">[[[</span><span class="s1">&#39;CPV07&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CPV09&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CPV17&#39;</span><span class="p">]],</span>
+            <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic E&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic F&#39;</span><span class="p">)],</span>
+             <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic G&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic K&#39;</span><span class="p">)],</span>
+             <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic L&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic M&#39;</span><span class="p">)],</span>
+             <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic P&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic Q&#39;</span><span class="p">)],</span>
+             <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic S&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic T&#39;</span><span class="p">)]]],</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="p">[[[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic N&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic R&#39;</span><span class="p">)]],</span>
+            <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic 1&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic 9&#39;</span><span class="p">)],</span>
+             <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic 10&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic 12&#39;</span><span class="p">)],</span>
+             <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic 19&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic 29&#39;</span><span class="p">)],</span>
+             <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic 49&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic 59&#39;</span><span class="p">)]]],</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic M&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic N&#39;</span><span class="p">)],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic Q&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic R&#39;</span><span class="p">)],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Characteristic S&#39;</span><span class="p">)]],</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;CRH&#39;</span><span class="p">]],</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Temperature Range M&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Temperature Range N&#39;</span><span class="p">)],</span>
+             <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Temperature Range O&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Temperature Range P&#39;</span><span class="p">)]],</span>
+            <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Temperature Range O&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Temperature Range P&#39;</span><span class="p">)]],</span>
+        <span class="p">],</span>
+        <span class="mi">8</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;CB50&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Other&#39;</span><span class="p">)]],</span>
+        <span class="mi">9</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Temperature Range C&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Temperature Range D&#39;</span><span class="p">)]],</span>
+            <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;All&#39;</span><span class="p">)]],</span>
+        <span class="p">],</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="p">[[[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Type A Rated Temperature&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Type B Rated Temperature&#39;</span><span class="p">)],</span>
+              <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Type C Rated Temperature&#39;</span><span class="p">)]],</span>
+             <span class="p">[[</span><span class="s1">&#39;CKR05&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CKR06&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CKR07&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CKR08&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CKR09&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CKR10&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;CKR11&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CKR12&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CKR13&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CKR14&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CKR15&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CKR16&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;CKR17&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CKR18&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CKR19&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CKR48&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CKR64&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CKR72&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;CKR73&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CKR74&#39;</span><span class="p">]]],</span>
+        <span class="mi">11</span><span class="p">:</span> <span class="p">[[[</span><span class="s1">&#39;CC5&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC6&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC7&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC8&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC9&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC13&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC14&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;CC15&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC16&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC17&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC18&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC19&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC20&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;CC21&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC22&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC25&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC26&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC27&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC30&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;CC31&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC32&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC33&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC35&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC36&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC37&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;CC45&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC47&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC50&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC51&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC52&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC53&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;CC54&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC55&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC56&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC57&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC75&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC76&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;CC77&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC78&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC79&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC81&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC82&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC83&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;CC85&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC95&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC96&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CC97&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CCR05&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CCR06&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;CCR07&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CCR08&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CCR09&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CCR13&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CCR14&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CCR15&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;CCR16&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CCR17&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CCR18&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CCR19&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CCR54&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CCR55&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;CCR56&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CCR57&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CCR75&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CCR76&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CCR77&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CCR78&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;CCR79&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CCR81&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CCR82&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CCR83&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CCR90&#39;</span><span class="p">]],</span>
+             <span class="p">[[</span><span class="s1">&#39;CDR&#39;</span><span class="p">]]],</span>
+        <span class="mi">12</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;CSR&#39;</span><span class="p">]],</span>
+        <span class="mi">13</span><span class="p">:</span> <span class="p">[[[</span><span class="s1">&#39;CL10&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL13&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL14&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL16&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL17&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL18&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;CL24&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL25&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL26&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL27&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL30&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL31&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;CL32&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL33&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL34&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL35&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL36&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL37&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;CL40&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL41&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL42&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL43&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL46&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL47&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;CL48&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL49&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL50&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL51&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL52&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL53&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;CL54&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL55&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL56&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL64&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL65&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL66&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;CL67&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL70&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL71&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL72&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CL73&#39;</span><span class="p">]],</span> <span class="p">[[</span><span class="s1">&#39;CLR&#39;</span><span class="p">]]],</span>
+        <span class="mi">14</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Style 16&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Style 17&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Style 71&#39;</span><span class="p">)],</span>
+             <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;All Others&#39;</span><span class="p">)]],</span>
+        <span class="mi">15</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;CE&#39;</span><span class="p">]],</span>
+        <span class="mi">16</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;CV11&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CV14&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CV21&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CV31&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CV32&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CV34&#39;</span><span class="p">],</span>
+             <span class="p">[</span><span class="s1">&#39;CV35&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CV36&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CV40&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CV41&#39;</span><span class="p">]],</span>
+        <span class="mi">17</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Style G&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Style H&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Style J&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Style L&#39;</span><span class="p">)],</span>
+             <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Style Q&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Style T&#39;</span><span class="p">)]],</span>
+        <span class="mi">18</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;CT&#39;</span><span class="p">]],</span>
+        <span class="mi">19</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;CG20&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CG21&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CG30&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CG31&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CG32&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CG40&#39;</span><span class="p">],</span>
+             <span class="p">[</span><span class="s1">&#39;CG41&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CG42&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CG43&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CG44&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CG50&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CG51&#39;</span><span class="p">],</span>
+             <span class="p">[</span><span class="s1">&#39;CG60&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CG61&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CG62&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CG63&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CG64&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CG65&#39;</span><span class="p">],</span>
+             <span class="p">[</span><span class="s1">&#39;CG66&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;CG67&#39;</span><span class="p">]]</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Define private list class attributes.</span>
+
+    <span class="c1"># Define private scalar class attributes.</span>
+
+    <span class="c1"># Define public dictionary class attributes.</span>
+
+    <span class="c1"># Define public list class attributes.</span>
+
+    <span class="c1"># Define public scalar class attributes.</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the Capacitor assessment input view.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_keys</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;quality_id&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;specification_id&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;type_id&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;configuration_id&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;construction_id&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;capacitance&#39;</span><span class="p">,</span> <span class="s1">&#39;float&#39;</span><span class="p">],</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;resistance&#39;</span><span class="p">,</span> <span class="s1">&#39;float&#39;</span><span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_labels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Quality Level:&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Capacitance (F):&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Specification:&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Style:&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Configuration:&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Construction:&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Equivalent Series Resistance (</span><span class="se">\u03A9</span><span class="s1">):&#39;</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The quality level of the capacitor.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The capacitance rating (in farads) of the capacitor.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The governing specification for the capacitor.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The style of the capacitor.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The configuration of the capacitor.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The method of construction of the capacitor.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The equivalent series resistance of the capacitor.&#39;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbConfiguration</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbStyle</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtCapacitance</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtESR</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_updater</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;quality_id&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;specification_id&#39;</span><span class="p">:</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="s1">&#39;type_id&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbStyle</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="s1">&#39;configuration_id&#39;</span><span class="p">:</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbConfiguration</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+            <span class="s1">&#39;construction_id&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+            <span class="s1">&#39;capacitance&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">txtCapacitance</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+            <span class="s1">&#39;resistance&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">txtESR</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtCapacitance</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbStyle</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbConfiguration</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtESR</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Make a fixed type panel.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_properties</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_make_panel_fixed</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_callbacks</span><span class="p">()</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_load_comboboxes</span><span class="p">,</span> <span class="s1">&#39;changed_subcategory&#39;</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_load_panel</span><span class="p">,</span>
+                      <span class="s1">&#39;succeed_get_all_hardware_attributes&#39;</span><span class="p">)</span>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="c1"># noinspection PyUnusedLocal</span>
+<div class="viewcode-block" id="AssessmentInputPanel.do_load_comboboxes"><a class="viewcode-back" href="../../../../../../api/ramstk.views.gtk3.hardware.components.html#ramstk.views.gtk3.hardware.components.capacitor.AssessmentInputPanel.do_load_comboboxes">[docs]</a>    <span class="k">def</span> <span class="nf">do_load_comboboxes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subcategory_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the capacitor assessment input RAMSTKComboBox()s.</span>
+
+<span class="sd">        :param subcategory_id: the subcategory ID of the selected capacitor.</span>
+<span class="sd">            This is unused in this method but required because this method is a</span>
+<span class="sd">            PyPubSub listener.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># MIL-HDBK-217F parts count.</span>
+            <span class="n">_quality</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;MIL-SPEC&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Lower&#39;</span><span class="p">)]</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">_quality</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_quality</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">_quality</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="n">_quality</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_specification</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_specifications</span><span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">_specification</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="n">_specification</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbStyle</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">([],</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbConfiguration</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">([[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Fixed&#39;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Variable&#39;</span><span class="p">)]],</span>
+                                            <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+        <span class="n">_construction</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Slug, All Tantalum&#39;</span><span class="p">)],</span>
+                                    <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Foil, Hermetic&#39;</span><span class="p">)],</span>
+                                    <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Slug, Hermetic&#39;</span><span class="p">)],</span>
+                                    <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Foil, Non-Hermetic&#39;</span><span class="p">)],</span>
+                                    <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Slug, Non-Hermetic&#39;</span><span class="p">)]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="n">_construction</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_do_load_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the Capacitor Assessment Inputs page.</span>
+
+<span class="sd">        :param attributes: the attributes dictionary for the selected</span>
+<span class="sd">            Capacitor.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_load_panel</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+
+        <span class="c1"># We don&#39;t block the callback signal otherwise the style</span>
+        <span class="c1"># RAMSTKComboBox() will not be loaded and set.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;specification_id&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbStyle</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;type_id&#39;</span><span class="p">],</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbConfiguration</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;configuration_id&#39;</span><span class="p">],</span>
+                                            <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;construction_id&#39;</span><span class="p">],</span>
+                                           <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtCapacitance</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;capacitance&#39;</span><span class="p">])),</span>
+                                          <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>  <span class="c1"># noqa</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtESR</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;resistance&#39;</span><span class="p">])),</span>
+                                  <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>  <span class="c1"># noqa</span>
+
+    <span class="k">def</span> <span class="nf">_do_load_styles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combo</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the style RAMSTKComboBox() when the specification changes.</span>
+
+<span class="sd">        :param combo: the specification RAMSTKCombo() that called this method.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If the capacitor specification changed, load the capacitor style</span>
+        <span class="c1"># RAMSTKComboBox().</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">13</span><span class="p">]:</span>
+                <span class="n">_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">combo</span><span class="o">.</span><span class="n">get_active</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="n">_styles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_styles</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span><span class="p">][</span><span class="n">_idx</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_styles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_styles</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">_styles</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbStyle</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="n">entries</span><span class="o">=</span><span class="n">_styles</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_set_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set widget sensitivity as needed for the selected capacitor type.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_parts_count_sensitive</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_part_stress_sensitive</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set callback methods for Capacitor assessment input widgets.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># ----- COMBOBOXES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_load_styles</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbStyle</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbStyle</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbConfiguration</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbConfiguration</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+                                                      <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span>
+                                                      <span class="mi">4</span><span class="p">,</span>
+                                                      <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+
+        <span class="c1"># ----- ENTRIES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtCapacitance</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtCapacitance</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+                                                     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_entry</span><span class="p">,</span>
+                                                     <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtESR</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtESR</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_entry</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_parts_count_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set widget sensitivity as needed for MIL-HDBK-217F, Parts Count.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbStyle</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbConfiguration</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtCapacitance</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtESR</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_part_stress_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set widget sensitivity as needed for MIL-HDBK-217F, Part Stress.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbStyle</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtCapacitance</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="o">==</span> <span class="mi">12</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtESR</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtESR</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="o">==</span> <span class="mi">13</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="o">==</span> <span class="mi">19</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbConfiguration</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbConfiguration</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set properties for Capacitor assessment input widgets.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">()</span>
+
+        <span class="c1"># ----- ENTRIES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtCapacitance</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">tooltip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                              <span class="n">width</span><span class="o">=</span><span class="mi">125</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtESR</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">tooltip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">width</span><span class="o">=</span><span class="mi">125</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AssessmentResultPanel"><a class="viewcode-back" href="../../../../../../api/ramstk.views.gtk3.hardware.components.html#ramstk.views.gtk3.hardware.components.capacitor.AssessmentResultPanel">[docs]</a><span class="k">class</span> <span class="nc">AssessmentResultPanel</span><span class="p">(</span><span class="n">RAMSTKAssessmentResultPanel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Displays capacitor assessment results attribute data.</span>
+
+<span class="sd">    The capacitor assessment result view displays all the assessment results</span>
+<span class="sd">    for the selected capacitor.  This includes, currently, results for</span>
+<span class="sd">    MIL-HDBK-217FN2 parts count and MIL-HDBK-217FN2 part stress methods.  The</span>
+<span class="sd">    attributes of a capacitor assessment result view are:</span>
+
+<span class="sd">    :cvar dict _dic_part_stress: dictionary of MIL-HDBK-217F part stress</span>
+<span class="sd">        models.  The key is the subcategory ID attribute of the component.</span>
+
+<span class="sd">    :ivar list _lst_labels: list of label text to display for the capacitor</span>
+<span class="sd">        MIL-HDBK-217 input parameters.</span>
+
+<span class="sd">    :ivar self.txtLambdaB: displays the base hazard rate for the Hardware</span>
+<span class="sd">        item.</span>
+<span class="sd">    :ivar txtPiCV: displays the capacitance factor for the capacitor.</span>
+<span class="sd">    :ivar txtPiCF: displays the configuration factor for the capacitor.</span>
+<span class="sd">    :ivar txtPiC: displays the construction factor for the capacitor.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Define private dict class attributes.</span>
+    <span class="n">_dic_part_stress</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;CV&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;CV&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;CV&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">4</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;CV&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;CV&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">6</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;CV&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">7</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;CV&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">8</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;CV&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">9</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;CV&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;CV&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">11</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;CV&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">12</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;CV&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;SR&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&quot;</span>
+        <span class="s2">&quot;&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">13</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;CV&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;C&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">14</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;CV&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">15</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;CV&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">16</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">17</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">18</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">19</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;CF&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Define private list class attributes.</span>
+
+    <span class="c1"># Define private scalar class attributes.</span>
+
+    <span class="c1"># Define public dictionary class attributes.</span>
+
+    <span class="c1"># Define public list class attributes.</span>
+
+    <span class="c1"># Define public scalar class attributes.</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the Capacitor assessment result view.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_labels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;:&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;:&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&gt;:&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="se">\u03C0</span><span class="s1">&lt;sub&gt;CV&lt;/sub&gt;:&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="se">\u03C0</span><span class="s1">&lt;sub&gt;CF&lt;/sub&gt;:&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="se">\u03C0</span><span class="s1">&lt;sub&gt;C&lt;/sub&gt;:&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The assessment model used to calculate the capacitor hazard &quot;</span>
+              <span class="s2">&quot;rate.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The base hazard rate for the capacitor.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The quality factor for the capacitor.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The environment factor for the capacitor.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The capacitance factor for the capacitor.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The configuration factor for the capacitor.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The construction factor for the capacitor.&#39;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiCV</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiCF</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiC</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lblModel</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtLambdaB</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiQ</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiE</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiCV</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiCF</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiC</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_make_panel_fixed</span><span class="p">()</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_load_panel</span><span class="p">,</span>
+                      <span class="s1">&#39;succeed_get_all_hardware_attributes&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_load_panel</span><span class="p">,</span> <span class="s1">&#39;succeed_calculate_hardware&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_load_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the capacitor assessment results page.</span>
+
+<span class="sd">        :param attributes: the attributes dictionary for the selected</span>
+<span class="sd">            Capacitor.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_load_panel</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiCV</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piCV&#39;</span><span class="p">])))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiCF</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piCF&#39;</span><span class="p">])))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiC</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piC&#39;</span><span class="p">])))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_set_sensitive</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_do_set_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set widget sensitivity as needed for the selected capacitor.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiQ</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># MIL-HDBK-217F, Parts Count</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiCV</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiCF</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiC</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiE</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiCV</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiCF</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiC</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiE</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

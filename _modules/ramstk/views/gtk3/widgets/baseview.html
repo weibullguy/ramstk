@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.widgets.baseview &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.widgets.baseview</h1><div class="highlight"><pre>
+<span></span><span class="c1"># pylint: disable=non-parent-init-called, too-many-public-methods</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.views.gtk3.widgets.view.py is part of the RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2019 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;The RAMSTKBaseView Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">import</span> <span class="nn">locale</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="c1"># noinspection PyPackageRequirements</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">treelib</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.configuration</span> <span class="kn">import</span> <span class="n">RAMSTKUserConfiguration</span>
+<span class="kn">from</span> <span class="nn">ramstk.logger</span> <span class="kn">import</span> <span class="n">RAMSTKLogManager</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3</span> <span class="kn">import</span> <span class="n">Gdk</span><span class="p">,</span> <span class="n">GObject</span><span class="p">,</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">_</span>
+
+<span class="c1"># RAMSTK Local Imports</span>
+<span class="kn">from</span> <span class="nn">.button</span> <span class="kn">import</span> <span class="n">do_make_buttonbox</span>
+<span class="kn">from</span> <span class="nn">.dialog</span> <span class="kn">import</span> <span class="n">RAMSTKMessageDialog</span>
+<span class="kn">from</span> <span class="nn">.label</span> <span class="kn">import</span> <span class="n">RAMSTKLabel</span>
+<span class="kn">from</span> <span class="nn">.matrixview</span> <span class="kn">import</span> <span class="n">RAMSTKMatrixView</span>
+<span class="kn">from</span> <span class="nn">.panel</span> <span class="kn">import</span> <span class="n">RAMSTKPanel</span>
+<span class="kn">from</span> <span class="nn">.treeview</span> <span class="kn">import</span> <span class="n">RAMSTKTreeView</span>
+
+
+<span class="c1"># noinspection PyUnresolvedReferences</span>
+<div class="viewcode-block" id="RAMSTKBaseView"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKBaseView</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">HBox</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Meta class for all RAMSTK ListView, ModuleView, and WorkView classes.</span>
+
+<span class="sd">    Attributes of the RAMSTKBaseView are:</span>
+
+<span class="sd">    :cvar RAMSTK_USER_CONFIGURATION: the instance of the RAMSTK Configuration</span>
+<span class="sd">        class.</span>
+<span class="sd">    :cvar dic_tab_position: dictionary holding the Gtk.PositionType()s for</span>
+<span class="sd">        each of left, right, top, and bottom.</span>
+
+<span class="sd">    The following attributes are used to build toolbars and pop-up menus:</span>
+
+<span class="sd">    :ivar _dic_icons: dictionary containing icon name and absolute path</span>
+<span class="sd">        key:value pairs.</span>
+
+<span class="sd">    :ivar _lst_callbacks: the list of callback functions to associate with</span>
+<span class="sd">        toolbutton items and pop-up menu entries on a view.</span>
+<span class="sd">    :ivar _lst_icons: the list of icon names (keys) in the _dic_icons</span>
+<span class="sd">        dictionary to use for each toolbutton item and pop-up menu entry.</span>
+<span class="sd">    :ivar _lst_mnu_labels: the list of labels to use on pop-up menu entries</span>
+<span class="sd">        for a view.  These are generally only used for views with a</span>
+<span class="sd">        RAMSTKTreeView().</span>
+<span class="sd">    :ivar _lst_tooltips: the list of tooltips to associate with each</span>
+<span class="sd">        toolbutton item.</span>
+
+<span class="sd">    :ivar float _mission_time: the mission time for the open RAMSTK Program.</span>
+<span class="sd">    :ivar _notebook: the Gtk.Notebook() to hold all the pages of information to</span>
+<span class="sd">        be displayed.</span>
+<span class="sd">    :type _notebook: :class:`Gtk.Notebook`</span>
+<span class="sd">    :ivar int _revision_id: the ID of the Revision associated with the</span>
+<span class="sd">        information being displayed in the View.</span>
+<span class="sd">    :ivar int _parent_id: the ID of the parent object associated with the</span>
+<span class="sd">        information being displayed in the View.</span>
+<span class="sd">    :ivar treeview: the Gtk.TreeView() to display the information for the View.</span>
+<span class="sd">    :type treeview: :class:`Gtk.TreeView`</span>
+<span class="sd">    :ivar str fmt: the formatting code for numerical displays.</span>
+<span class="sd">    :ivar hbx_tab_label: the Gtk.HBox() containing the View&#39;s Gtk.Notebook()</span>
+<span class="sd">        tab Gtk.Label().</span>
+<span class="sd">    :type hbx_tab_label: :class:`Gtk.HBox`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Define private class scalar attributes.</span>
+    <span class="n">_pixbuf</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># Define public class dict attributes.</span>
+    <span class="n">dic_tab_position</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;left&#39;</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">PositionType</span><span class="o">.</span><span class="n">LEFT</span><span class="p">,</span>
+        <span class="s1">&#39;right&#39;</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">PositionType</span><span class="o">.</span><span class="n">RIGHT</span><span class="p">,</span>
+        <span class="s1">&#39;top&#39;</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">PositionType</span><span class="o">.</span><span class="n">TOP</span><span class="p">,</span>
+        <span class="s1">&#39;bottom&#39;</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">PositionType</span><span class="o">.</span><span class="n">BOTTOM</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Define public class scalar attributes.</span>
+    <span class="n">RAMSTK_USER_CONFIGURATION</span><span class="p">:</span> <span class="n">RAMSTKUserConfiguration</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="n">RAMSTKUserConfiguration</span><span class="p">,</span>
+                 <span class="n">logger</span><span class="p">:</span> <span class="n">RAMSTKLogManager</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the RAMSTK Base View.</span>
+
+<span class="sd">        :param configuration: the RAMSTKUserConfiguration class instance.</span>
+<span class="sd">        :param logger: the RAMSTKLogManager class instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">GObject</span><span class="o">.</span><span class="n">GObject</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span> <span class="o">=</span> <span class="n">configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOGGER</span> <span class="o">=</span> <span class="n">logger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOGGER</span><span class="o">.</span><span class="n">do_create_logger</span><span class="p">(</span>
+            <span class="vm">__name__</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_LOGLEVEL</span><span class="p">,</span>
+            <span class="n">to_tty</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_icons</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__set_icons</span><span class="p">()</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_callbacks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">do_request_update</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">do_request_update_all</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_icons</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;save&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;save-all&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_mnu_labels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Save&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Save All&#39;</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_col_order</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_handler_id</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_layouts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;allocation&#39;</span><span class="p">,</span> <span class="s1">&#39;failure_definition&#39;</span><span class="p">,</span> <span class="s1">&#39;fmea&#39;</span><span class="p">,</span> <span class="s1">&#39;function&#39;</span><span class="p">,</span> <span class="s1">&#39;hardware&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;hazard&#39;</span><span class="p">,</span> <span class="s1">&#39;incident&#39;</span><span class="p">,</span> <span class="s1">&#39;pof&#39;</span><span class="p">,</span> <span class="s1">&#39;requirement&#39;</span><span class="p">,</span> <span class="s1">&#39;revision&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;similar_item&#39;</span><span class="p">,</span> <span class="s1">&#39;software&#39;</span><span class="p">,</span> <span class="s1">&#39;stakeholder&#39;</span><span class="p">,</span> <span class="s1">&#39;testing&#39;</span><span class="p">,</span> <span class="s1">&#39;validation&#39;</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_img_tab</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Image</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Image</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mission_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_MTIME</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_notebook</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Notebook</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Notebook</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parent_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pnlPanel</span><span class="p">:</span> <span class="n">RAMSTKPanel</span> <span class="o">=</span> <span class="n">RAMSTKPanel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_revision_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree_loaded</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="p">:</span> <span class="n">RAMSTKTreeView</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_treeview</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">&#39;{0:0.&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_DEC_PLACES</span><span class="p">)</span>
+            <span class="o">+</span> <span class="s1">&#39;G}&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hbx_tab_label</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">HBox</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">HBox</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">locale</span><span class="o">.</span><span class="n">setlocale</span><span class="p">(</span><span class="n">locale</span><span class="o">.</span><span class="n">LC_ALL</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_LOCALE</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">locale</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">_error</span><span class="p">:</span>
+            <span class="n">locale</span><span class="o">.</span><span class="n">setlocale</span><span class="p">(</span><span class="n">locale</span><span class="o">.</span><span class="n">LC_ALL</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOGGER</span><span class="o">.</span><span class="n">do_log_exception</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">_error</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_callbacks</span><span class="p">()</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_select_revision</span><span class="p">,</span> <span class="s1">&#39;selected_revision&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_set_cursor_active</span><span class="p">,</span> <span class="s1">&#39;succeed_update_matrix&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_set_cursor_active</span><span class="p">,</span> <span class="s1">&#39;succeed_update_all&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_set_cursor_active_on_fail</span><span class="p">,</span> <span class="s1">&#39;fail_update_matrix&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__set_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set common callback methods.</span>
+
+<span class="sd">        Sets callback for the RAMSTKView, Gtk.TreeView, and Gtk.TreeSelection.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+                <span class="s1">&#39;button-press&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                    <span class="s1">&#39;button_press_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_button_press</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">_error</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_module</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_layouts</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOGGER</span><span class="o">.</span><span class="n">do_log_exception</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">_error</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__set_icons</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Set the dict of icons.</span>
+
+<span class="sd">        :return: the dict of icons to use in RAMSTK.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;action&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/action.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;add&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span> <span class="o">+</span> <span class="s1">&#39;/32x32/add.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;calculate&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/calculate.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;calculate_all&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/calculate-all.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;cancel&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/cancel.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;cause&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/cause.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;complete&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/complete.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;control&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/control.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;chart&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/charts.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;edit&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span> <span class="o">+</span> <span class="s1">&#39;/32x32/edit.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;environment&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/environment.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;error&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/error.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;export&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/export.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;important&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/important.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;insert_child&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/insert_child.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;insert_sibling&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/insert_sibling.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;mechanism&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/mechanism.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;mission&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/mission.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;mode&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span> <span class="o">+</span> <span class="s1">&#39;/32x32/mode.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;none&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span> <span class="o">+</span> <span class="s1">&#39;/32x32/none.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;opload&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span> <span class="o">+</span> <span class="s1">&#39;/32x32/load.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;opstress&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/stress.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;partial&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/partial.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;phase&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/phase.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;plot&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/charts.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;question&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/question.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;refresh-view&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/view-refresh.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;remove&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/remove.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;rollup&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/rollup.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;reports&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/reports.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;save&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span> <span class="o">+</span> <span class="s1">&#39;/32x32/save.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;save-all&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/save-all.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;save-layout&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/save-layout.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;testmethod&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/method.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;warning&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/warning.png&#39;</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">_make_treeview</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RAMSTKTreeView</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Make the RAMSTKTreeView instance for this view.</span>
+
+<span class="sd">        :return: _treeview; the RAMSTKTreeView() created.</span>
+<span class="sd">        :rtype: :class:`ramstk.views.gtk3.widgets.RAMSTKTreeView`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_treeview</span> <span class="o">=</span> <span class="n">RAMSTKTreeView</span><span class="p">()</span>
+
+            <span class="n">_fmt_file</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span>
+                         <span class="o">+</span> <span class="s1">&#39;/layouts/&#39;</span>
+                         <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_FORMAT_FILE</span><span class="p">[</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">_module</span><span class="p">])</span>
+
+            <span class="n">_treeview</span><span class="o">.</span><span class="n">do_parse_format</span><span class="p">(</span><span class="n">_fmt_file</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lst_col_order</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">_treeview</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">_bg_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_module</span> <span class="o">+</span> <span class="s1">&#39;bg&#39;</span><span class="p">]</span>
+                <span class="n">_fg_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_module</span> <span class="o">+</span> <span class="s1">&#39;fg&#39;</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">_error</span><span class="p">:</span>
+                <span class="n">_bg_color</span> <span class="o">=</span> <span class="s1">&#39;#FFFFFF&#39;</span>
+                <span class="n">_fg_color</span> <span class="o">=</span> <span class="s1">&#39;#000000&#39;</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_module</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_layouts</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOGGER</span><span class="o">.</span><span class="n">do_log_exception</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">_error</span><span class="p">)</span>
+
+            <span class="n">_treeview</span><span class="o">.</span><span class="n">do_make_model</span><span class="p">()</span>
+            <span class="n">_treeview</span><span class="o">.</span><span class="n">do_make_columns</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;bg_color&#39;</span><span class="p">:</span> <span class="n">_bg_color</span><span class="p">,</span>
+                <span class="s1">&#39;fg_color&#39;</span><span class="p">:</span> <span class="n">_fg_color</span>
+            <span class="p">})</span>
+            <span class="n">_treeview</span><span class="o">.</span><span class="n">do_set_editable_columns</span><span class="p">(</span><span class="n">_treeview</span><span class="o">.</span><span class="n">do_edit_cell</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">_error</span><span class="p">:</span>
+            <span class="n">_treeview</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeView</span><span class="p">()</span>
+            <span class="n">_treeview</span><span class="o">.</span><span class="n">selection</span> <span class="o">=</span> <span class="n">_treeview</span><span class="o">.</span><span class="n">get_selection</span><span class="p">()</span>
+            <span class="n">_treeview</span><span class="o">.</span><span class="n">dic_handler_id</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_module</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_layouts</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOGGER</span><span class="o">.</span><span class="n">do_log_exception</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">_error</span><span class="p">)</span>
+
+        <span class="n">_treeview</span><span class="o">.</span><span class="n">set_grid_lines</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">_treeview</span><span class="o">.</span><span class="n">set_enable_tree_lines</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">_treeview</span><span class="o">.</span><span class="n">set_level_indentation</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_treeview</span>
+
+<div class="viewcode-block" id="RAMSTKBaseView.do_embed_matrixview_panel"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.do_embed_matrixview_panel">[docs]</a>    <span class="k">def</span> <span class="nf">do_embed_matrixview_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Embed a matrixview RAMSTKPanel() into the layout.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matrixview</span><span class="o">.</span><span class="n">dic_icons</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;complete&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/complete.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;none&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span> <span class="o">+</span> <span class="s1">&#39;/32x32/none.png&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;partial&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/partial.png&#39;</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matrixview</span><span class="o">.</span><span class="n">set_tooltip_text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tabtooltip</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pnlPanel</span><span class="o">.</span><span class="n">do_make_panel_matrixview</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">matrixview</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pack_end</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pnlPanel</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.do_embed_treeview_panel"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.do_embed_treeview_panel">[docs]</a>    <span class="k">def</span> <span class="nf">do_embed_treeview_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Embed a treeview RAMSTKPanel() into the layout.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_fmt_file</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">+</span> <span class="s1">&#39;/layouts/&#39;</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_FORMAT_FILE</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_module</span><span class="p">])</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_bg_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_module</span> <span class="o">+</span> <span class="s1">&#39;bg&#39;</span><span class="p">]</span>
+            <span class="n">_fg_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_module</span> <span class="o">+</span> <span class="s1">&#39;fg&#39;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">_bg_color</span> <span class="o">=</span> <span class="s1">&#39;#FFFFFF&#39;</span>
+            <span class="n">_fg_color</span> <span class="o">=</span> <span class="s1">&#39;#000000&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pnlPanel</span><span class="o">.</span><span class="n">do_make_treeview</span><span class="p">(</span><span class="n">bg_color</span><span class="o">=</span><span class="n">_bg_color</span><span class="p">,</span>
+                                        <span class="n">fg_color</span><span class="o">=</span><span class="n">_fg_color</span><span class="p">,</span>
+                                        <span class="n">fmt_file</span><span class="o">=</span><span class="n">_fmt_file</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pack_end</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pnlPanel</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.do_expand_tree"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.do_expand_tree">[docs]</a>    <span class="k">def</span> <span class="nf">do_expand_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Expand the RAMSTKTreeView.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+        <span class="n">_row</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_iter_first</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">expand_all</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">_row</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_path</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="n">_row</span><span class="p">)</span>
+            <span class="n">_column</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">get_column</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">set_cursor</span><span class="p">(</span><span class="n">_path</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">row_activated</span><span class="p">(</span><span class="n">_path</span><span class="p">,</span> <span class="n">_column</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.do_get_headings"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.do_get_headings">[docs]</a>    <span class="k">def</span> <span class="nf">do_get_headings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get the list of headings for the Usage Profile treeview.</span>
+
+<span class="sd">        :param level: the level (mission, phase, environment) to retrieve</span>
+<span class="sd">            headers for.</span>
+<span class="sd">        :return: list of headings</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_headings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_headings</span><span class="p">[</span><span class="n">level</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">_headings</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">return</span> <span class="n">_headings</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.do_load_row"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.do_load_row">[docs]</a>    <span class="k">def</span> <span class="nf">do_load_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the data into a row.</span>
+
+<span class="sd">        This is used to load data into a RAMSTKTreeView() that is being used in</span>
+<span class="sd">        a &quot;worksheet&quot; manner.  See the Allocation and Similar Item work views</span>
+<span class="sd">        for examples.</span>
+
+<span class="sd">        :param attributes: the Hardware attributes dict for the row to</span>
+<span class="sd">            be loaded in the WorkView worksheet.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+
+        <span class="n">_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">korder</span><span class="p">:</span>
+            <span class="n">_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">korder</span><span class="p">[</span><span class="n">_key</span><span class="p">]])</span>
+
+        <span class="c1"># Only load items that are immediate children of the selected item and</span>
+        <span class="c1"># prevent loading the selected item itself in the worksheet.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_loaded</span><span class="p">:</span>
+            <span class="c1"># noinspection PyDeepBugsSwappedArgs</span>
+            <span class="n">_model</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">_data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.do_make_layout"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.do_make_layout">[docs]</a>    <span class="k">def</span> <span class="nf">do_make_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create a view with the following layout.</span>
+
+<span class="sd">        +-----+---------------------------------------+</span>
+<span class="sd">        |  B  |                WIDGETS                |</span>
+<span class="sd">        |  U  |                                       |</span>
+<span class="sd">        |  T  |                                       |</span>
+<span class="sd">        |  T  |                                       |</span>
+<span class="sd">        |  O  |                                       |</span>
+<span class="sd">        |  N  |                                       |</span>
+<span class="sd">        |  S  |                                       |</span>
+<span class="sd">        +-----+---------------------------------------+</span>
+<span class="sd">        self.make_toolbuttons -------&gt; self</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">make_tab_label</span><span class="p">(</span><span class="n">tablabel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tablabel</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tabtooltip</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">make_toolbuttons</span><span class="p">(</span>
+            <span class="n">icons</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_icons</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+            <span class="n">tooltips</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+            <span class="n">callbacks</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_callbacks</span><span class="p">)</span>  <span class="c1"># type: ignore</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.do_make_layout_lr"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.do_make_layout_lr">[docs]</a>    <span class="k">def</span> <span class="nf">do_make_layout_lr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">HPaned</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create a view with the following layout.</span>
+
+<span class="sd">        +-----+-------------------+-------------------+</span>
+<span class="sd">        |  B  |      L. SIDE      |      R. SIDE      |</span>
+<span class="sd">        |  U  |                   |                   |</span>
+<span class="sd">        |  T  |                   |                   |</span>
+<span class="sd">        |  T  |                   |                   |</span>
+<span class="sd">        |  O  |                   |                   |</span>
+<span class="sd">        |  N  |                   |                   |</span>
+<span class="sd">        |  S  |                   |                   |</span>
+<span class="sd">        +-----+-------------------+-------------------+</span>
+<span class="sd">        self.make_toolbuttons -----+--&gt; self</span>
+<span class="sd">                                   |</span>
+<span class="sd">                      _hpaned -----+</span>
+
+<span class="sd">        :return: _hpaned; the Gtk.HPaned() that creates the left and right</span>
+<span class="sd">            sides for further population.</span>
+<span class="sd">        :rtype: :class:`Gtk.Hpaned`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_make_layout</span><span class="p">()</span>
+
+        <span class="n">_hpaned</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">HPaned</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">HPaned</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">_hpaned</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_hpaned</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.do_make_layout_lrr"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.do_make_layout_lrr">[docs]</a>    <span class="k">def</span> <span class="nf">do_make_layout_lrr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Gtk</span><span class="o">.</span><span class="n">HPaned</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">VPaned</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Create a view with the following layout.</span>
+
+<span class="sd">        +-----+-------------------+-------------------+</span>
+<span class="sd">        |  B  |      L. SIDE      |      R. TOP       |</span>
+<span class="sd">        |  U  |                   |                   |</span>
+<span class="sd">        |  T  |                   |                   |</span>
+<span class="sd">        |  T  |                   +-------------------+</span>
+<span class="sd">        |  O  |                   |     R. BOTTOM     |</span>
+<span class="sd">        |  N  |                   |                   |</span>
+<span class="sd">        |  S  |                   |                   |</span>
+<span class="sd">        +-----+-------------------+-------------------+</span>
+<span class="sd">           self.make_toolbuttons  -----+--&gt; self</span>
+<span class="sd">                                       |</span>
+<span class="sd">        _vpaned_right -----&gt; _hpaned --+</span>
+
+<span class="sd">        :return: (_hpaned, _vpaned_right); the Gtk.HPaned() and Gtk.Vpaned()</span>
+<span class="sd">            that create the left and right sections for further population.</span>
+<span class="sd">        :rtype: tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_make_layout</span><span class="p">()</span>
+
+        <span class="n">_hpaned</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">HPaned</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">HPaned</span><span class="p">()</span>
+        <span class="n">_vpaned_right</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">VPaned</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">VPaned</span><span class="p">()</span>
+
+        <span class="n">_hpaned</span><span class="o">.</span><span class="n">pack2</span><span class="p">(</span><span class="n">_vpaned_right</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">_hpaned</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_hpaned</span><span class="p">,</span> <span class="n">_vpaned_right</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.do_make_layout_llr"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.do_make_layout_llr">[docs]</a>    <span class="k">def</span> <span class="nf">do_make_layout_llr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Gtk</span><span class="o">.</span><span class="n">HPaned</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">VPaned</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Create a view with the following layout.</span>
+
+<span class="sd">        +-----+-------------------+-------------------+</span>
+<span class="sd">        |  B  |       L. TOP      |     R. SIDE       |</span>
+<span class="sd">        |  U  |                   |                   |</span>
+<span class="sd">        |  T  |                   |                   |</span>
+<span class="sd">        |  T  +-------------------+                   |</span>
+<span class="sd">        |  O  |     L. BOTTOM     |                   |</span>
+<span class="sd">        |  N  |                   |                   |</span>
+<span class="sd">        |  S  |                   |                   |</span>
+<span class="sd">        +-----+-------------------+-------------------+</span>
+<span class="sd">           self.make_toolbuttons  -----+--&gt; self</span>
+<span class="sd">                                       |</span>
+<span class="sd">         _vpaned_left -----&gt; _hpaned --+</span>
+
+<span class="sd">        :return: (_hpaned, _vpaned_left); the Gtk.HPaned() and Gtk.Vpaned()</span>
+<span class="sd">            that create the left and right sections for further population.</span>
+<span class="sd">        :rtype: tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_make_layout</span><span class="p">()</span>
+
+        <span class="n">_hpaned</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">HPaned</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">HPaned</span><span class="p">()</span>
+        <span class="n">_vpaned_left</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">VPaned</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">VPaned</span><span class="p">()</span>
+
+        <span class="n">_hpaned</span><span class="o">.</span><span class="n">pack1</span><span class="p">(</span><span class="n">_vpaned_left</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">_hpaned</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_hpaned</span><span class="p">,</span> <span class="n">_vpaned_left</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.do_make_layout_llrr"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.do_make_layout_llrr">[docs]</a>    <span class="k">def</span> <span class="nf">do_make_layout_llrr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Gtk</span><span class="o">.</span><span class="n">VPaned</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">VPaned</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Create a view with the following layout.</span>
+
+<span class="sd">        +-----+-------------------+-------------------+</span>
+<span class="sd">        |  B  |       L. TOP      |      R. TOP       |</span>
+<span class="sd">        |  U  |                   |                   |</span>
+<span class="sd">        |  T  |                   |                   |</span>
+<span class="sd">        |  T  +-------------------+-------------------+</span>
+<span class="sd">        |  O  |     L. BOTTOM     |     R. BOTTOM     |</span>
+<span class="sd">        |  N  |                   |                   |</span>
+<span class="sd">        |  S  |                   |                   |</span>
+<span class="sd">        +-----+-------------------+-------------------+</span>
+<span class="sd">           self.make_toolbuttons  -----+--&gt; self</span>
+<span class="sd">                                       |</span>
+<span class="sd">         _vpaned_left --+--&gt; _hpaned --+</span>
+<span class="sd">                        |</span>
+<span class="sd">        _vpaned_right --+</span>
+
+<span class="sd">        :return: (_vpaned_left, _vpaned_right); the two Gtk.Vpaned()</span>
+<span class="sd">            that create the left and right sections for further population.</span>
+<span class="sd">        :rtype: tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_make_layout</span><span class="p">()</span>
+
+        <span class="n">_hpaned</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">HPaned</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">HPaned</span><span class="p">()</span>
+        <span class="n">_vpaned_left</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">VPaned</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">VPaned</span><span class="p">()</span>
+        <span class="n">_vpaned_right</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">VPaned</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">VPaned</span><span class="p">()</span>
+
+        <span class="n">_hpaned</span><span class="o">.</span><span class="n">pack1</span><span class="p">(</span><span class="n">_vpaned_left</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">_hpaned</span><span class="o">.</span><span class="n">pack2</span><span class="p">(</span><span class="n">_vpaned_right</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">_hpaned</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_vpaned_left</span><span class="p">,</span> <span class="n">_vpaned_right</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.do_raise_dialog"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.do_raise_dialog">[docs]</a>    <span class="k">def</span> <span class="nf">do_raise_dialog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RAMSTKMessageDialog</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Raise a dialog in response to information, warnings, and errors.</span>
+
+<span class="sd">        This method will display an message dialog of the appropriate severity</span>
+<span class="sd">        information, warning, or error containing a message to the user.  It</span>
+<span class="sd">        will also write a message to the RAMSTK debug_log to (hopefully) assist</span>
+<span class="sd">        in troubleshooting.</span>
+
+<span class="sd">        :return: _dialog</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_debug_msg</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;debug_msg&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_parent</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;parent&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">_dialog</span> <span class="o">=</span> <span class="n">RAMSTKMessageDialog</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">_parent</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOGGER</span><span class="o">.</span><span class="n">do_log_debug</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">_debug_msg</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_dialog</span></div>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="c1"># noinspection PyUnusedLocal</span>
+<div class="viewcode-block" id="RAMSTKBaseView.do_refresh_tree"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.do_refresh_tree">[docs]</a>    <span class="k">def</span> <span class="nf">do_refresh_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">package</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Update the module view RAMSTKTreeView() with attribute changes.</span>
+
+<span class="sd">        This method receives two dicts.  This first is from the</span>
+<span class="sd">        workflow&#39;s workview module and is sent when a workview widget is</span>
+<span class="sd">        edited/changed.</span>
+
+<span class="sd">            `package` key: `package` value</span>
+
+<span class="sd">        corresponds to:</span>
+
+<span class="sd">            database field name: database field new value</span>
+
+<span class="sd">        The second dict is from the workflow&#39;s moduleview.</span>
+
+<span class="sd">            `keys` key: `keys` value</span>
+
+<span class="sd">        corresponds to:</span>
+
+<span class="sd">            database field name: TreeModel default column position</span>
+
+<span class="sd">        Since both dicts contain the same key values, this method can refresh</span>
+<span class="sd">        the proper column of the RAMSTKTreeView with the new data.</span>
+
+<span class="sd">        :param list node_id: unused in this method.</span>
+<span class="sd">        :param package: the key:value for the data being updated.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="p">[[</span><span class="n">_key</span><span class="p">,</span> <span class="n">_value</span><span class="p">]]</span> <span class="o">=</span> <span class="n">package</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_col_order</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_dic_key_index</span><span class="p">[</span><span class="n">_key</span><span class="p">]]</span>
+
+            <span class="n">_model</span><span class="p">,</span> <span class="n">_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">get_selection</span><span class="p">()</span><span class="o">.</span><span class="n">get_selected</span><span class="p">()</span>
+            <span class="n">_model</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">_row</span><span class="p">,</span> <span class="n">_position</span><span class="p">,</span> <span class="n">_value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">_error</span><span class="p">:</span>
+            <span class="c1"># Not all attributes available on the workview are stored in the</span>
+            <span class="c1"># moduleview tree.  We log the error in case the offending</span>
+            <span class="c1"># attribute is supposed to be there and then continue.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOGGER</span><span class="o">.</span><span class="n">do_log_exception</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">_error</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.do_request_insert"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.do_request_insert">[docs]</a>    <span class="k">def</span> <span class="nf">do_request_insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Request insert a new work stream element into the program database.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_sibling</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sibling&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_set_cursor_busy</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">_sibling</span><span class="p">:</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_insert_</span><span class="si">{0:s}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_module</span><span class="o">.</span><span class="n">lower</span><span class="p">()),</span>
+                            <span class="n">parent_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent_id</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_insert_</span><span class="si">{0:s}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_module</span><span class="o">.</span><span class="n">lower</span><span class="p">()),</span>
+                            <span class="n">parent_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span><span class="p">)</span>  <span class="c1"># noqa</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.do_request_insert_child"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.do_request_insert_child">[docs]</a>    <span class="k">def</span> <span class="nf">do_request_insert_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__button</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ToolButton</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Request to insert a new child entity of the selected entity.</span>
+
+<span class="sd">        :param __button: the Gtk.ToolButton() that called this method.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_request_insert</span><span class="p">(</span><span class="n">sibling</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.do_request_insert_sibling"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.do_request_insert_sibling">[docs]</a>    <span class="k">def</span> <span class="nf">do_request_insert_sibling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__button</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ToolButton</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Send request to insert a new sibling entity.</span>
+
+<span class="sd">        :param __button: the Gtk.ToolButton() that called this method.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_request_insert</span><span class="p">(</span><span class="n">sibling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.do_request_update"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.do_request_update">[docs]</a>    <span class="k">def</span> <span class="nf">do_request_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__button</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ToolButton</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Request to update selected record to RAMSTK program database.</span>
+
+<span class="sd">        :param __button: the Gtk.ToolButton() that called this method.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_set_cursor_busy</span><span class="p">()</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_update_</span><span class="si">{0:s}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_module</span><span class="p">),</span>
+                        <span class="n">node_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.do_request_update_all"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.do_request_update_all">[docs]</a>    <span class="k">def</span> <span class="nf">do_request_update_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__button</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ToolButton</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Send request to save all the records to RAMSTK program database.</span>
+
+<span class="sd">        :param __button: the Gtk.ToolButton() that called this method.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_set_cursor_busy</span><span class="p">()</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_update_all_</span><span class="si">{0:s}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_module</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.do_set_cursor"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.do_set_cursor">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_cursor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">CursorType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the cursor for the Module, List, and Work Book Gdk.Window().</span>
+
+<span class="sd">        :param cursor: the Gdk.Cursor.new() to set.  Only handles one of the</span>
+<span class="sd">                       following:</span>
+<span class="sd">                       - Gdk.CursorType.X_CURSOR</span>
+<span class="sd">                       - Gdk.CursorType.ARROW</span>
+<span class="sd">                       - Gdk.CursorType.CENTER_PTR</span>
+<span class="sd">                       - Gdk.CIRCLE</span>
+<span class="sd">                       - Gdk.CROSS</span>
+<span class="sd">                       - Gdk.CROSS_REVERSE</span>
+<span class="sd">                       - Gdk.CursorType.CROSSHAIR</span>
+<span class="sd">                       - Gdk.DIAMOND_CROSS</span>
+<span class="sd">                       - Gdk.DOUBLE_ARROW</span>
+<span class="sd">                       - Gdk.DRAFT_LARGE</span>
+<span class="sd">                       - Gdk.DRAFT_SMALL</span>
+<span class="sd">                       - Gdk.EXCHANGE</span>
+<span class="sd">                       - Gdk.FLEUR</span>
+<span class="sd">                       - Gdk.GUMBY</span>
+<span class="sd">                       - Gdk.HAND1</span>
+<span class="sd">                       - Gdk.HAND2</span>
+<span class="sd">                       - Gdk.CursorType.LEFT_PTR - non-busy cursor</span>
+<span class="sd">                       - Gdk.PENCIL</span>
+<span class="sd">                       - Gdk.PLUS</span>
+<span class="sd">                       - Gdk.QUESTION_ARROW</span>
+<span class="sd">                       - Gdk.CursorType.RIGHT_PTR</span>
+<span class="sd">                       - Gdk.SB_DOWN_ARROW</span>
+<span class="sd">                       - Gdk.SB_H_DOUBLE_ARROW</span>
+<span class="sd">                       - Gdk.SB_LEFT_ARROW</span>
+<span class="sd">                       - Gdk.SB_RIGHT_ARROW</span>
+<span class="sd">                       - Gdk.SB_UP_ARROW</span>
+<span class="sd">                       - Gdk.SB_V_DOUBLE_ARROW</span>
+<span class="sd">                       - Gdk.TCROSS</span>
+<span class="sd">                       - Gdk.TOP_LEFT_ARROW</span>
+<span class="sd">                       - Gdk.CursorType.WATCH - when application is busy</span>
+<span class="sd">                       - Gdk.XTERM - selection bar</span>
+<span class="sd">        :type cursor: :class:`Gdk.Cursor`</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_parent_window</span><span class="p">()</span><span class="o">.</span><span class="n">set_cursor</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">Cursor</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">cursor</span><span class="p">))</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="c1"># There is no parent window.</span>
+            <span class="k">pass</span></div>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="c1"># noinspection PyUnusedLocal</span>
+<div class="viewcode-block" id="RAMSTKBaseView.do_set_cursor_active"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.do_set_cursor_active">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_cursor_active</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                             <span class="n">node_id</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                             <span class="n">tree</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set active cursor for the Module, List, and Work Book Gdk.Window().</span>
+
+<span class="sd">        :param node_id: the node ID passed in the PyPubSub message.  Only</span>
+<span class="sd">            needed when this method is a PyPubSub subscriber.</span>
+<span class="sd">        :param tree: the treelib Tree() passed in the PyPubSub message.  Only</span>
+<span class="sd">            needed when this method is a PyPubSub subscriber.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_set_cursor</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">CursorType</span><span class="o">.</span><span class="n">LEFT_PTR</span><span class="p">)</span></div>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="c1"># noinspection PyUnusedLocal</span>
+<div class="viewcode-block" id="RAMSTKBaseView.do_set_cursor_active_on_fail"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.do_set_cursor_active_on_fail">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_cursor_active_on_fail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set active cursor for the Module, List, and Work Book Gdk.Window().</span>
+
+<span class="sd">        :keyword str error_message: the error message broadcast with the</span>
+<span class="sd">        &#39;fail&#39; message.  Only needed when this method is a PyPubSub subscriber.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_set_cursor</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">CursorType</span><span class="o">.</span><span class="n">LEFT_PTR</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.do_set_cursor_busy"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.do_set_cursor_busy">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_cursor_busy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set busy cursor for the Module, List, and Work Book Gdk.Window().</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_set_cursor</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">CursorType</span><span class="o">.</span><span class="n">WATCH</span><span class="p">)</span></div>
+
+    <span class="c1"># noinspection PyUnusedLocal</span>
+    <span class="c1"># pylint: disable=unused-argument</span>
+<div class="viewcode-block" id="RAMSTKBaseView.make_tab_label"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.make_tab_label">[docs]</a>    <span class="k">def</span> <span class="nf">make_tab_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Make the view&#39;s tab label.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_img_tab</span><span class="o">.</span><span class="n">set_from_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dic_icons</span><span class="p">[</span><span class="s1">&#39;tab&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hbx_tab_label</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_img_tab</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c1"># There is no icon to display on the tab.  Just move along.</span>
+            <span class="k">pass</span>
+
+        <span class="n">_label</span><span class="p">:</span> <span class="n">RAMSTKLabel</span> <span class="o">=</span> <span class="n">RAMSTKLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tablabel</span><span class="p">)</span>
+        <span class="n">_label</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">height</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+                                 <span class="n">width</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                                 <span class="n">justify</span><span class="o">=</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Justification</span><span class="o">.</span><span class="n">CENTER</span><span class="p">,</span>
+                                 <span class="n">tooltip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tabtooltip</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hbx_tab_label</span><span class="o">.</span><span class="n">pack_end</span><span class="p">(</span><span class="n">_label</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hbx_tab_label</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.make_toolbuttons"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.make_toolbuttons">[docs]</a>    <span class="k">def</span> <span class="nf">make_toolbuttons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create the RAMSTKBaseView() tool buttons.</span>
+
+<span class="sd">        Keyword arguments are passed along to the do_make_buttonbox() function.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_scrolledwindow</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ScrolledWindow</span><span class="p">()</span>
+        <span class="n">_scrolledwindow</span><span class="o">.</span><span class="n">set_policy</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">PolicyType</span><span class="o">.</span><span class="n">NEVER</span><span class="p">,</span>
+                                   <span class="n">Gtk</span><span class="o">.</span><span class="n">PolicyType</span><span class="o">.</span><span class="n">AUTOMATIC</span><span class="p">)</span>
+        <span class="n">_scrolledwindow</span><span class="o">.</span><span class="n">add_with_viewport</span><span class="p">(</span><span class="n">do_make_buttonbox</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">_scrolledwindow</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.on_button_press"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.on_button_press">[docs]</a>    <span class="k">def</span> <span class="nf">on_button_press</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__treeview</span><span class="p">:</span> <span class="n">RAMSTKTreeView</span><span class="p">,</span>
+                        <span class="n">event</span><span class="p">:</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">EventButton</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Handle mouse clicks on the View&#39;s RTKTreeView().</span>
+
+<span class="sd">        :param __treeview: the RAMSTKTreeView() that called this method.  If is</span>
+<span class="sd">            unused in this method.</span>
+<span class="sd">        :param event: the Gdk.Event() that called this method (the important</span>
+<span class="sd">        attribute is which mouse button was clicked).</span>
+
+<span class="sd">                      * 1 = left</span>
+<span class="sd">                      * 2 = scrollwheel</span>
+<span class="sd">                      * 3 = right</span>
+<span class="sd">                      * 4 = forward</span>
+<span class="sd">                      * 5 = backwards</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">handler_block</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;button-press&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">_menu</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Menu</span><span class="p">()</span>
+            <span class="n">_menu</span><span class="o">.</span><span class="n">popup_at_pointer</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+            <span class="c1"># pylint: disable=unused-variable</span>
+            <span class="k">for</span> <span class="n">_idx</span><span class="p">,</span> <span class="n">__</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_icons</span><span class="p">):</span>
+                <span class="n">_menu_item</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ImageMenuItem</span><span class="p">()</span>
+                <span class="n">_image</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Image</span><span class="p">()</span>
+                <span class="n">_image</span><span class="o">.</span><span class="n">set_from_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dic_icons</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_icons</span><span class="p">[</span><span class="n">_idx</span><span class="p">]])</span>
+                <span class="n">_menu_item</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_mnu_labels</span><span class="p">[</span><span class="n">_idx</span><span class="p">])</span>
+                <span class="n">_menu_item</span><span class="o">.</span><span class="n">set_image</span><span class="p">(</span><span class="n">_image</span><span class="p">)</span>
+                <span class="n">_menu_item</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;use_underline&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+                <span class="n">_menu_item</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;activate&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_callbacks</span><span class="p">[</span><span class="n">_idx</span><span class="p">],</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="p">)</span>
+                <span class="n">_menu_item</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+                <span class="n">_menu</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_menu_item</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">handler_unblock</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;button-press&#39;</span><span class="p">])</span></div>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="c1"># noinspection PyUnusedLocal</span>
+<div class="viewcode-block" id="RAMSTKBaseView.on_delete"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.on_delete">[docs]</a>    <span class="k">def</span> <span class="nf">on_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Update the RAMSTKTreeView after deleting a line item.</span>
+
+<span class="sd">        :param node_id: the treelib Tree() node ID that was deleted.</span>
+<span class="sd">        :param tree: the treelib Tree() containing the workflow module data.</span>
+<span class="sd">        :type tree: :class:`treelib.Tree`</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_model</span><span class="p">,</span> <span class="n">_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">selection</span><span class="o">.</span><span class="n">get_selected</span><span class="p">()</span>
+        <span class="n">_model</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">_row</span><span class="p">)</span>
+
+        <span class="n">_row</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_iter_first</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">_row</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">selection</span><span class="o">.</span><span class="n">select_iter</span><span class="p">(</span><span class="n">_row</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.on_insert"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.on_insert">[docs]</a>    <span class="k">def</span> <span class="nf">on_insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add row to the RAMSTKTreeView for newly added element.</span>
+
+<span class="sd">        :param node_id: the ID of the newly added element.</span>
+<span class="sd">        :param tree: the treelib Tree() containing the work stream module&#39;s</span>
+<span class="sd">            data.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_data</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_module</span><span class="p">]</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pnlPanel</span><span class="o">.</span><span class="n">on_insert</span><span class="p">(</span><span class="n">_data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.on_row_change"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.on_row_change">[docs]</a>    <span class="k">def</span> <span class="nf">on_row_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeSelection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Respond to RAMSTKTreeView() row changes.</span>
+
+<span class="sd">        :param selection: the current Gtk.TreeSelection().</span>
+<span class="sd">        :return: _attributes; the dict containing the record&#39;s attributes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">selection</span><span class="o">.</span><span class="n">handler_block</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">])</span>
+
+        <span class="n">_attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">_model</span><span class="p">,</span> <span class="n">_row</span> <span class="o">=</span> <span class="n">selection</span><span class="o">.</span><span class="n">get_selected</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">_row</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># // TODO: Update base view on_row_change() to use _dic_column_keys.    # noqa</span>
+            <span class="c1"># //</span>
+            <span class="c1"># // The _dic_key_index and _dic_column_keys are both</span>
+            <span class="c1"># // dictionaries with the object&#39;s attribute name (str) as the key</span>
+            <span class="c1"># // and the associated work flow column number (int) as the</span>
+            <span class="c1"># // value.  Only one is needed; the _dic_column_keys is more</span>
+            <span class="c1"># // widely used and is more descriptive of what the dict holds.</span>
+            <span class="k">for</span> <span class="n">_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_key_index</span><span class="p">:</span>
+                <span class="n">_attributes</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="n">_row</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_col_order</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_dic_key_index</span><span class="p">[</span><span class="n">_key</span><span class="p">]])</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span> <span class="o">=</span> <span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;revision_id&#39;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="n">selection</span><span class="o">.</span><span class="n">handler_unblock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">_attributes</span></div>
+
+<div class="viewcode-block" id="RAMSTKBaseView.on_select_revision"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKBaseView.on_select_revision">[docs]</a>    <span class="k">def</span> <span class="nf">on_select_revision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the Revision ID when a new Revision is selected.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_revision_id</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;revision_id&#39;</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="RAMSTKListView"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKListView">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKListView</span><span class="p">(</span><span class="n">RAMSTKBaseView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class to display list and matrix type data in the RAMSTK List Book.</span>
+
+<span class="sd">    This is the meta class for all RAMSTK List View classes.  Attributes of the</span>
+<span class="sd">    RAMSTKListView are:</span>
+
+<span class="sd">    :ivar str _matrix_type: the name of the matrix displayed by this view.</span>
+<span class="sd">    :ivar str _module: the capitalized name of the RAMSTK module the List View</span>
+<span class="sd">        is associated with.</span>
+<span class="sd">    :ivar int _n_columns: the number of columns in a matrix.</span>
+<span class="sd">    :ivar int _n_rows: the number of rows in a matrix.</span>
+<span class="sd">    :ivar matrixview: the MatrixView() displaying the matrix data.</span>
+<span class="sd">    :type matrixview: :class:`ramstk.views.gtk3.widgets.RAMSTKMatrixView`</span>
+<span class="sd">    :ivar int n_fixed_columns: the number of matrix columns on the left that</span>
+<span class="sd">        contain fixed data.</span>
+<span class="sd">    :ivar tab_label: the Gtk.Label() displaying text for the List View tab.</span>
+<span class="sd">    :type tab_label: :class:`Gtk.Label`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="n">RAMSTKUserConfiguration</span><span class="p">,</span>
+                 <span class="n">logger</span><span class="p">:</span> <span class="n">RAMSTKLogManager</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the List View.</span>
+
+<span class="sd">        :param configuration: the RAMSTKUserConfiguration class instance.</span>
+<span class="sd">        :param logger: the RAMSTKLogManager class instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view_type</span> <span class="o">==</span> <span class="s1">&#39;list&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lst_callbacks</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_request_insert_sibling</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lst_icons</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view_type</span> <span class="o">==</span> <span class="s1">&#39;matrix&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lst_callbacks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_request_update</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lst_mnu_labels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Save Matrix&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matrixview</span><span class="p">:</span> <span class="n">RAMSTKMatrixView</span> <span class="o">=</span> <span class="n">RAMSTKMatrixView</span><span class="p">(</span>
+            <span class="n">module</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_module</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tab_label</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Label</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Label</span><span class="p">()</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_load_matrix</span><span class="p">,</span> <span class="s1">&#39;succeed_load_matrix&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_request_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__button</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ToolButton</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Send request to update the matrix.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view_type</span> <span class="o">==</span> <span class="s1">&#39;matrix&#39;</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cursor_busy</span><span class="p">()</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;do_request_update_matrix&#39;</span><span class="p">,</span>
+                            <span class="n">matrix_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_module</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+
+<div class="viewcode-block" id="RAMSTKListView.do_request_update_all"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKListView.do_request_update_all">[docs]</a>    <span class="k">def</span> <span class="nf">do_request_update_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__button</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ToolButton</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Send request to update the matrix.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view_type</span> <span class="o">==</span> <span class="s1">&#39;list&#39;</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cursor_busy</span><span class="p">()</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_update_all_</span><span class="si">{0:s}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_module</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view_type</span> <span class="o">==</span> <span class="s1">&#39;matrix&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_request_update</span><span class="p">(</span><span class="n">__button</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKListView.do_load_matrix"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKListView.do_load_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">do_load_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">matrix</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the RAMSTKMatrixView() with matrix data.</span>
+
+<span class="sd">        :param matrix_type: the type of matrix to load.</span>
+<span class="sd">        :param matrix: the data matrix to display.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">matrix_type</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_module</span><span class="o">.</span><span class="n">capitalize</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">matrixview</span><span class="o">.</span><span class="n">do_load_matrix</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKListView.make_ui"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKListView.make_ui">[docs]</a>    <span class="k">def</span> <span class="nf">make_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Build the list view user interface.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_make_layout</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view_type</span> <span class="o">==</span> <span class="s1">&#39;matrix&#39;</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_embed_matrixview_panel</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_embed_treeview_panel</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="RAMSTKModuleView"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKModuleView">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKModuleView</span><span class="p">(</span><span class="n">RAMSTKBaseView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Display data in the RAMSTK Module Book.</span>
+
+<span class="sd">    This is the meta class for all RAMSTK Module View classes.</span>
+<span class="sd">    Attributes of the RAMSTKModuleView are:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="n">RAMSTKUserConfiguration</span><span class="p">,</span>
+                 <span class="n">logger</span><span class="p">:</span> <span class="n">RAMSTKLogManager</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the RAMSTKModuleView meta-class.</span>
+
+<span class="sd">        :param configuration: the RAMSTKUserConfiguration class instance.</span>
+<span class="sd">        :param logger: the RAMSTKLogManager class instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_icons</span><span class="p">[</span><span class="s1">&#39;insert_part&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/insert_part.png&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_key_index</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_callbacks</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_request_insert_sibling</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_callbacks</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_request_delete</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_icons</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_icons</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;remove&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+
+<div class="viewcode-block" id="RAMSTKModuleView.make_ui"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKModuleView.make_ui">[docs]</a>    <span class="k">def</span> <span class="nf">make_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Build the user interface for a ModuleView.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_make_layout</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_embed_treeview_panel</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="RAMSTKWorkView"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKWorkView">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKWorkView</span><span class="p">(</span><span class="n">RAMSTKBaseView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class to display data in the RAMSTK Work Book.</span>
+
+<span class="sd">    This is the meta class for all RAMSTK Work View classes.  Attributes of the</span>
+<span class="sd">    RAMSTKWorkView are:</span>
+
+<span class="sd">    :ivar list _lst_widgets: the list of RAMSTK (preferred) and Gtk widgets</span>
+<span class="sd">        used to display information on a workview.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="n">RAMSTKUserConfiguration</span><span class="p">,</span>
+                 <span class="n">logger</span><span class="p">:</span> <span class="n">RAMSTKLogManager</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the RAMSTKWorkView meta-class.</span>
+
+<span class="sd">        :param configuration: the RAMSTKUserConfiguration class instance.</span>
+<span class="sd">        :param logger: the RAMSTKLogManager class instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+
+<div class="viewcode-block" id="RAMSTKWorkView.do_clear_tree"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKWorkView.do_clear_tree">[docs]</a>    <span class="k">def</span> <span class="nf">do_clear_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Clear the contents of a RAMSTKTreeView().</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+        <span class="n">_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">get_columns</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">_column</span> <span class="ow">in</span> <span class="n">_columns</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">remove_column</span><span class="p">(</span><span class="n">_column</span><span class="p">)</span>
+
+        <span class="n">_model</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="c1"># noinspection PyUnusedLocal</span>
+<div class="viewcode-block" id="RAMSTKWorkView.on_edit"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKWorkView.on_edit">[docs]</a>    <span class="k">def</span> <span class="nf">on_edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">package</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Update the Work View Gtk.Widgets() when attributes change.</span>
+
+<span class="sd">        This method is called whenever an attribute is edited in the module</span>
+<span class="sd">        view.</span>
+
+<span class="sd">        :param list node_id: the list of IDs of the item being edited.  This</span>
+<span class="sd">            parameter is required to allow the PyPubSub signals to call this</span>
+<span class="sd">            method and the request_set_attributes() method in the</span>
+<span class="sd">            RAMSTKDataController.</span>
+<span class="sd">        :param package: the index in the module attributes list of the</span>
+<span class="sd">            attribute that was edited and the new text to update the</span>
+<span class="sd">            Gtk.Widget() with.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="p">[[</span><span class="n">_key</span><span class="p">,</span> <span class="n">_value</span><span class="p">]]</span> <span class="o">=</span> <span class="n">package</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+
+        <span class="p">(</span><span class="n">_function</span><span class="p">,</span> <span class="n">_signal</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_switch</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">_key</span><span class="p">)</span>
+        <span class="n">_function</span><span class="p">(</span><span class="n">_value</span><span class="p">,</span> <span class="n">_signal</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

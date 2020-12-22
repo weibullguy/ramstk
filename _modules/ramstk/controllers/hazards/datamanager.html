@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.controllers.hazards.datamanager &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.controllers.hazards.datamanager</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.controllers.hazards.datamanager.py is part of The RAMSTK</span>
+<span class="c1">#       Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2020 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;Hazards Package Data Model.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+<span class="kn">from</span> <span class="nn">treelib.exceptions</span> <span class="kn">import</span> <span class="n">NodeIDAbsentError</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.controllers</span> <span class="kn">import</span> <span class="n">RAMSTKDataManager</span>
+<span class="kn">from</span> <span class="nn">ramstk.exceptions</span> <span class="kn">import</span> <span class="n">DataAccessError</span>
+<span class="kn">from</span> <span class="nn">ramstk.models.programdb</span> <span class="kn">import</span> <span class="n">RAMSTKHazardAnalysis</span>
+
+
+<div class="viewcode-block" id="DataManager"><a class="viewcode-back" href="../../../../api/ramstk.controllers.hazards.html#ramstk.controllers.hazards.datamanager.DataManager">[docs]</a><span class="k">class</span> <span class="nc">DataManager</span><span class="p">(</span><span class="n">RAMSTKDataManager</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Contain the attributes and methods of the Hazard data manager.</span>
+
+<span class="sd">    This class manages the hazard data from the RAMSTKHazardAnalysis and</span>
+<span class="sd">    RAMSTKHazardAnalysis data models.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_tag</span> <span class="o">=</span> <span class="s1">&#39;hazards&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize a Hazard data manager instance.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pkey</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;hazard&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;revision_id&#39;</span><span class="p">,</span> <span class="s1">&#39;function_id&#39;</span><span class="p">,</span> <span class="s1">&#39;hazard_id&#39;</span><span class="p">]}</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_get_attributes</span><span class="p">,</span>
+                      <span class="s1">&#39;request_get_hazard_attributes&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_attributes</span><span class="p">,</span>
+                      <span class="s1">&#39;request_set_hazard_attributes&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_attributes</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hazard&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_update_all</span><span class="p">,</span> <span class="s1">&#39;request_update_all_hazards&#39;</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_get_tree</span><span class="p">,</span> <span class="s1">&#39;request_get_hazard_tree&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_select_all</span><span class="p">,</span> <span class="s1">&#39;selected_function&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_set_all_attributes</span><span class="p">,</span>
+                      <span class="s1">&#39;request_set_all_hazard_attributes&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;request_update_hazard&#39;</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_delete</span><span class="p">,</span> <span class="s1">&#39;request_delete_hazard&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_insert_hazard</span><span class="p">,</span> <span class="s1">&#39;request_insert_hazard&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DataManager.do_get_tree"><a class="viewcode-back" href="../../../../api/ramstk.controllers.hazards.html#ramstk.controllers.hazards.datamanager.DataManager.do_get_tree">[docs]</a>    <span class="k">def</span> <span class="nf">do_get_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve the hazard treelib Tree.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_get_hazard_tree&#39;</span><span class="p">,</span> <span class="n">tree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataManager.do_select_all"><a class="viewcode-back" href="../../../../api/ramstk.controllers.hazards.html#ramstk.controllers.hazards.datamanager.DataManager.do_select_all">[docs]</a>    <span class="k">def</span> <span class="nf">do_select_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve all the Hazard data from the RAMSTK Program database.</span>
+
+<span class="sd">        :param attributes: the attributes for the selected Hazard.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_revision_id</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;revision_id&#39;</span><span class="p">]</span>
+        <span class="n">_function_id</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;function_id&#39;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">children</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">root</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">_node</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">_hazard</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">do_select_all</span><span class="p">(</span>
+                <span class="n">RAMSTKHazardAnalysis</span><span class="p">,</span>
+                <span class="n">key</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;revision_id&#39;</span><span class="p">,</span> <span class="s1">&#39;function_id&#39;</span><span class="p">],</span>
+                <span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_revision_id</span><span class="p">,</span> <span class="n">_function_id</span><span class="p">],</span>
+                <span class="n">order</span><span class="o">=</span><span class="n">RAMSTKHazardAnalysis</span><span class="o">.</span><span class="n">hazard_id</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s1">&#39;hazard&#39;</span><span class="p">,</span>
+                                  <span class="n">identifier</span><span class="o">=</span><span class="n">_hazard</span><span class="o">.</span><span class="n">hazard_id</span><span class="p">,</span>
+                                  <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="p">,</span>
+                                  <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;hazard&#39;</span><span class="p">:</span> <span class="n">_hazard</span><span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_id</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+            <span class="s1">&#39;succeed_retrieve_hazards&#39;</span><span class="p">,</span>
+            <span class="n">tree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataManager.do_set_all_attributes"><a class="viewcode-back" href="../../../../api/ramstk.controllers.hazards.html#ramstk.controllers.hazards.datamanager.DataManager.do_set_all_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_all_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set all the attributes of the selected hazard.</span>
+
+<span class="sd">        This is a helper method to set a group of attributes in a single</span>
+<span class="sd">        call.  Used mainly by the AnalysisManager.</span>
+
+<span class="sd">        :param attributes: the aggregate attributes dict for the hardware item.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_key</span> <span class="ow">in</span> <span class="n">attributes</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_attributes</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="p">[</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_id&#39;</span><span class="p">],</span> <span class="s1">&#39;&#39;</span><span class="p">],</span>
+                                      <span class="n">package</span><span class="o">=</span><span class="p">{</span><span class="n">_key</span><span class="p">:</span> <span class="n">attributes</span><span class="p">[</span><span class="n">_key</span><span class="p">]})</span></div>
+
+<div class="viewcode-block" id="DataManager.do_update"><a class="viewcode-back" href="../../../../api/ramstk.controllers.hazards.html#ramstk.controllers.hazards.datamanager.DataManager.do_update">[docs]</a>    <span class="k">def</span> <span class="nf">do_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Update record associated with node ID in RAMSTK Program database.</span>
+
+<span class="sd">        :param node_id: the node (hazard) ID of the hazard to save.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;hazard&#39;</span><span class="p">])</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;succeed_update_hazard&#39;</span><span class="p">,</span>
+                <span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">_method_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
+            <span class="n">_error_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">{1}</span><span class="s1">: Attempted to delete non-existent hazard &#39;</span>
+                          <span class="s1">&#39;ID </span><span class="si">{0}</span><span class="s1">.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">node_id</span><span class="p">),</span> <span class="n">_method_name</span><span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;do_log_debug&#39;</span><span class="p">,</span>
+                <span class="n">logger_name</span><span class="o">=</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">,</span>
+                <span class="n">message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;fail_update_hazard&#39;</span><span class="p">,</span>
+                <span class="n">error_message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">node_id</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">_method_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
+                <span class="n">_error_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">{1}</span><span class="s1">: No data package found for hazard ID {&#39;</span>
+                              <span class="s1">&#39;0}.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">node_id</span><span class="p">),</span> <span class="n">_method_name</span><span class="p">)</span>
+                <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                    <span class="s1">&#39;do_log_debug&#39;</span><span class="p">,</span>
+                    <span class="n">logger_name</span><span class="o">=</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">,</span>
+                    <span class="n">message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                    <span class="s1">&#39;fail_update_hazard&#39;</span><span class="p">,</span>
+                    <span class="n">error_message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">,</span>
+                <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_do_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Remove a hazard.</span>
+
+<span class="sd">        :param node_id: the node (hazard) ID to be removed from the</span>
+<span class="sd">            RAMSTK Program database.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_delete</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="s1">&#39;hazard&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_id</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;succeed_delete_hazard&#39;</span><span class="p">,</span>
+                <span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span>
+                <span class="n">tree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">DataAccessError</span><span class="p">,</span> <span class="n">NodeIDAbsentError</span><span class="p">):</span>
+            <span class="n">_method_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
+            <span class="n">_error_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">{1}</span><span class="s1">: Attempted to delete non-existent hazard &#39;</span>
+                          <span class="s1">&#39;ID </span><span class="si">{0}</span><span class="s1">.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">node_id</span><span class="p">),</span> <span class="n">_method_name</span><span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;do_log_debug&#39;</span><span class="p">,</span>
+                <span class="n">logger_name</span><span class="o">=</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">,</span>
+                <span class="n">message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;fail_delete_hazard&#39;</span><span class="p">,</span>
+                <span class="n">error_message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_insert_hazard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add a new hazard to parent (function) ID.</span>
+
+<span class="sd">        :param parent_id: the parent (function) ID to associate the new hazard</span>
+<span class="sd">        with.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_last_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">get_last_id</span><span class="p">(</span><span class="s1">&#39;ramstk_hazard_analysis&#39;</span><span class="p">,</span> <span class="s1">&#39;hazard_id&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_hazard</span> <span class="o">=</span> <span class="n">RAMSTKHazardAnalysis</span><span class="p">()</span>
+            <span class="n">_hazard</span><span class="o">.</span><span class="n">revision_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_revision_id</span>
+            <span class="n">_hazard</span><span class="o">.</span><span class="n">function_id</span> <span class="o">=</span> <span class="n">parent_id</span>
+            <span class="n">_hazard</span><span class="o">.</span><span class="n">hazard_id</span> <span class="o">=</span> <span class="n">_last_id</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">do_insert</span><span class="p">(</span><span class="n">_hazard</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s1">&#39;hazard&#39;</span><span class="p">,</span>
+                                  <span class="n">identifier</span><span class="o">=</span><span class="n">_hazard</span><span class="o">.</span><span class="n">hazard_id</span><span class="p">,</span>
+                                  <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="p">,</span>
+                                  <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;hazard&#39;</span><span class="p">:</span> <span class="n">_hazard</span><span class="p">})</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">_hazard</span><span class="o">.</span><span class="n">hazard_id</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_id</span> <span class="o">=</span> <span class="n">_hazard</span><span class="o">.</span><span class="n">hazard_id</span>
+
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;succeed_insert_hazard&#39;</span><span class="p">,</span>
+                <span class="n">tree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">DataAccessError</span> <span class="k">as</span> <span class="n">_error</span><span class="p">:</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;do_log_debug&#39;</span><span class="p">,</span>
+                <span class="n">logger_name</span><span class="o">=</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">,</span>
+                <span class="n">message</span><span class="o">=</span><span class="n">_error</span><span class="o">.</span><span class="n">msg</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s2">&quot;fail_insert_hazard&quot;</span><span class="p">,</span>
+                <span class="n">error_message</span><span class="o">=</span><span class="n">_error</span><span class="o">.</span><span class="n">msg</span><span class="p">,</span>
+            <span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

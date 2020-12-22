@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.db package &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ramstk.exim package" href="ramstk.exim.html" />
+    <link rel="prev" title="ramstk.controllers.validation package" href="ramstk.controllers.validation.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../contributing.html" >Contributing</a> &#187;</li>
+          <li><a href="modules.html" >ramstk</a> &#187;</li>
+          <li><a href="ramstk.html" accesskey="U">ramstk package</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="ramstk-db-package">
+<h1>ramstk.db package<a class="headerlink" href="#ramstk-db-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-ramstk.db.base">
+<span id="ramstk-db-base-module"></span><h2>ramstk.db.base module<a class="headerlink" href="#module-ramstk.db.base" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTK Base Database Module.</p>
+<dl class="py class">
+<dt id="ramstk.db.base.BaseDatabase">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.db.base.</code><code class="sig-name descname">BaseDatabase</code><a class="reference internal" href="../_modules/ramstk/db/base.html#BaseDatabase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.db.base.BaseDatabase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>The BaseDatabase class.</p>
+<dl class="py attribute">
+<dt id="ramstk.db.base.BaseDatabase.cxnargs">
+<code class="sig-name descname">cxnargs</code><em class="property">: Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">]</span></em><em class="property"> = {'dbname': '', 'dialect': '', 'host': '', 'password': '', 'port': '', 'user': ''}</em><a class="headerlink" href="#ramstk.db.base.BaseDatabase.cxnargs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.db.base.BaseDatabase.database">
+<code class="sig-name descname">database</code><em class="property">: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></em><em class="property"> = ''</em><a class="headerlink" href="#ramstk.db.base.BaseDatabase.database" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.db.base.BaseDatabase.do_connect">
+<code class="sig-name descname">do_connect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">database</span><span class="p">:</span> <span class="n">Dict</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/db/base.html#BaseDatabase.do_connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.db.base.BaseDatabase.do_connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>database</strong> – the connection information for the database to
+connect to.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+<dt class="field-even">Raise</dt>
+<dd class="field-even"><p>sqlalchemy.exc.OperationalError if passed an invalid database
+URL.</p>
+</dd>
+<dt class="field-odd">Raise</dt>
+<dd class="field-odd"><p>sqlalchemy.exc.ArgumentError if passed a database URL with
+an unknown/unsupported SQL dialect.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.db.base.BaseDatabase.do_delete">
+<code class="sig-name descname">do_delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/db/base.html#BaseDatabase.do_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.db.base.BaseDatabase.do_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a record from the RAMSTK Program database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>item</strong> (<em>Object</em><em>(</em><em>)</em>) – the item to remove from the RAMSTK Program database.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.db.base.BaseDatabase.do_disconnect">
+<code class="sig-name descname">do_disconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/db/base.html#BaseDatabase.do_disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.db.base.BaseDatabase.do_disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the current session.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.db.base.BaseDatabase.do_insert">
+<code class="sig-name descname">do_insert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">record</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/db/base.html#BaseDatabase.do_insert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.db.base.BaseDatabase.do_insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new record to a database table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>record</strong> – the object to add to the RAMSTK Program database.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.db.base.BaseDatabase.do_insert_many">
+<code class="sig-name descname">do_insert_many</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">records</span><span class="p">:</span> <span class="n">List<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/db/base.html#BaseDatabase.do_insert_many"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.db.base.BaseDatabase.do_insert_many" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a group of new records to a database table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>records</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the list of objects to add to the RAMSTK database.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.db.base.BaseDatabase.do_select_all">
+<code class="sig-name descname">do_select_all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">table</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; sqlalchemy.orm.query.Query<a class="reference internal" href="../_modules/ramstk/db/base.html#BaseDatabase.do_select_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.db.base.BaseDatabase.do_select_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select all records from the RAMSTK database for table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>table</strong> – the database table object to select all from.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of table instances; one for each record.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.db.base.BaseDatabase.do_update">
+<code class="sig-name descname">do_update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">record</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/db/base.html#BaseDatabase.do_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.db.base.BaseDatabase.do_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the RAMSTK database with any pending changes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>record</strong> – the record to update in the database.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.db.base.BaseDatabase.engine">
+<code class="sig-name descname">engine</code><em class="property">: sqlalchemy.engine.base.Engine</em><em class="property"> = None</em><a class="headerlink" href="#ramstk.db.base.BaseDatabase.engine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.db.base.BaseDatabase.get_database_list">
+<code class="sig-name descname">get_database_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">database</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<a class="reference internal" href="../_modules/ramstk/db/base.html#BaseDatabase.get_database_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.db.base.BaseDatabase.get_database_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the list of program databases available to RAMSTK.</p>
+<p>This method is used to create a user-selectable list of databases when
+using the postgresql or MariaDB (MySQL) backend.  SQLite3 simply uses
+an open file dialog.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>database</strong> – the connection information for the dialect’s
+administrative database.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the list of databases available to RAMSTK for the selected
+dialect.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.db.base.BaseDatabase.get_last_id">
+<code class="sig-name descname">get_last_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">table</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">id_column</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="../_modules/ramstk/db/base.html#BaseDatabase.get_last_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.db.base.BaseDatabase.get_last_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the last used value of the ID column.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>This method could be used to select the last used value from
+any column in a table.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table</strong> – the name of the table to get the last ID from.</p></li>
+<li><p><strong>id_column</strong> – the name of the field to use as the ID column.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>_last_id; the last used value of the ID column.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+<dt class="field-even">Raise</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.exc.OperationalError</span></code> if passed an unknown
+table or unknown column name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.db.base.BaseDatabase.session">
+<code class="sig-name descname">session</code><em class="property">: sqlalchemy.orm.scoping.scoped_session</em><em class="property"> = None</em><a class="headerlink" href="#ramstk.db.base.BaseDatabase.session" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.db.base.BaseDatabase.sqlstatements">
+<code class="sig-name descname">sqlstatements</code><em class="property">: Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">]</span></em><em class="property"> = {'from': 'FROM {0:s} ', 'order': 'ORDER BY {0:s} DESC LIMIT 1', 'select': 'SELECT {0:s} '}</em><a class="headerlink" href="#ramstk.db.base.BaseDatabase.sqlstatements" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="ramstk.db.base.do_create_program_db">
+<code class="sig-prename descclassname">ramstk.db.base.</code><code class="sig-name descname">do_create_program_db</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">database</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">sql_file</span><span class="p">:</span> <span class="n">TextIO</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/db/base.html#do_create_program_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.db.base.do_create_program_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a shiny new, unpopulated RAMSTK program database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>database</strong> – a dict containing the database connection arguments.</p></li>
+<li><p><strong>sql_file</strong> – the absolute path to the text file containing the
+SQL statements for creating a bare RAMSTK Program Database.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ramstk.db.base.do_open_session">
+<code class="sig-prename descclassname">ramstk.db.base.</code><code class="sig-name descname">do_open_session</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">database</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>sqlalchemy.engine.base.Engine<span class="p">, </span>sqlalchemy.orm.scoping.scoped_session<span class="p">]</span><a class="reference internal" href="../_modules/ramstk/db/base.html#do_open_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.db.base.do_open_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a session to be used with an instance of the BaseDatabase.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.db.common">
+<span id="ramstk-db-common-module"></span><h2>ramstk.db.common module<a class="headerlink" href="#module-ramstk.db.common" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTK Common Database Module.</p>
+<dl class="py function">
+<dt id="ramstk.db.common.do_add_administrator">
+<code class="sig-prename descclassname">ramstk.db.common.</code><code class="sig-name descname">do_add_administrator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span><span class="p">:</span> <span class="n">sqlalchemy.orm.scoping.scoped_session</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/db/common.html#do_add_administrator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.db.common.do_add_administrator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new administrator to the RAMSTK pool.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ramstk.db.common.do_create_common_db">
+<code class="sig-prename descclassname">ramstk.db.common.</code><code class="sig-name descname">do_create_common_db</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">engine</span><span class="p">:</span> <span class="n">sqlalchemy.engine.base.Engine</span></em>, <em class="sig-param"><span class="n">session</span><span class="p">:</span> <span class="n">sqlalchemy.orm.scoping.scoped_session</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/db/common.html#do_create_common_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.db.common.do_create_common_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create and populate the RAMSTK Common database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> – the SQLAlchemy Engine connected to the database.</p></li>
+<li><p><strong>session</strong> – the SQLAlchemy session to use when creating the database.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ramstk.db.common.do_load_variables">
+<code class="sig-prename descclassname">ramstk.db.common.</code><code class="sig-name descname">do_load_variables</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">site_db</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#ramstk.db.base.BaseDatabase" title="ramstk.db.base.BaseDatabase">ramstk.db.base.BaseDatabase</a></span></em>, <em class="sig-param"><span class="n">site_configuration</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.configuration.RAMSTKSiteConfiguration" title="ramstk.configuration.RAMSTKSiteConfiguration">ramstk.configuration.RAMSTKSiteConfiguration</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/db/common.html#do_load_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.db.common.do_load_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the RAMSTKSiteConfiguration global variables from the site db.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>site_db</strong> (<a class="reference internal" href="#ramstk.db.base.BaseDatabase" title="ramstk.db.base.BaseDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.db.base.BaseDatabase</span></code></a>) – the RAMSTK Site Database to read the values of the
+global variables.</p></li>
+<li><p><strong>site_configuration</strong> (<a class="reference internal" href="ramstk.html#ramstk.configuration.RAMSTKSiteConfiguration" title="ramstk.configuration.RAMSTKSiteConfiguration"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.configuration.RAMSTKSiteConfiguration</span></code></a>) – the RAMSTKSiteConfiguration instance whose
+variable is to be loaded.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ramstk.db.common.do_make_commondb_tables">
+<code class="sig-prename descclassname">ramstk.db.common.</code><code class="sig-name descname">do_make_commondb_tables</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">engine</span><span class="p">:</span> <span class="n">sqlalchemy.engine.base.Engine</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/db/common.html#do_make_commondb_tables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.db.common.do_make_commondb_tables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create all the tables in the RAMSTK Common database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>engine</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.engine.Engine</span></code>) – the SQLAlchemy database engine to use to create the common
+database tables.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.db.program">
+<span id="ramstk-db-program-module"></span><h2>ramstk.db.program module<a class="headerlink" href="#module-ramstk.db.program" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTK Program Database Module.</p>
+<dl class="py function">
+<dt id="ramstk.db.program.do_create_program_db">
+<code class="sig-prename descclassname">ramstk.db.program.</code><code class="sig-name descname">do_create_program_db</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">engine</span><span class="p">:</span> <span class="n">sqlalchemy.engine.base.Engine</span></em>, <em class="sig-param"><span class="n">session</span><span class="p">:</span> <span class="n">sqlalchemy.orm.scoping.scoped_session</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/db/program.html#do_create_program_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.db.program.do_create_program_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create and initialize a RAMSTK Program database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>engine</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.engine.Engine</span></code>) – the SQLAlchemy Engine connected to the database.</p></li>
+<li><p><strong>session</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.orm.Session</span></code>) – the SQLAlchemy session to use when creating the database.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ramstk.db.program.do_make_programdb_tables">
+<code class="sig-prename descclassname">ramstk.db.program.</code><code class="sig-name descname">do_make_programdb_tables</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">engine</span><span class="p">:</span> <span class="n">sqlalchemy.engine.base.Engine</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/db/program.html#do_make_programdb_tables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.db.program.do_make_programdb_tables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create all the tables in the RAMSTK Program database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>engine</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.engine.Engine</span></code>) – the SQLAlchemy database engine to use to create the program
+database tables.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.db">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ramstk.db" title="Permalink to this headline">¶</a></h2>
+<p>The RAMSTK database package.</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">ramstk.db package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-ramstk.db.base">ramstk.db.base module</a></li>
+<li><a class="reference internal" href="#module-ramstk.db.common">ramstk.db.common module</a></li>
+<li><a class="reference internal" href="#module-ramstk.db.program">ramstk.db.program module</a></li>
+<li><a class="reference internal" href="#module-ramstk.db">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ramstk.controllers.validation.html"
+                        title="previous chapter">ramstk.controllers.validation package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ramstk.exim.html"
+                        title="next chapter">ramstk.exim package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/ramstk.db.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ramstk.exim.html" title="ramstk.exim package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ramstk.controllers.validation.html" title="ramstk.controllers.validation package"
+             accesskey="P">previous</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>Establishing a Development Environment &#8212; RAMSTK 2.0.0 documentation</title>
-    <link rel="stylesheet" href="_static/pydoctheme.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Establishing a Development Environment &#8212; RAMSTK 1.0.0 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pydoctheme.css" type="text/css" />
     
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     
-    <script type="text/javascript" src="_static/sidebar.js"></script>
+    <script src="_static/sidebar.js"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ramstk" href="api/modules.html" />
+    <link rel="prev" title="Coding Conventions" href="CODING_STDS.html" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <link rel="shortcut icon" type="image/png" href="_static/favicon.png" />
     <meta name="viewport" content="width=device-width,initial-scale=0.8">
@@ -28,7 +31,8 @@
       <h3>Navigation</h3>
       <ul>
         <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
-        <li><a href="index.html">RAMSTK 2.0.0 documentation</a> &#187;</li> 
+        <li><a href="index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="contributing.html" accesskey="U">Contributing</a> &#187;</li> 
       </ul>
     </div>
     
@@ -61,7 +65,7 @@ are not used <strong>in</strong> the environment:</p>
 <p>Once the tools in the previous section are installed and available for your
 use, the next step is to create a virtual environment to develop RAMSTK in.
 Execute the following to setup the virtual environment:</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>~/projects/RAMSTK $ export WORKON_HOME=&quot;$HOME/.virtualenvs&quot;
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~/projects/RAMSTK $ export WORKON_HOME=&quot;$HOME/.virtualenvs&quot;
 ~/projects/RAMSTK $ export PROJECT_HOME-&quot;$HOME/projects&quot;
 ~/projects/RAMSTK $ source $(which virtualenvwrapper.sh)
 ~/projects/RAMSTK $ mkvirtualenv ramstk-python2.7-pygtk
@@ -78,7 +82,7 @@ you need to work in the RAMSTK environment, just execute
 <p>After you are in the virtual environment, you will need to install the Python
 packages needed by RAMSTK to run and some recommended packages for development and
 testing.</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>(ramstk-python2.7-pygtk) ~/projects/RAMSTK $ pip install -U pip
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(ramstk-python2.7-pygtk) ~/projects/RAMSTK $ pip install -U pip
 (ramstk-python2.7-pygtk) ~/projects/RAMSTK $ pip install -U setuptools&gt;12.0
 (ramstk-python2.7-pygtk) ~/projects/RAMSTK $ pip install --only-binary=numpy numpy==1.14.3
 (ramstk-python2.7-pygtk) ~/projects/RAMSTK $ pip install --only-binary=scipy scipy==1.0.0
@@ -94,7 +98,7 @@ the new virtual environment.  It is important to install numpy before PyGTK so
 PyGTK will build with numpy support.</p>
 <p>First create a build directory and download the PyGTK source tarballs into
 that directory:</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>(ramstk-python2.7-pygtk) ~/projects/RAMSTK $ cd $PROJECT_HOME
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(ramstk-python2.7-pygtk) ~/projects/RAMSTK $ cd $PROJECT_HOME
 (ramstk-python2.7-pygtk) ~/projects/RAMSTK $ mkdir pygtk_build
 (ramstk-python2.7-pygtk) ~/projects/RAMSTK $ cd pygtk_build
 (ramstk-python2.7-pygtk) ~/projects/RAMSTK $ wget http://www.cairographics.org/releases/py2cairo-1.10.0.tar.bz2
@@ -103,7 +107,7 @@ that directory:</p>
 </pre></div>
 </div>
 <p>Now build py2cairo and install into the virtual environment:</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>(ramstk-python2.7-pygtk) ~/projects/RAMSTK $ tar -xf py2cairo-1.10.0.tar.bz2
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(ramstk-python2.7-pygtk) ~/projects/RAMSTK $ tar -xf py2cairo-1.10.0.tar.bz2
 (ramstk-python2.7-pygtk) ~/projects/RAMSTK $ cd py2cairo-1.10.0
 (ramstk-python2.7-pygtk) ~/projects/RAMSTK $ ./waf configure --prefix=$VIRTUAL_ENV
 (ramstk-python2.7-pygtk) ~/projects/RAMSTK $ ./waf build
@@ -112,7 +116,7 @@ that directory:</p>
 </pre></div>
 </div>
 <p>Now build pygobject and install into the virtual environment:</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>(ramstk-python2.7-pygtk) ~/projects/RAMSTK $ tar -xf pygobject-2.28.6.tar.bz2
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(ramstk-python2.7-pygtk) ~/projects/RAMSTK $ tar -xf pygobject-2.28.6.tar.bz2
 (ramstk-python2.7-pygtk) ~/projects/RAMSTK $ cd pygobject-2.28.6
 (ramstk-python2.7-pygtk) ~/projects/RAMSTK $ ./configure --prefix=$VIRTUAL_ENV --disable-introspection
 (ramstk-python2.7-pygtk) ~/projects/RAMSTK $ make
@@ -121,7 +125,7 @@ that directory:</p>
 </pre></div>
 </div>
 <p>Now build pygtk and install into the virtual environment:</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>(ramstk-python2.7-pygtk) ~/projects/RAMSTK $ tar -xf pygtk-2.24.0.tar.bz2
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(ramstk-python2.7-pygtk) ~/projects/RAMSTK $ tar -xf pygtk-2.24.0.tar.bz2
 (ramstk-python2.7-pygtk) ~/projects/RAMSTK $ cd pygtk-2.24.0
 (ramstk-python2.7-pygtk) ~/projects/RAMSTK $ ./configure --prefix=$VIRTUAL_ENV
 (ramstk-python2.7-pygtk) ~/projects/RAMSTK $ make
@@ -130,21 +134,21 @@ that directory:</p>
 </pre></div>
 </div>
 <p>Optionally, verify PyGTK installed and is importable.</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">ramstk</span><span class="o">-</span><span class="n">python2</span><span class="o">.</span><span class="mi">7</span><span class="o">-</span><span class="n">pygtk</span><span class="p">)</span> <span class="o">~/</span><span class="n">projects</span><span class="o">/</span><span class="n">RAMSTK</span> <span class="err">$</span> <span class="n">python</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(ramstk-python2.7-pygtk) ~/projects/RAMSTK $ python
 
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">gtk</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">quit</span><span class="p">()</span>
+&gt;&gt;&gt; import gtk
+&gt;&gt;&gt; quit()
 </pre></div>
 </div>
 <p>Finally, after PyGTK is successfully installed in the virtual environment, it
 is time to install matplotlib.  Install matplotlib after PyGTK is necessary so
 matplotlib builds the GDK backend.</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>(ramstk-python2.7-pygtk) ~/projects/RAMSTK $ pip install matplotlib==1.4.3
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(ramstk-python2.7-pygtk) ~/projects/RAMSTK $ pip install matplotlib==1.4.3
 </pre></div>
 </div>
 <p>Optionally, verify the GDK backend shared library (<strong>__backend_gdk.so</strong>) is
 installed:</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>(ramstk-python2.7-pygtk) ~/projects/RAMSTK $ ls $VIRTUAL_ENV/lib/python2.7/site-packages/matplotlib/backends
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(ramstk-python2.7-pygtk) ~/projects/RAMSTK $ ls $VIRTUAL_ENV/lib/python2.7/site-packages/matplotlib/backends
 </pre></div>
 </div>
 </div>
@@ -152,7 +156,7 @@ installed:</p>
 <h2>Install and Test RAMSTK<a class="headerlink" href="#install-and-test-ramstk" title="Permalink to this headline">¶</a></h2>
 <p>Now that all the required runtime, development, and documentation packages are
 installed, RAMSTK itself should be installed and tested:</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>(ramstk-python2.7-pygtk) ~/projects/RAMSTK $ python setup.py develop
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(ramstk-python2.7-pygtk) ~/projects/RAMSTK $ python setup.py develop
 (ramstk-python2.7-pygtk) ~/projects/RAMSTK $ which ramstk
 /home/arowland/.virtualenvs/ramstk-python2.7-pygtk/bin/ramstk
 (ramstk-python2.7-pygtk) ~/projects/RAMSTK $ python setup.py test
@@ -166,6 +170,7 @@ May 20, 2018</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -185,6 +190,12 @@ May 20, 2018</p>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="CODING_STDS.html"
+                        title="previous chapter">Coding Conventions</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="api/modules.html"
+                        title="next chapter">ramstk</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -193,15 +204,15 @@ May 20, 2018</p>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -215,12 +226,18 @@ May 20, 2018</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="api/modules.html" title="ramstk"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="CODING_STDS.html" title="Coding Conventions"
+             accesskey="P">previous</a> |</li>
       </ul>
     </div>
 
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2007 - 2019, Doyle Rowland.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
     </div>
   </body>
 </html>

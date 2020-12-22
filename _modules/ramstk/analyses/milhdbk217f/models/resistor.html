@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.analyses.milhdbk217f.models.resistor &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.analyses.milhdbk217f.models.resistor</h1><div class="highlight"><pre>
+<span></span><span class="c1"># type: ignore</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.analyses.prediction.Resistor.py is part of the RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2017 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;Resistor Reliability Calculations Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">exp</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="n">PART_COUNT_LAMBDA_B</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">0.0005</span><span class="p">,</span> <span class="mf">0.0022</span><span class="p">,</span> <span class="mf">0.0071</span><span class="p">,</span> <span class="mf">0.0037</span><span class="p">,</span> <span class="mf">0.012</span><span class="p">,</span> <span class="mf">0.0052</span><span class="p">,</span> <span class="mf">0.0065</span><span class="p">,</span> <span class="mf">0.016</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">,</span>
+        <span class="mf">0.025</span><span class="p">,</span> <span class="mf">0.00025</span><span class="p">,</span> <span class="mf">0.0098</span><span class="p">,</span> <span class="mf">0.035</span><span class="p">,</span> <span class="mf">0.36</span>
+    <span class="p">],</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.0012</span><span class="p">,</span> <span class="mf">0.0027</span><span class="p">,</span> <span class="mf">0.011</span><span class="p">,</span> <span class="mf">0.0054</span><span class="p">,</span> <span class="mf">0.020</span><span class="p">,</span> <span class="mf">0.0063</span><span class="p">,</span> <span class="mf">0.013</span><span class="p">,</span> <span class="mf">0.018</span><span class="p">,</span> <span class="mf">0.033</span><span class="p">,</span>
+            <span class="mf">0.030</span><span class="p">,</span> <span class="mf">0.00025</span><span class="p">,</span> <span class="mf">0.014</span><span class="p">,</span> <span class="mf">0.044</span><span class="p">,</span> <span class="mf">0.69</span>
+        <span class="p">],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.0012</span><span class="p">,</span> <span class="mf">0.0027</span><span class="p">,</span> <span class="mf">0.011</span><span class="p">,</span> <span class="mf">0.0054</span><span class="p">,</span> <span class="mf">0.020</span><span class="p">,</span> <span class="mf">0.0063</span><span class="p">,</span> <span class="mf">0.013</span><span class="p">,</span> <span class="mf">0.018</span><span class="p">,</span> <span class="mf">0.033</span><span class="p">,</span>
+            <span class="mf">0.030</span><span class="p">,</span> <span class="mf">0.00025</span><span class="p">,</span> <span class="mf">0.014</span><span class="p">,</span> <span class="mf">0.044</span><span class="p">,</span> <span class="mf">0.69</span>
+        <span class="p">],</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.0014</span><span class="p">,</span> <span class="mf">0.0031</span><span class="p">,</span> <span class="mf">0.013</span><span class="p">,</span> <span class="mf">0.0061</span><span class="p">,</span> <span class="mf">0.023</span><span class="p">,</span> <span class="mf">0.0072</span><span class="p">,</span> <span class="mf">0.014</span><span class="p">,</span> <span class="mf">0.021</span><span class="p">,</span> <span class="mf">0.038</span><span class="p">,</span>
+            <span class="mf">0.034</span><span class="p">,</span> <span class="mf">0.00028</span><span class="p">,</span> <span class="mf">0.016</span><span class="p">,</span> <span class="mf">0.050</span><span class="p">,</span> <span class="mf">0.78</span>
+        <span class="p">],</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.0014</span><span class="p">,</span> <span class="mf">0.0031</span><span class="p">,</span> <span class="mf">0.013</span><span class="p">,</span> <span class="mf">0.0061</span><span class="p">,</span> <span class="mf">0.023</span><span class="p">,</span> <span class="mf">0.0072</span><span class="p">,</span> <span class="mf">0.014</span><span class="p">,</span> <span class="mf">0.021</span><span class="p">,</span> <span class="mf">0.038</span><span class="p">,</span>
+            <span class="mf">0.034</span><span class="p">,</span> <span class="mf">0.00028</span><span class="p">,</span> <span class="mf">0.016</span><span class="p">,</span> <span class="mf">0.050</span><span class="p">,</span> <span class="mf">0.78</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">0.012</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">,</span> <span class="mf">0.13</span><span class="p">,</span> <span class="mf">0.062</span><span class="p">,</span> <span class="mf">0.21</span><span class="p">,</span> <span class="mf">0.078</span><span class="p">,</span> <span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.19</span><span class="p">,</span> <span class="mf">0.24</span><span class="p">,</span> <span class="mf">0.32</span><span class="p">,</span> <span class="mf">0.0060</span><span class="p">,</span>
+        <span class="mf">0.18</span><span class="p">,</span> <span class="mf">0.47</span><span class="p">,</span> <span class="mf">8.2</span>
+    <span class="p">],</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">0.0023</span><span class="p">,</span> <span class="mf">0.0066</span><span class="p">,</span> <span class="mf">0.031</span><span class="p">,</span> <span class="mf">0.013</span><span class="p">,</span> <span class="mf">0.055</span><span class="p">,</span> <span class="mf">0.022</span><span class="p">,</span> <span class="mf">0.043</span><span class="p">,</span> <span class="mf">0.077</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.10</span><span class="p">,</span>
+        <span class="mf">0.0011</span><span class="p">,</span> <span class="mf">0.055</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">1.7</span>
+    <span class="p">],</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">0.0085</span><span class="p">,</span> <span class="mf">0.018</span><span class="p">,</span> <span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">,</span> <span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.17</span><span class="p">,</span> <span class="mf">0.30</span><span class="p">,</span> <span class="mf">0.38</span><span class="p">,</span> <span class="mf">0.26</span><span class="p">,</span> <span class="mf">0.0068</span><span class="p">,</span>
+        <span class="mf">0.13</span><span class="p">,</span> <span class="mf">0.37</span><span class="p">,</span> <span class="mf">5.4</span>
+    <span class="p">],</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.014</span><span class="p">,</span> <span class="mf">0.031</span><span class="p">,</span> <span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.077</span><span class="p">,</span> <span class="mf">0.26</span><span class="p">,</span> <span class="mf">0.073</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.19</span><span class="p">,</span> <span class="mf">0.39</span><span class="p">,</span> <span class="mf">0.42</span><span class="p">,</span>
+            <span class="mf">0.0042</span><span class="p">,</span> <span class="mf">0.21</span><span class="p">,</span> <span class="mf">0.62</span><span class="p">,</span> <span class="mf">9.4</span>
+        <span class="p">],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.013</span><span class="p">,</span> <span class="mf">0.028</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.070</span><span class="p">,</span> <span class="mf">0.24</span><span class="p">,</span> <span class="mf">0.065</span><span class="p">,</span> <span class="mf">0.13</span><span class="p">,</span> <span class="mf">0.18</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="mf">0.38</span><span class="p">,</span>
+            <span class="mf">0.0038</span><span class="p">,</span> <span class="mf">0.19</span><span class="p">,</span> <span class="mf">0.56</span><span class="p">,</span> <span class="mf">8.6</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="mi">7</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">0.008</span><span class="p">,</span> <span class="mf">0.18</span><span class="p">,</span> <span class="mf">0.096</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.044</span><span class="p">,</span> <span class="mf">0.088</span><span class="p">,</span> <span class="mf">0.12</span><span class="p">,</span> <span class="mf">0.24</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.004</span><span class="p">,</span>
+        <span class="mf">0.13</span><span class="p">,</span> <span class="mf">0.37</span><span class="p">,</span> <span class="mf">5.5</span>
+    <span class="p">],</span>
+    <span class="mi">8</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">0.065</span><span class="p">,</span> <span class="mf">0.32</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">0.71</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.71</span><span class="p">,</span> <span class="mf">1.9</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.7</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">,</span> <span class="mf">0.032</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">,</span> <span class="mf">3.4</span><span class="p">,</span>
+        <span class="mf">62.0</span>
+    <span class="p">],</span>
+    <span class="mi">9</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">0.025</span><span class="p">,</span> <span class="mf">0.055</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.58</span><span class="p">,</span> <span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.26</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="mf">0.58</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">0.013</span><span class="p">,</span>
+        <span class="mf">0.52</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">24.0</span>
+    <span class="p">],</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">0.33</span><span class="p">,</span> <span class="mf">0.73</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mf">2.9</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="mf">5.3</span><span class="p">,</span> <span class="mf">7.1</span><span class="p">,</span> <span class="mf">9.8</span><span class="p">,</span> <span class="mf">23.0</span><span class="p">,</span> <span class="mf">0.16</span><span class="p">,</span> <span class="mf">11.0</span><span class="p">,</span> <span class="mf">33.0</span><span class="p">,</span>
+        <span class="mf">510.0</span>
+    <span class="p">],</span>
+    <span class="mi">11</span><span class="p">:</span>
+    <span class="p">[</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="mf">3.1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">5.4</span><span class="p">,</span> <span class="mf">1.9</span><span class="p">,</span> <span class="mf">2.8</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">9.0</span><span class="p">,</span> <span class="mf">0.075</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+    <span class="mi">12</span><span class="p">:</span>
+    <span class="p">[</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.34</span><span class="p">,</span> <span class="mf">2.9</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">7.6</span><span class="p">,</span> <span class="mf">0.076</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+    <span class="mi">13</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">0.043</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">,</span> <span class="mf">0.39</span><span class="p">,</span> <span class="mf">0.78</span><span class="p">,</span> <span class="mf">1.8</span><span class="p">,</span> <span class="mf">2.8</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">0.21</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span>
+        <span class="mf">3.7</span><span class="p">,</span> <span class="mf">49.0</span>
+    <span class="p">],</span>
+    <span class="mi">14</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.11</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">,</span> <span class="mf">1.7</span><span class="p">,</span> <span class="mf">2.8</span><span class="p">,</span> <span class="mf">4.6</span><span class="p">,</span> <span class="mf">4.6</span><span class="p">,</span> <span class="mf">7.5</span><span class="p">,</span> <span class="mf">3.3</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">4.7</span><span class="p">,</span>
+        <span class="mf">67.0</span>
+    <span class="p">],</span>
+    <span class="mi">15</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">0.048</span><span class="p">,</span> <span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.76</span><span class="p">,</span> <span class="mf">0.36</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">,</span> <span class="mf">0.36</span><span class="p">,</span> <span class="mf">0.72</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mf">0.024</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span>
+        <span class="mf">3.4</span><span class="p">,</span> <span class="mf">52.0</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+<span class="n">PART_COUNT_PI_Q</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.030</span><span class="p">,</span> <span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.30</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">]</span>
+<span class="n">PART_STRESS_PI_Q</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">],</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">],</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">],</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">],</span>
+    <span class="mi">7</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">],</span>
+    <span class="mi">8</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">],</span>
+    <span class="mi">9</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.06</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">],</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="p">[</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span>
+    <span class="mi">11</span><span class="p">:</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">],</span>
+    <span class="mi">12</span><span class="p">:</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">],</span>
+    <span class="mi">13</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.06</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">],</span>
+    <span class="mi">14</span><span class="p">:</span> <span class="p">[</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span>
+    <span class="mi">15</span><span class="p">:</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]</span>
+<span class="p">}</span>
+<span class="n">PI_C</span> <span class="o">=</span> <span class="p">{</span><span class="mi">10</span><span class="p">:</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="mi">12</span><span class="p">:</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]}</span>
+<span class="n">PI_E</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">13.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mf">11.0</span><span class="p">,</span> <span class="mf">19.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">11.0</span><span class="p">,</span> <span class="mf">27.0</span><span class="p">,</span>
+        <span class="mf">490.0</span>
+    <span class="p">],</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">14.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">18.0</span><span class="p">,</span> <span class="mf">19.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">28.0</span><span class="p">,</span>
+        <span class="mf">510.0</span>
+    <span class="p">],</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">17.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">14.0</span><span class="p">,</span> <span class="mf">18.0</span><span class="p">,</span> <span class="mf">25.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">14.0</span><span class="p">,</span> <span class="mf">36.0</span><span class="p">,</span>
+        <span class="mf">660.0</span>
+    <span class="p">],</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">17.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">14.0</span><span class="p">,</span> <span class="mf">18.0</span><span class="p">,</span> <span class="mf">25.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">14.0</span><span class="p">,</span> <span class="mf">36.0</span><span class="p">,</span>
+        <span class="mf">660.0</span>
+    <span class="p">],</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">11.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">18.0</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">,</span> <span class="mf">18.0</span><span class="p">,</span> <span class="mf">28.0</span><span class="p">,</span> <span class="mf">35.0</span><span class="p">,</span> <span class="mf">27.0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">14.0</span><span class="p">,</span>
+        <span class="mf">38.0</span><span class="p">,</span> <span class="mf">610.0</span>
+    <span class="p">],</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">16.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">9.0</span><span class="p">,</span> <span class="mf">18.0</span><span class="p">,</span> <span class="mf">23.0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">13.0</span><span class="p">,</span> <span class="mf">34.0</span><span class="p">,</span>
+        <span class="mf">610.0</span>
+    <span class="p">],</span>
+    <span class="mi">7</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">16.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">9.0</span><span class="p">,</span> <span class="mf">18.0</span><span class="p">,</span> <span class="mf">23.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">13.0</span><span class="p">,</span> <span class="mf">34.0</span><span class="p">,</span>
+        <span class="mf">610.0</span>
+    <span class="p">],</span>
+    <span class="mi">8</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">1.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">21.0</span><span class="p">,</span> <span class="mf">11.0</span><span class="p">,</span> <span class="mf">24.0</span><span class="p">,</span> <span class="mf">11.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">,</span> <span class="mf">16.0</span><span class="p">,</span> <span class="mf">42.0</span><span class="p">,</span> <span class="mf">37.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span>
+        <span class="mf">53.0</span><span class="p">,</span> <span class="mf">950.0</span>
+    <span class="p">],</span>
+    <span class="mi">9</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">9.0</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">,</span> <span class="mf">33.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">18.0</span><span class="p">,</span> <span class="mf">48.0</span><span class="p">,</span>
+        <span class="mf">870.0</span>
+    <span class="p">],</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">18.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">13.0</span><span class="p">,</span> <span class="mf">18.0</span><span class="p">,</span> <span class="mf">53.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">29.0</span><span class="p">,</span>
+        <span class="mf">76.0</span><span class="p">,</span> <span class="mf">1400.0</span>
+    <span class="p">],</span>
+    <span class="mi">11</span><span class="p">:</span>
+    <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">16.0</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mf">28.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">38.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+    <span class="mi">12</span><span class="p">:</span>
+    <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">16.0</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mf">28.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">38.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+    <span class="mi">13</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">14.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">24.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">18.0</span><span class="p">,</span> <span class="mf">39.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">22.0</span><span class="p">,</span> <span class="mf">57.0</span><span class="p">,</span>
+        <span class="mf">1000.0</span>
+    <span class="p">],</span>
+    <span class="mi">14</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">19.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">29.0</span><span class="p">,</span> <span class="mf">40.0</span><span class="p">,</span> <span class="mf">65.0</span><span class="p">,</span> <span class="mf">48.0</span><span class="p">,</span> <span class="mf">78.0</span><span class="p">,</span> <span class="mf">46.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">25.0</span><span class="p">,</span>
+        <span class="mf">66.0</span><span class="p">,</span> <span class="mf">1200.0</span>
+    <span class="p">],</span>
+    <span class="mi">15</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">14.0</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mf">24.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">,</span> <span class="mf">39.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">22.0</span><span class="p">,</span>
+        <span class="mf">57.0</span><span class="p">,</span> <span class="mf">1000.0</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+<span class="n">PI_R</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">],</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">],</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">],</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.7</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="p">[[[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]],</span>
+        <span class="p">[[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">2.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]]],</span>
+    <span class="mi">7</span><span class="p">:</span> <span class="p">[[[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">]],</span>
+        <span class="p">[[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]]],</span>
+    <span class="mi">9</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">],</span>
+    <span class="mi">11</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span>
+    <span class="mi">12</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span>
+    <span class="mi">13</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">1.8</span><span class="p">],</span>
+    <span class="mi">14</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">1.8</span><span class="p">],</span>
+    <span class="mi">15</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">1.8</span><span class="p">]</span>
+<span class="p">}</span>
+<span class="n">PI_V</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">9</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.22</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.22</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span>
+    <span class="mi">11</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.22</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span>
+    <span class="mi">12</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.22</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span>
+    <span class="mi">13</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">],</span>
+    <span class="mi">14</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">],</span>
+    <span class="mi">15</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">]</span>
+<span class="p">}</span>
+<span class="n">REF_TEMPS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="mf">343.0</span><span class="p">,</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="mf">298.0</span><span class="p">,</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="mf">398.0</span><span class="p">,</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="mf">298.0</span><span class="p">,</span>
+    <span class="mi">7</span><span class="p">:</span> <span class="mf">298.0</span><span class="p">,</span>
+    <span class="mi">9</span><span class="p">:</span> <span class="mf">358.0</span><span class="p">,</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="mf">358.0</span><span class="p">,</span>
+    <span class="mi">11</span><span class="p">:</span> <span class="mf">313.0</span><span class="p">,</span>
+    <span class="mi">12</span><span class="p">:</span> <span class="mf">298.0</span><span class="p">,</span>
+    <span class="mi">13</span><span class="p">:</span> <span class="mf">358.0</span><span class="p">,</span>
+    <span class="mi">14</span><span class="p">:</span> <span class="mf">343.0</span><span class="p">,</span>
+    <span class="mi">15</span><span class="p">:</span> <span class="mf">343.0</span>
+<span class="p">}</span>
+<span class="n">REF_TEMPS_FILM</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mf">343.0</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">343.0</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">398.0</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="mf">398.0</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="calculate_part_count"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.resistor.calculate_part_count">[docs]</a><span class="k">def</span> <span class="nf">calculate_part_count</span><span class="p">(</span><span class="o">**</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Wrap get_part_count_lambda_b().</span>
+
+<span class="sd">    This wrapper allows us to pass an attributes dict from a generic parts</span>
+<span class="sd">    count function.</span>
+
+<span class="sd">    :param attributes: the attributes for the connection being calculated.</span>
+<span class="sd">    :return: _base_hr; the parts count base hazard rates.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">get_part_count_lambda_b</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="calculate_part_stress"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.resistor.calculate_part_stress">[docs]</a><span class="k">def</span> <span class="nf">calculate_part_stress</span><span class="p">(</span><span class="o">**</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the part stress hazard rate for a resistor.</span>
+
+<span class="sd">    This function calculates the MIL-HDBK-217F hazard rate using the part</span>
+<span class="sd">    stress method.</span>
+
+<span class="sd">    :return: (attributes, _msg); the keyword argument (hardware attribute)</span>
+<span class="sd">             dictionary with updated values and the error message, if any.</span>
+<span class="sd">    :rtype: (dict, str)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">attributes</span> <span class="o">=</span> <span class="n">calculate_part_stress_lambda_b</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+    <span class="n">attributes</span> <span class="o">=</span> <span class="n">get_resistance_factor</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+    <span class="n">attributes</span> <span class="o">=</span> <span class="n">calculate_temperature_factor</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+
+    <span class="n">_subcategory_id</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">]</span>
+    <span class="n">_construction_id</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;construction_id&#39;</span><span class="p">]</span>
+    <span class="n">_lambda_b</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;lambda_b&#39;</span><span class="p">]</span>
+    <span class="n">_n_elements</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;n_elements&#39;</span><span class="p">]</span>
+    <span class="n">_pi_q</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piQ&#39;</span><span class="p">]</span>
+    <span class="n">_pi_e</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piE&#39;</span><span class="p">]</span>
+    <span class="n">_pi_t</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piT&#39;</span><span class="p">]</span>
+    <span class="n">_pi_r</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piR&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Calculate the voltage factor and taps factor (piTAPS).</span>
+    <span class="k">if</span> <span class="n">_subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">]:</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">get_voltage_factor</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+        <span class="n">_pi_v</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piV&#39;</span><span class="p">]</span>
+        <span class="n">_pi_taps</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="p">(</span><span class="n">_n_elements</span><span class="o">**</span><span class="mf">1.5</span> <span class="o">/</span> <span class="mf">25.0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.792</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piTAPS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_pi_taps</span>
+
+    <span class="c1"># Determine the consruction class factor (piC).</span>
+    <span class="k">if</span> <span class="n">_subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">]:</span>
+        <span class="n">_pi_c</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">PI_C</span><span class="p">[</span><span class="n">_subcategory_id</span><span class="p">][</span><span class="n">_construction_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piC&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_pi_c</span>
+
+    <span class="n">_hazard_rate_active</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="p">(</span><span class="n">_lambda_b</span> <span class="o">*</span> <span class="n">_pi_q</span> <span class="o">*</span> <span class="n">_pi_e</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">_subcategory_id</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">_hazard_rate_active</span> <span class="o">=</span> <span class="p">(</span><span class="n">_hazard_rate_active</span> <span class="o">*</span> <span class="n">_pi_t</span> <span class="o">*</span> <span class="n">_n_elements</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">_subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">]:</span>
+        <span class="n">_hazard_rate_active</span> <span class="o">=</span> <span class="p">(</span><span class="n">_hazard_rate_active</span> <span class="o">*</span> <span class="n">_pi_taps</span> <span class="o">*</span> <span class="n">_pi_r</span> <span class="o">*</span> <span class="n">_pi_v</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">_subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">]:</span>
+        <span class="n">_hazard_rate_active</span> <span class="o">=</span> <span class="p">(</span><span class="n">_hazard_rate_active</span> <span class="o">*</span> <span class="n">_pi_taps</span> <span class="o">*</span> <span class="n">_pi_c</span> <span class="o">*</span> <span class="n">_pi_r</span>
+                               <span class="o">*</span> <span class="n">_pi_v</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">_subcategory_id</span> <span class="o">!=</span> <span class="mi">8</span><span class="p">:</span>
+        <span class="n">_hazard_rate_active</span> <span class="o">=</span> <span class="p">(</span><span class="n">_hazard_rate_active</span> <span class="o">*</span> <span class="n">_pi_r</span><span class="p">)</span>
+
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_hazard_rate_active</span>
+
+    <span class="k">return</span> <span class="n">attributes</span></div>
+
+
+<span class="c1"># pylint: disable=too-many-locals</span>
+<div class="viewcode-block" id="calculate_part_stress_lambda_b"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.resistor.calculate_part_stress_lambda_b">[docs]</a><span class="k">def</span> <span class="nf">calculate_part_stress_lambda_b</span><span class="p">(</span>
+        <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate part stress base hazard rate (lambda b) from MIL-HDBK-217F.</span>
+
+<span class="sd">    This function calculates the MIL-HDBK-217F hazard rate using the parts</span>
+<span class="sd">    stress method.</span>
+
+<span class="sd">    :param attributes: the attributes of the switch being calculated.</span>
+<span class="sd">    :return attributes: the updated attributes of the switch being calculated.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    :raise: IndexError if passed an unknown quality ID or application ID.</span>
+<span class="sd">    :raise: KeyError is passed an unknown construction ID.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_subcategory_id</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">]</span>
+    <span class="n">_specification_id</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;specification_id&#39;</span><span class="p">]</span>
+    <span class="n">_type_id</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;type_id&#39;</span><span class="p">]</span>
+    <span class="n">_temperature_active</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;temperature_active&#39;</span><span class="p">]</span>
+    <span class="n">_power_ratio</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;power_ratio&#39;</span><span class="p">]</span>
+
+    <span class="n">_dic_factors</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">4.5E-9</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="mf">7.33E-3</span><span class="p">,</span> <span class="mf">0.202</span><span class="p">,</span> <span class="mf">2.6</span><span class="p">,</span> <span class="mf">1.45</span><span class="p">,</span> <span class="mf">0.89</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">],</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0031</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.00148</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.00015</span><span class="p">,</span> <span class="mf">2.64</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.466</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+        <span class="mi">8</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.021</span><span class="p">,</span> <span class="mf">0.065</span><span class="p">,</span> <span class="mf">0.105</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+        <span class="mi">9</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0062</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0735</span><span class="p">,</span> <span class="mf">1.03</span><span class="p">,</span> <span class="mf">4.45</span><span class="p">,</span> <span class="mf">2.74</span><span class="p">,</span> <span class="mf">3.51</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+        <span class="mi">11</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0398</span><span class="p">,</span> <span class="mf">0.514</span><span class="p">,</span> <span class="mf">5.28</span><span class="p">,</span> <span class="mf">1.44</span><span class="p">,</span> <span class="mf">4.46</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+        <span class="mi">12</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0481</span><span class="p">,</span> <span class="mf">0.334</span><span class="p">,</span> <span class="mf">4.66</span><span class="p">,</span> <span class="mf">1.47</span><span class="p">,</span> <span class="mf">2.83</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+        <span class="mi">13</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.019</span><span class="p">,</span> <span class="mf">0.445</span><span class="p">,</span> <span class="mf">7.3</span><span class="p">,</span> <span class="mf">2.69</span><span class="p">,</span> <span class="mf">2.46</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+        <span class="mi">14</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0246</span><span class="p">,</span> <span class="mf">0.459</span><span class="p">,</span> <span class="mf">9.3</span><span class="p">,</span> <span class="mf">2.32</span><span class="p">,</span> <span class="mf">5.3</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+        <span class="mi">15</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.018</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">7.4</span><span class="p">,</span> <span class="mf">2.55</span><span class="p">,</span> <span class="mf">3.6</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+    <span class="p">}</span>
+    <span class="n">_dic_factors_film</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">3.25E-4</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">3.25E-4</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="mf">5.0E-5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="mf">5.0E-5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">_subcategory_id</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">_ref_temp</span> <span class="o">=</span> <span class="n">REF_TEMPS_FILM</span><span class="p">[</span><span class="n">_specification_id</span><span class="p">]</span>
+        <span class="n">_f0</span> <span class="o">=</span> <span class="n">_dic_factors_film</span><span class="p">[</span><span class="n">_specification_id</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">_f1</span> <span class="o">=</span> <span class="n">_dic_factors_film</span><span class="p">[</span><span class="n">_specification_id</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">_f2</span> <span class="o">=</span> <span class="n">_dic_factors_film</span><span class="p">[</span><span class="n">_specification_id</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">_f3</span> <span class="o">=</span> <span class="n">_dic_factors_film</span><span class="p">[</span><span class="n">_specification_id</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">_f4</span> <span class="o">=</span> <span class="n">_dic_factors_film</span><span class="p">[</span><span class="n">_specification_id</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span>
+        <span class="n">_f5</span> <span class="o">=</span> <span class="n">_dic_factors_film</span><span class="p">[</span><span class="n">_specification_id</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">_subcategory_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">]:</span>
+        <span class="n">_ref_temp</span> <span class="o">=</span> <span class="n">REF_TEMPS</span><span class="p">[</span><span class="n">_subcategory_id</span><span class="p">]</span>
+        <span class="n">_f0</span> <span class="o">=</span> <span class="n">_dic_factors</span><span class="p">[</span><span class="n">_subcategory_id</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">_f1</span> <span class="o">=</span> <span class="n">_dic_factors</span><span class="p">[</span><span class="n">_subcategory_id</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">_f2</span> <span class="o">=</span> <span class="n">_dic_factors</span><span class="p">[</span><span class="n">_subcategory_id</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">_f3</span> <span class="o">=</span> <span class="n">_dic_factors</span><span class="p">[</span><span class="n">_subcategory_id</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">_f4</span> <span class="o">=</span> <span class="n">_dic_factors</span><span class="p">[</span><span class="n">_subcategory_id</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span>
+        <span class="n">_f5</span> <span class="o">=</span> <span class="n">_dic_factors</span><span class="p">[</span><span class="n">_subcategory_id</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">_subcategory_id</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">_lambda_b</span> <span class="o">=</span> <span class="mf">0.00006</span>
+    <span class="k">elif</span> <span class="n">_subcategory_id</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+        <span class="n">_lambda_b</span> <span class="o">=</span> <span class="n">_dic_factors</span><span class="p">[</span><span class="n">_subcategory_id</span><span class="p">][</span><span class="n">_type_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_lambda_b</span> <span class="o">=</span> <span class="n">_f0</span> <span class="o">*</span> <span class="n">exp</span><span class="p">(</span>
+            <span class="n">_f1</span> <span class="o">*</span> <span class="p">((</span><span class="n">_temperature_active</span> <span class="o">+</span> <span class="mf">273.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">_ref_temp</span><span class="p">),</span> <span class="p">)</span><span class="o">**</span><span class="n">_f2</span> <span class="o">*</span> <span class="n">exp</span><span class="p">(</span>
+                <span class="p">((</span><span class="n">_power_ratio</span> <span class="o">/</span> <span class="n">_f3</span><span class="p">)</span> <span class="o">*</span>
+                 <span class="p">((</span><span class="n">_temperature_active</span> <span class="o">+</span> <span class="mf">273.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">273.0</span><span class="p">)</span><span class="o">**</span><span class="n">_f4</span><span class="p">)</span><span class="o">**</span><span class="n">_f5</span><span class="p">)</span>
+
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;lambda_b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_lambda_b</span>
+
+    <span class="k">return</span> <span class="n">attributes</span></div>
+
+
+<div class="viewcode-block" id="calculate_temperature_factor"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.resistor.calculate_temperature_factor">[docs]</a><span class="k">def</span> <span class="nf">calculate_temperature_factor</span><span class="p">(</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the temperature factor (piT).</span>
+
+<span class="sd">    :param temperature_active: the ambient operating temperature of the</span>
+<span class="sd">        resistor in C.</span>
+<span class="sd">    :param power_ratio: the ratio of the power dissipated by the resistor</span>
+<span class="sd">        and it&#39;s rated power; both in W.</span>
+<span class="sd">    :return: (temperature_case, _pi_c); the calculated surface temperature of</span>
+<span class="sd">        the rsistor and it&#39;s resistance factor.</span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_temperature_active</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;temperature_active&#39;</span><span class="p">])</span>
+    <span class="n">_power_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;power_ratio&#39;</span><span class="p">])</span>
+
+    <span class="n">_temperature_case</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_temperature_active</span> <span class="o">+</span> <span class="mf">55.0</span> <span class="o">*</span> <span class="n">_power_ratio</span>
+    <span class="n">_pi_t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">4056.0</span> <span class="o">*</span> <span class="p">((</span><span class="mf">1.0</span> <span class="o">/</span>
+                                   <span class="p">(</span><span class="n">_temperature_case</span> <span class="o">+</span> <span class="mf">273.0</span><span class="p">))</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mf">298.0</span><span class="p">))</span>
+
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;temperature_case&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_temperature_case</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_pi_t</span>
+
+    <span class="k">return</span> <span class="n">attributes</span></div>
+
+
+<div class="viewcode-block" id="get_part_count_lambda_b"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.resistor.get_part_count_lambda_b">[docs]</a><span class="k">def</span> <span class="nf">get_part_count_lambda_b</span><span class="p">(</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Retrieve the parts count base hazard rate (lambda b) from MIL-HDBK-217F.</span>
+
+<span class="sd">    This function calculates the MIL-HDBK-217F hazard rate using the parts</span>
+<span class="sd">    count method.</span>
+
+<span class="sd">    This function calculates the MIL-HDBK-217F hazard rate using the parts</span>
+<span class="sd">    count method.  The dictionary PART_COUNT_LAMBDA_B contains the</span>
+<span class="sd">    MIL-HDBK-217F parts count base hazard rates.  Keys are for</span>
+<span class="sd">    PART_COUNT_LAMBDA_B are:</span>
+
+<span class="sd">        #. subcategory_id</span>
+<span class="sd">        #. environment_active_id</span>
+<span class="sd">        #. specification id; if the resistor subcategory is NOT specification</span>
+<span class="sd">            dependent, then the second key will be zero.</span>
+
+<span class="sd">    Current subcategory IDs are:</span>
+
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    | Subcategory    |            Resistor           | MIL-HDBK-217F   |</span>
+<span class="sd">    |       ID       |              Style            |    Section      |</span>
+<span class="sd">    +================+===============================+=================+</span>
+<span class="sd">    |        1       | Fixed, Composition (RC, RCR)  |        9.1      |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    |        2       | Fixed, Film (RL, RLR, RN,     |        9.2      |</span>
+<span class="sd">    |                | RNC, RNN, RNR)                |                 |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    |        3       | Fixed, Film, Power (RD)       |        9.3      |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    |        4       | Fixed, Film, Network (RZ)     |        9.4      |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    |        5       | Fixed, Wirewound (RB, RBR)    |        9.5      |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    |        6       | Fixed, Wirewound, Power       |        9.6      |</span>
+<span class="sd">    |                | (RW, RWR)                     |                 |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    |        7       | Fixed, Wirewound, Power,      |        9.7      |</span>
+<span class="sd">    |                | Chassis Mounted (RE, RER)     |                 |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    |        8       | Thermistor                    |        9.8      |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    |        9       | Variable, Wirewound (RT, RTR) |        9.9      |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    |       10       | Variable, Wirewound,          |       9.10      |</span>
+<span class="sd">    |                | Precision (RR)                |                 |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    |       11       | Variable, Wirewound,          |       9.11      |</span>
+<span class="sd">    |                | Semiprecision (RA, RK)        |                 |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    |       12       | Variable, Wirewound, Power    |       9.12      |</span>
+<span class="sd">    |                | (RP)                          |                 |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    |       13       | Variable, Non-Wirewound       |       9.13      |</span>
+<span class="sd">    |                | (RJ, RJR)                     |                 |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    |       14       | Variable, Composition (RV)    |       9.14      |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    |       15       | Variable,Non-Wirewound,       |       9.15      |</span>
+<span class="sd">    |                | Film and Precision (RQ, RVC)  |                 |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+
+<span class="sd">    :param subcategory_id: the subcategory identifier.</span>
+<span class="sd">    :param environment_active_id: the active environment identifier.</span>
+<span class="sd">    :param specification_id: the resistor spectification identifier.</span>
+<span class="sd">    :return: _base_hr; the parts count base hazard rate.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: IndexError if passed an unknown active environment ID.</span>
+<span class="sd">    :raise: KeyError if passed an unknown subcategory ID or specification ID:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_subcategory_id</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">]</span>
+    <span class="n">_environment_active_id</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;environment_active_id&#39;</span><span class="p">]</span>
+    <span class="n">_specification_id</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;specification_id&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">_subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">]:</span>
+        <span class="n">_base_hr</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">PART_COUNT_LAMBDA_B</span><span class="p">[</span><span class="n">_subcategory_id</span><span class="p">][</span>
+            <span class="n">_specification_id</span><span class="p">][</span><span class="n">_environment_active_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_base_hr</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">PART_COUNT_LAMBDA_B</span><span class="p">[</span><span class="n">_subcategory_id</span><span class="p">][</span>
+            <span class="n">_environment_active_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;lambda_b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_base_hr</span>
+
+    <span class="k">return</span> <span class="n">_base_hr</span></div>
+
+
+<div class="viewcode-block" id="get_resistance_factor"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.resistor.get_resistance_factor">[docs]</a><span class="k">def</span> <span class="nf">get_resistance_factor</span><span class="p">(</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Retrieve the resistance factor (piR).</span>
+
+<span class="sd">    :param subcategory_id: the subcategory identifier.</span>
+<span class="sd">    :param specification_id: the resistor&#39;s governing specification</span>
+<span class="sd">        identifier.</span>
+<span class="sd">    :param family_id: the resistor family identifier.</span>
+<span class="sd">    :param resistance: the resistance in ohms of the resistor.</span>
+<span class="sd">    :return: _pi_r; the calculated resistance factor value.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: IndexError if passed an unknown specification ID or family ID.</span>
+<span class="sd">    :raise: KeyError if passed an unknown subcategory ID.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_subcategory_id</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">]</span>
+    <span class="n">_specification_id</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;specification_id&#39;</span><span class="p">]</span>
+    <span class="n">_family_id</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;family_id&#39;</span><span class="p">]</span>
+    <span class="n">_resistance</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;resistance&#39;</span><span class="p">]</span>
+
+    <span class="n">_dic_breakpoints</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0E5</span><span class="p">,</span> <span class="mf">1.0E6</span><span class="p">,</span> <span class="mf">1.0E7</span><span class="p">],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0E5</span><span class="p">,</span> <span class="mf">1.0E6</span><span class="p">,</span> <span class="mf">1.0E7</span><span class="p">],</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">1.0E5</span><span class="p">,</span> <span class="mf">1.0E6</span><span class="p">],</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0E4</span><span class="p">,</span> <span class="mf">1.0E5</span><span class="p">,</span> <span class="mf">1.0E6</span><span class="p">],</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="p">[[</span><span class="mf">500.0</span><span class="p">,</span> <span class="mf">1.0E3</span><span class="p">,</span> <span class="mf">5.0E3</span><span class="p">,</span> <span class="mf">7.5E3</span><span class="p">,</span> <span class="mf">1.0E4</span><span class="p">,</span> <span class="mf">1.5E4</span><span class="p">,</span> <span class="mf">2.0E4</span><span class="p">],</span>
+            <span class="p">[</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">1.0E3</span><span class="p">,</span> <span class="mf">1.0E4</span><span class="p">,</span> <span class="mf">1.0E5</span><span class="p">,</span> <span class="mf">1.5E5</span><span class="p">,</span> <span class="mf">2.0E5</span><span class="p">]],</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="p">[</span><span class="mf">500.0</span><span class="p">,</span> <span class="mf">1.0E3</span><span class="p">,</span> <span class="mf">5.0E3</span><span class="p">,</span> <span class="mf">1.0E4</span><span class="p">,</span> <span class="mf">2.0E4</span><span class="p">],</span>
+        <span class="mi">9</span><span class="p">:</span> <span class="p">[</span><span class="mf">2.0E3</span><span class="p">,</span> <span class="mf">5.0E3</span><span class="p">],</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0E4</span><span class="p">,</span> <span class="mf">2.0E4</span><span class="p">,</span> <span class="mf">5.0E4</span><span class="p">,</span> <span class="mf">1.0E5</span><span class="p">,</span> <span class="mf">2.0E5</span><span class="p">],</span>
+        <span class="mi">11</span><span class="p">:</span> <span class="p">[</span><span class="mf">2.0E3</span><span class="p">,</span> <span class="mf">5.0E3</span><span class="p">],</span>
+        <span class="mi">12</span><span class="p">:</span> <span class="p">[</span><span class="mf">2.0E3</span><span class="p">,</span> <span class="mf">5.0E3</span><span class="p">],</span>
+        <span class="mi">13</span><span class="p">:</span> <span class="p">[</span><span class="mf">5.0E4</span><span class="p">,</span> <span class="mf">1.0E5</span><span class="p">,</span> <span class="mf">2.0E5</span><span class="p">,</span> <span class="mf">5.0E5</span><span class="p">],</span>
+        <span class="mi">14</span><span class="p">:</span> <span class="p">[</span><span class="mf">5.0E4</span><span class="p">,</span> <span class="mf">1.0E5</span><span class="p">,</span> <span class="mf">2.0E5</span><span class="p">,</span> <span class="mf">5.0E5</span><span class="p">],</span>
+        <span class="mi">15</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0E4</span><span class="p">,</span> <span class="mf">5.0E4</span><span class="p">,</span> <span class="mf">2.0E5</span><span class="p">,</span> <span class="mf">1.0E6</span><span class="p">]</span>
+    <span class="p">}</span>
+    <span class="n">_pi_r</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="k">if</span> <span class="n">_subcategory_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">]:</span>
+        <span class="n">_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="n">_subcategory_id</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="n">_breaks</span> <span class="o">=</span> <span class="n">_dic_breakpoints</span><span class="p">[</span><span class="n">_subcategory_id</span><span class="p">][</span><span class="n">_specification_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_breaks</span> <span class="o">=</span> <span class="n">_dic_breakpoints</span><span class="p">[</span><span class="n">_subcategory_id</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">_index</span><span class="p">,</span> <span class="n">_value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">_breaks</span><span class="p">):</span>
+            <span class="n">_diff</span> <span class="o">=</span> <span class="n">_value</span> <span class="o">-</span> <span class="n">_resistance</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">_breaks</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">_diff</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_diff</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="c1"># Resistance factor (piR) dictionary of values.  The key is the</span>
+        <span class="c1"># subcategory ID.  The index in the returned list is the resistance</span>
+        <span class="c1"># range breakpoint (breakpoint values are in _lst_breakpoints below).</span>
+        <span class="c1"># For subcategory ID 6 and 7, the specification ID selects the correct</span>
+        <span class="c1"># set of lists, then the style ID selects the proper list of piR values</span>
+        <span class="c1"># and then the resistance range breakpoint is used to select</span>
+        <span class="k">if</span> <span class="n">_subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">]:</span>
+            <span class="n">_pi_r</span> <span class="o">=</span> <span class="n">PI_R</span><span class="p">[</span><span class="n">_subcategory_id</span><span class="p">][</span><span class="n">_specification_id</span>
+                                          <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">_family_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">_subcategory_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">]:</span>
+            <span class="n">_pi_r</span> <span class="o">=</span> <span class="n">PI_R</span><span class="p">[</span><span class="n">_subcategory_id</span><span class="p">][</span><span class="n">_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_pi_r</span>
+
+    <span class="k">return</span> <span class="n">attributes</span></div>
+
+
+<div class="viewcode-block" id="get_voltage_factor"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.resistor.get_voltage_factor">[docs]</a><span class="k">def</span> <span class="nf">get_voltage_factor</span><span class="p">(</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Retrieve the voltage factor (piV).</span>
+
+<span class="sd">    :param subcategory_id: the subcategory identifier.</span>
+<span class="sd">    :param voltage_ratio: the ratio of voltages on each half of the</span>
+<span class="sd">        potentiometer.</span>
+<span class="sd">    :return: _pi_v; the selected voltage factor.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: KeyError if passed an unknown subcategory ID.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_subcategory_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">])</span>
+    <span class="n">_voltage_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;voltage_ratio&#39;</span><span class="p">])</span>
+
+    <span class="n">_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">_breaks</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">_subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">]:</span>
+        <span class="n">_breaks</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">_subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">]:</span>
+        <span class="n">_breaks</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">_index</span><span class="p">,</span> <span class="n">_value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">_breaks</span><span class="p">):</span>
+        <span class="n">_diff</span> <span class="o">=</span> <span class="n">_value</span> <span class="o">-</span> <span class="n">_voltage_ratio</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">_breaks</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+                <span class="ow">and</span> <span class="n">_diff</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">_index</span> <span class="o">==</span> <span class="mi">0</span>
+                                     <span class="ow">and</span> <span class="n">_diff</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_diff</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">break</span>
+
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piV&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PI_V</span><span class="p">[</span><span class="n">_subcategory_id</span><span class="p">][</span><span class="n">_index</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">attributes</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

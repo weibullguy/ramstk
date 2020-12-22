@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.controllers.fmea.datamanager &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.controllers.fmea.datamanager</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.controllers.fmea.datamanager.py is part of The RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2019 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;FMEA Package Data Model.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+<span class="kn">from</span> <span class="nn">treelib.exceptions</span> <span class="kn">import</span> <span class="n">NodeIDAbsentError</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.controllers</span> <span class="kn">import</span> <span class="n">RAMSTKDataManager</span>
+<span class="kn">from</span> <span class="nn">ramstk.exceptions</span> <span class="kn">import</span> <span class="n">DataAccessError</span>
+<span class="kn">from</span> <span class="nn">ramstk.models.programdb</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RAMSTKAction</span><span class="p">,</span> <span class="n">RAMSTKCause</span><span class="p">,</span> <span class="n">RAMSTKControl</span><span class="p">,</span> <span class="n">RAMSTKMechanism</span><span class="p">,</span> <span class="n">RAMSTKMode</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="DataManager"><a class="viewcode-back" href="../../../../api/ramstk.controllers.fmea.html#ramstk.controllers.fmea.datamanager.DataManager">[docs]</a><span class="k">class</span> <span class="nc">DataManager</span><span class="p">(</span><span class="n">RAMSTKDataManager</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Contain the attributes and methods of the FMEA data manager.</span>
+
+<span class="sd">    This class manages the fmea data from the RAMSTKFMEA and</span>
+<span class="sd">    RAMSTKHazardAnalysis data models.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_tag</span> <span class="o">=</span> <span class="s1">&#39;fmea&#39;</span>
+    <span class="n">_root</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize a FMEA data manager instance.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pkey</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;mode&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;revision_id&#39;</span><span class="p">,</span> <span class="s1">&#39;hardware_id&#39;</span><span class="p">,</span> <span class="s1">&#39;mode_id&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;mechanism&#39;</span><span class="p">:</span>
+            <span class="p">[</span><span class="s1">&#39;revision_id&#39;</span><span class="p">,</span> <span class="s1">&#39;hardware_id&#39;</span><span class="p">,</span> <span class="s1">&#39;mode_id&#39;</span><span class="p">,</span> <span class="s1">&#39;mechanism_id&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;cause&#39;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s1">&#39;revision_id&#39;</span><span class="p">,</span> <span class="s1">&#39;hardware_id&#39;</span><span class="p">,</span> <span class="s1">&#39;mode_id&#39;</span><span class="p">,</span> <span class="s1">&#39;mechanism_id&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;cause_id&#39;</span>
+            <span class="p">],</span>
+            <span class="s1">&#39;control&#39;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s1">&#39;revision_id&#39;</span><span class="p">,</span> <span class="s1">&#39;hardware_id&#39;</span><span class="p">,</span> <span class="s1">&#39;mode_id&#39;</span><span class="p">,</span> <span class="s1">&#39;mechanism_id&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;cause_id&#39;</span><span class="p">,</span> <span class="s1">&#39;control_id&#39;</span>
+            <span class="p">],</span>
+            <span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s1">&#39;revision_id&#39;</span><span class="p">,</span> <span class="s1">&#39;hardware_id&#39;</span><span class="p">,</span> <span class="s1">&#39;mode_id&#39;</span><span class="p">,</span> <span class="s1">&#39;mechanism_id&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;cause_id&#39;</span><span class="p">,</span> <span class="s1">&#39;action_id&#39;</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_is_functional</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;functional&#39;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_is_functional</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parent_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_get_attributes</span><span class="p">,</span> <span class="s1">&#39;request_get_mode_attributes&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_get_attributes</span><span class="p">,</span>
+                      <span class="s1">&#39;request_get_mechanism_attributes&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_get_attributes</span><span class="p">,</span>
+                      <span class="s1">&#39;request_get_cause_attributes&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_get_attributes</span><span class="p">,</span>
+                      <span class="s1">&#39;request_get_control_attributes&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_get_attributes</span><span class="p">,</span>
+                      <span class="s1">&#39;request_get_action_attributes&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_attributes</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_fmea&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_attributes</span><span class="p">,</span> <span class="s1">&#39;request_set_fmea_attributes&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_update_all</span><span class="p">,</span> <span class="s1">&#39;request_update_all_fmea&#39;</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_select_all</span><span class="p">,</span> <span class="s1">&#39;selected_function&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_select_all</span><span class="p">,</span> <span class="s1">&#39;selected_hardware&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;request_update_fmea&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_get_tree</span><span class="p">,</span> <span class="s1">&#39;request_get_fmea_tree&#39;</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_delete</span><span class="p">,</span> <span class="s1">&#39;request_delete_fmea&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_insert_action</span><span class="p">,</span> <span class="s1">&#39;request_insert_fmea_action&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_insert_cause</span><span class="p">,</span> <span class="s1">&#39;request_insert_fmea_cause&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_insert_control</span><span class="p">,</span> <span class="s1">&#39;request_insert_fmea_control&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_insert_mechanism</span><span class="p">,</span>
+                      <span class="s1">&#39;request_insert_fmea_mechanism&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_insert_mode</span><span class="p">,</span> <span class="s1">&#39;request_insert_fmea_mode&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DataManager.do_get_tree"><a class="viewcode-back" href="../../../../api/ramstk.controllers.fmea.html#ramstk.controllers.fmea.datamanager.DataManager.do_get_tree">[docs]</a>    <span class="k">def</span> <span class="nf">do_get_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve the FMEA treelib Tree.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_get_fmea_tree&#39;</span><span class="p">,</span> <span class="n">tree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataManager.do_select_all"><a class="viewcode-back" href="../../../../api/ramstk.controllers.fmea.html#ramstk.controllers.fmea.datamanager.DataManager.do_select_all">[docs]</a>    <span class="k">def</span> <span class="nf">do_select_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve all FMEA data from the RAMSTK Program database.</span>
+
+<span class="sd">        :param attributes: the attributes dict for the selected</span>
+<span class="sd">            function or hardware item.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">children</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">root</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">_node</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_revision_id</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;revision_id&#39;</span><span class="p">]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_is_functional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parent_id</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hardware_id&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_select_all_hardware_fmea</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_is_functional</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parent_id</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;function_id&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="DataManager.do_update"><a class="viewcode-back" href="../../../../api/ramstk.controllers.fmea.html#ramstk.controllers.fmea.datamanager.DataManager.do_update">[docs]</a>    <span class="k">def</span> <span class="nf">do_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Update record associated with node ID in RAMSTK Program database.</span>
+
+<span class="sd">        :param node_id: the node ID of the FMEA item to save.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_table</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">_table</span><span class="p">])</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">do_update</span><span class="p">()</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_update_fmea&#39;</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;fail_update_fmea&#39;</span><span class="p">,</span>
+                            <span class="n">error_message</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Attempted to save non-existent &#39;</span>
+                                           <span class="s1">&#39;FMEA element with FMEA ID &#39;</span>
+                                           <span class="s1">&#39;</span><span class="si">{0:s}</span><span class="s1">.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">node_id</span><span class="p">)))</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">node_id</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;fail_update_fmea&#39;</span><span class="p">,</span>
+                                <span class="n">error_message</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;No data package found for &#39;</span>
+                                               <span class="s1">&#39;FMEA ID </span><span class="si">{0:s}</span><span class="s1">.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                                   <span class="nb">str</span><span class="p">(</span><span class="n">node_id</span><span class="p">)))</span></div>
+
+    <span class="k">def</span> <span class="nf">_add_cause_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cause</span><span class="p">:</span> <span class="n">RAMSTKCause</span><span class="p">,</span> <span class="n">parent_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add a node to the treelib Tree() to hold a failure cause.</span>
+
+<span class="sd">        This is a helper method to allow causes to be children of either a</span>
+<span class="sd">        failure mode (functional FMEA) or a failure mechanism (hardware FMEA).</span>
+
+<span class="sd">        :param cause: an instance of RAMSTKCause.</span>
+<span class="sd">        :param parent_id: the parent node ID the causes are associated</span>
+<span class="sd">            with.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_data_package</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;cause&#39;</span><span class="p">:</span> <span class="n">cause</span><span class="p">}</span>
+
+        <span class="n">_identifier</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:s}</span><span class="s1">.</span><span class="si">{1:d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">parent_id</span><span class="p">,</span>
+                                           <span class="n">cause</span><span class="o">.</span><span class="n">cause_id</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s1">&#39;cause&#39;</span><span class="p">,</span>
+                              <span class="n">identifier</span><span class="o">=</span><span class="n">_identifier</span><span class="p">,</span>
+                              <span class="n">parent</span><span class="o">=</span><span class="n">parent_id</span><span class="p">,</span>
+                              <span class="n">data</span><span class="o">=</span><span class="n">_data_package</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                               <span class="n">cause</span><span class="o">.</span><span class="n">cause_id</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_select_all_control</span><span class="p">(</span><span class="n">_identifier</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_select_all_action</span><span class="p">(</span><span class="n">_identifier</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_mode_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">RAMSTKMode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add a node to the treelib Tree() to hold a failure mode.</span>
+
+<span class="sd">        This is a helper method to allow modes to be children of either a</span>
+<span class="sd">        function (functional FMEA) or a hardware item (hardware FMEA).</span>
+
+<span class="sd">        :param mode: an instance of RAMSTKMode.</span>
+<span class="sd">        :type mode: :class:`ramstk.models.programdb.RAMSTKMode`</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_data_package</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mode&#39;</span><span class="p">:</span> <span class="n">mode</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span>
+            <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;mode&#39;</span><span class="p">,</span>
+            <span class="n">identifier</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">mode</span><span class="o">.</span><span class="n">mode_id</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+            <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">_data_package</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mode</span><span class="o">.</span><span class="n">mode_id</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+    <span class="k">def</span> <span class="nf">_do_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Remove a FMEA element.</span>
+
+<span class="sd">        :param node_id: the node (FMEA action) ID to be removed from the</span>
+<span class="sd">            RAMSTK Program database.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_table</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_delete</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="n">_table</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_delete_fmea&#39;</span><span class="p">,</span>
+                            <span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span>
+                            <span class="n">tree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">DataAccessError</span><span class="p">):</span>
+            <span class="n">_error_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Attempted to delete non-existent FMEA element ID &quot;</span>
+                          <span class="s2">&quot;</span><span class="si">{0:s}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">node_id</span><span class="p">))</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;fail_delete_fmea&#39;</span><span class="p">,</span> <span class="n">error_message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_insert_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add a new action to FMEA cause ID.</span>
+
+<span class="sd">        :param parent_id: the parent node ID the control is associated</span>
+<span class="sd">            with.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="p">(</span><span class="n">_mode_id</span><span class="p">,</span> <span class="n">_mechanism_id</span><span class="p">,</span> <span class="n">_cause_id</span><span class="p">)</span> <span class="o">=</span> <span class="n">parent_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_action</span> <span class="o">=</span> <span class="n">RAMSTKAction</span><span class="p">()</span>
+            <span class="n">_action</span><span class="o">.</span><span class="n">revision_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_revision_id</span>
+            <span class="n">_action</span><span class="o">.</span><span class="n">hardware_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent_id</span>
+            <span class="n">_action</span><span class="o">.</span><span class="n">mode_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_mode_id</span><span class="p">)</span>
+            <span class="n">_action</span><span class="o">.</span><span class="n">mechanism_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_mechanism_id</span><span class="p">)</span>
+            <span class="n">_action</span><span class="o">.</span><span class="n">cause_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_cause_id</span><span class="p">)</span>
+            <span class="n">_action</span><span class="o">.</span><span class="n">action_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">_action</span><span class="o">.</span><span class="n">action_recommended</span> <span class="o">=</span> <span class="s1">&#39;Recommended Action&#39;</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">do_insert</span><span class="p">(</span><span class="n">_action</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">_action</span><span class="o">.</span><span class="n">action_id</span>
+
+            <span class="n">_data_package</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="n">_action</span><span class="p">}</span>
+
+            <span class="n">_identifier</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:s}</span><span class="s1">.</span><span class="si">{1:d}</span><span class="s1">.a&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">parent_id</span><span class="p">,</span> <span class="n">_action</span><span class="o">.</span><span class="n">action_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s1">&#39;action&#39;</span><span class="p">,</span>
+                                  <span class="n">identifier</span><span class="o">=</span><span class="n">_identifier</span><span class="p">,</span>
+                                  <span class="n">parent</span><span class="o">=</span><span class="n">parent_id</span><span class="p">,</span>
+                                  <span class="n">data</span><span class="o">=</span><span class="n">_data_package</span><span class="p">)</span>
+
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_insert_action&#39;</span><span class="p">,</span>
+                            <span class="n">node_id</span><span class="o">=</span><span class="n">_identifier</span><span class="p">,</span>
+                            <span class="n">tree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_insert_fmea&#39;</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="n">_identifier</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">DataAccessError</span><span class="p">,</span> <span class="n">NodeIDAbsentError</span><span class="p">):</span>
+            <span class="n">_error_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Attempting to add an action to unknown failure &#39;</span>
+                          <span class="s1">&#39;cause ID </span><span class="si">{0:d}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">_cause_id</span><span class="p">)))</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s2">&quot;fail_insert_action&quot;</span><span class="p">,</span> <span class="n">error_message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_insert_cause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add a new failure cause to FMEA mechanism ID.</span>
+
+<span class="sd">        :parem str parent_id: the parent node ID the cause is associated with.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="p">(</span><span class="n">_mode_id</span><span class="p">,</span> <span class="n">_mechanism_id</span><span class="p">)</span> <span class="o">=</span> <span class="n">parent_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_cause</span> <span class="o">=</span> <span class="n">RAMSTKCause</span><span class="p">()</span>
+            <span class="n">_cause</span><span class="o">.</span><span class="n">revision_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_revision_id</span>
+            <span class="n">_cause</span><span class="o">.</span><span class="n">hardware_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent_id</span>
+            <span class="n">_cause</span><span class="o">.</span><span class="n">mode_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_mode_id</span><span class="p">)</span>
+            <span class="n">_cause</span><span class="o">.</span><span class="n">mechanism_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_mechanism_id</span><span class="p">)</span>
+            <span class="n">_cause</span><span class="o">.</span><span class="n">cause_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">_cause</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;New Failure Cause&#39;</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">do_insert</span><span class="p">(</span><span class="n">_cause</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">_cause</span><span class="o">.</span><span class="n">cause_id</span>
+
+            <span class="n">_identifier</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:s}</span><span class="s1">.</span><span class="si">{1:d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">parent_id</span><span class="p">,</span> <span class="n">_cause</span><span class="o">.</span><span class="n">cause_id</span><span class="p">)</span>
+
+            <span class="n">_data_package</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;cause&#39;</span><span class="p">:</span> <span class="n">_cause</span><span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s1">&#39;cause&#39;</span><span class="p">,</span>
+                                  <span class="n">identifier</span><span class="o">=</span><span class="n">_identifier</span><span class="p">,</span>
+                                  <span class="n">parent</span><span class="o">=</span><span class="n">parent_id</span><span class="p">,</span>
+                                  <span class="n">data</span><span class="o">=</span><span class="n">_data_package</span><span class="p">)</span>
+
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_insert_cause&#39;</span><span class="p">,</span>
+                            <span class="n">node_id</span><span class="o">=</span><span class="n">_identifier</span><span class="p">,</span>
+                            <span class="n">tree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_insert_fmea&#39;</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="n">_identifier</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">DataAccessError</span><span class="p">,</span> <span class="n">NodeIDAbsentError</span><span class="p">):</span>
+            <span class="n">_error_msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Attempting to add a failure cause to unknown &#39;</span>
+                <span class="s1">&#39;failure mode ID </span><span class="si">{0:d}</span><span class="s1"> or mechanism ID </span><span class="si">{1:d}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="nb">int</span><span class="p">(</span><span class="n">_mode_id</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">_mechanism_id</span><span class="p">)))</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s2">&quot;fail_insert_cause&quot;</span><span class="p">,</span> <span class="n">error_message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_insert_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add a new control to FMEA cause ID.</span>
+
+<span class="sd">        :parem str parent_id: the parent node ID the control is associated</span>
+<span class="sd">            with.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="p">(</span><span class="n">_mode_id</span><span class="p">,</span> <span class="n">_mechanism_id</span><span class="p">,</span> <span class="n">_cause_id</span><span class="p">)</span> <span class="o">=</span> <span class="n">parent_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_control</span> <span class="o">=</span> <span class="n">RAMSTKControl</span><span class="p">()</span>
+            <span class="n">_control</span><span class="o">.</span><span class="n">revision_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_revision_id</span>
+            <span class="n">_control</span><span class="o">.</span><span class="n">hardware_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent_id</span>
+            <span class="n">_control</span><span class="o">.</span><span class="n">mode_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_mode_id</span><span class="p">)</span>
+            <span class="n">_control</span><span class="o">.</span><span class="n">mechanism_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_mechanism_id</span><span class="p">)</span>
+            <span class="n">_control</span><span class="o">.</span><span class="n">cause_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_cause_id</span><span class="p">)</span>
+            <span class="n">_control</span><span class="o">.</span><span class="n">control_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">_control</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;New Control&#39;</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">do_insert</span><span class="p">(</span><span class="n">_control</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">_control</span><span class="o">.</span><span class="n">control_id</span>
+
+            <span class="n">_data_package</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;control&#39;</span><span class="p">:</span> <span class="n">_control</span><span class="p">}</span>
+
+            <span class="n">_identifier</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:s}</span><span class="s1">.</span><span class="si">{1:d}</span><span class="s1">.c&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">parent_id</span><span class="p">,</span>
+                                                 <span class="n">_control</span><span class="o">.</span><span class="n">control_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s1">&#39;control&#39;</span><span class="p">,</span>
+                                  <span class="n">identifier</span><span class="o">=</span><span class="n">_identifier</span><span class="p">,</span>
+                                  <span class="n">parent</span><span class="o">=</span><span class="n">parent_id</span><span class="p">,</span>
+                                  <span class="n">data</span><span class="o">=</span><span class="n">_data_package</span><span class="p">)</span>
+
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_insert_control&#39;</span><span class="p">,</span>
+                            <span class="n">node_id</span><span class="o">=</span><span class="n">_identifier</span><span class="p">,</span>
+                            <span class="n">tree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_insert_fmea&#39;</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="n">_identifier</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">DataAccessError</span><span class="p">,</span> <span class="n">NodeIDAbsentError</span><span class="p">):</span>
+            <span class="n">_error_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Attempting to add a control to unknown failure &#39;</span>
+                          <span class="s1">&#39;cause ID </span><span class="si">{0:d}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">_cause_id</span><span class="p">)))</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s2">&quot;fail_insert_control&quot;</span><span class="p">,</span> <span class="n">error_message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_insert_mechanism</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add a new failure mechanism to FMEA mode ID.</span>
+
+<span class="sd">        :param mode_id: the FMEA mode ID to associate the new mechanism</span>
+<span class="sd">            with.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_mechanism</span> <span class="o">=</span> <span class="n">RAMSTKMechanism</span><span class="p">()</span>
+            <span class="n">_mechanism</span><span class="o">.</span><span class="n">revision_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_revision_id</span>
+            <span class="n">_mechanism</span><span class="o">.</span><span class="n">hardware_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent_id</span>
+            <span class="n">_mechanism</span><span class="o">.</span><span class="n">mode_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">mode_id</span><span class="p">)</span>
+            <span class="n">_mechanism</span><span class="o">.</span><span class="n">mechanism_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">_mechanism</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;New Failure Mechanism&#39;</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">do_insert</span><span class="p">(</span><span class="n">_mechanism</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">_mechanism</span><span class="o">.</span><span class="n">mechanism_id</span>
+
+            <span class="n">_identifier</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:s}</span><span class="s1">.</span><span class="si">{1:d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode_id</span><span class="p">,</span>
+                                               <span class="n">_mechanism</span><span class="o">.</span><span class="n">mechanism_id</span><span class="p">)</span>
+
+            <span class="n">_data_package</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mechanism&#39;</span><span class="p">:</span> <span class="n">_mechanism</span><span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s1">&#39;mechanism&#39;</span><span class="p">,</span>
+                                  <span class="n">identifier</span><span class="o">=</span><span class="n">_identifier</span><span class="p">,</span>
+                                  <span class="n">parent</span><span class="o">=</span><span class="n">mode_id</span><span class="p">,</span>
+                                  <span class="n">data</span><span class="o">=</span><span class="n">_data_package</span><span class="p">)</span>
+
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_insert_mechanism&#39;</span><span class="p">,</span>
+                            <span class="n">node_id</span><span class="o">=</span><span class="n">_identifier</span><span class="p">,</span>
+                            <span class="n">tree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_insert_fmea&#39;</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="n">_identifier</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">DataAccessError</span><span class="p">,</span> <span class="n">NodeIDAbsentError</span><span class="p">):</span>
+            <span class="n">_error_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Attempting to add a failure mechanism to unknown &#39;</span>
+                          <span class="s1">&#39;failure mode ID </span><span class="si">{0:s}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">mode_id</span><span class="p">)))</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s2">&quot;fail_insert_mechanism&quot;</span><span class="p">,</span> <span class="n">error_message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_insert_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add a new failure mode.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_mode</span> <span class="o">=</span> <span class="n">RAMSTKMode</span><span class="p">()</span>
+            <span class="n">_mode</span><span class="o">.</span><span class="n">revision_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_revision_id</span>
+            <span class="n">_mode</span><span class="o">.</span><span class="n">hardware_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent_id</span>
+            <span class="n">_mode</span><span class="o">.</span><span class="n">mode_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">_mode</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;New Failure Mode&#39;</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">do_insert</span><span class="p">(</span><span class="n">_mode</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">_mode</span><span class="o">.</span><span class="n">mode_id</span>
+
+            <span class="n">_data_package</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mode&#39;</span><span class="p">:</span> <span class="n">_mode</span><span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s1">&#39;mode&#39;</span><span class="p">,</span>
+                                  <span class="n">identifier</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">mode_id</span><span class="p">),</span>
+                                  <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="p">,</span>
+                                  <span class="n">data</span><span class="o">=</span><span class="n">_data_package</span><span class="p">)</span>
+
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_insert_mode&#39;</span><span class="p">,</span>
+                            <span class="n">node_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">mode_id</span><span class="p">),</span>
+                            <span class="n">tree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_insert_fmea&#39;</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">mode_id</span><span class="p">))</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">DataAccessError</span><span class="p">,</span> <span class="n">NodeIDAbsentError</span><span class="p">):</span>
+            <span class="n">_error_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Attempting to add a failure mode to unknown &#39;</span>
+                          <span class="s1">&#39;hardware ID </span><span class="si">{0:s}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="p">)))</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s2">&quot;fail_insert_mode&quot;</span><span class="p">,</span> <span class="n">error_message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_select_all_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve all the actions for the cause ID.</span>
+
+<span class="sd">        :parem str parent_id: the parent node ID the actions are associated</span>
+<span class="sd">            with.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="p">(</span><span class="n">_mode_id</span><span class="p">,</span> <span class="n">_mechanism_id</span><span class="p">,</span> <span class="n">_cause_id</span><span class="p">)</span> <span class="o">=</span> <span class="n">parent_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">_action</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">RAMSTKAction</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">RAMSTKAction</span><span class="o">.</span><span class="n">mode_id</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">_mode_id</span><span class="p">),</span>
+                <span class="n">RAMSTKAction</span><span class="o">.</span><span class="n">mechanism_id</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">_mechanism_id</span><span class="p">),</span>
+                <span class="n">RAMSTKAction</span><span class="o">.</span><span class="n">cause_id</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">_cause_id</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+
+            <span class="n">_data_package</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="n">_action</span><span class="p">}</span>
+
+            <span class="n">_identifier</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:s}</span><span class="s1">.</span><span class="si">{1:d}</span><span class="s1">.a&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">parent_id</span><span class="p">,</span> <span class="n">_action</span><span class="o">.</span><span class="n">action_id</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s1">&#39;action&#39;</span><span class="p">,</span>
+                                  <span class="n">identifier</span><span class="o">=</span><span class="n">_identifier</span><span class="p">,</span>
+                                  <span class="n">parent</span><span class="o">=</span><span class="n">parent_id</span><span class="p">,</span>
+                                  <span class="n">data</span><span class="o">=</span><span class="n">_data_package</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">_action</span><span class="o">.</span><span class="n">action_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_select_all_cause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve all the failure causes for the mechanism ID.</span>
+
+<span class="sd">        :parem str parent_id: the parent node ID the causes are associated</span>
+<span class="sd">            with.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="p">(</span><span class="n">_mode_id</span><span class="p">,</span> <span class="n">_mechanism_id</span><span class="p">)</span> <span class="o">=</span> <span class="n">parent_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">_cause</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">RAMSTKCause</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">RAMSTKCause</span><span class="o">.</span><span class="n">mode_id</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">_mode_id</span><span class="p">),</span>
+                <span class="n">RAMSTKCause</span><span class="o">.</span><span class="n">mechanism_id</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">_mechanism_id</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_cause_node</span><span class="p">(</span><span class="n">_cause</span><span class="p">,</span> <span class="n">parent_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_select_all_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve all the controls for the cause ID.</span>
+
+<span class="sd">        :parem str parent_id: the parent node ID the controls are associated</span>
+<span class="sd">            with.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="p">(</span><span class="n">_mode_id</span><span class="p">,</span> <span class="n">_mechanism_id</span><span class="p">,</span> <span class="n">_cause_id</span><span class="p">)</span> <span class="o">=</span> <span class="n">parent_id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">_control</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">RAMSTKControl</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">RAMSTKControl</span><span class="o">.</span><span class="n">mode_id</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">_mode_id</span><span class="p">),</span>
+                <span class="n">RAMSTKControl</span><span class="o">.</span><span class="n">mechanism_id</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">_mechanism_id</span><span class="p">),</span>
+                <span class="n">RAMSTKControl</span><span class="o">.</span><span class="n">cause_id</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">_cause_id</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+
+            <span class="n">_data_package</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;control&#39;</span><span class="p">:</span> <span class="n">_control</span><span class="p">}</span>
+
+            <span class="n">_identifier</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:s}</span><span class="s1">.</span><span class="si">{1:d}</span><span class="s1">.c&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">parent_id</span><span class="p">,</span>
+                                                 <span class="n">_control</span><span class="o">.</span><span class="n">control_id</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s1">&#39;control&#39;</span><span class="p">,</span>
+                                  <span class="n">identifier</span><span class="o">=</span><span class="n">_identifier</span><span class="p">,</span>
+                                  <span class="n">parent</span><span class="o">=</span><span class="n">parent_id</span><span class="p">,</span>
+                                  <span class="n">data</span><span class="o">=</span><span class="n">_data_package</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">_control</span><span class="o">.</span><span class="n">control_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_select_all_functional_fmea</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve all functional FMEA data from the RAMSTK Program database.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_mode</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">RAMSTKMode</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">RAMSTKMode</span><span class="o">.</span><span class="n">function_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent_id</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_mode_node</span><span class="p">(</span><span class="n">_mode</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_select_all_cause</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent_id</span><span class="p">))</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_retrieve_functional_fmea&#39;</span><span class="p">,</span> <span class="n">tree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_select_all_hardware_fmea</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve all hardware FMEA data from the RAMSTK Program database.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_mode</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">RAMSTKMode</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">RAMSTKMode</span><span class="o">.</span><span class="n">revision_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_revision_id</span><span class="p">,</span>
+                <span class="n">RAMSTKMode</span><span class="o">.</span><span class="n">hardware_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent_id</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_mode_node</span><span class="p">(</span><span class="n">_mode</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_select_all_mechanism</span><span class="p">(</span><span class="n">_mode</span><span class="o">.</span><span class="n">mode_id</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_retrieve_hardware_fmea&#39;</span><span class="p">,</span> <span class="n">tree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_select_all_mechanism</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve all the failure mechanisms for the mode ID.</span>
+
+<span class="sd">        :param mode_id: the mode ID to select the mechanisms for.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_mechanism</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">RAMSTKMechanism</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">RAMSTKMechanism</span><span class="o">.</span><span class="n">mode_id</span> <span class="o">==</span> <span class="n">mode_id</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+
+            <span class="n">_data_package</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mechanism&#39;</span><span class="p">:</span> <span class="n">_mechanism</span><span class="p">}</span>
+
+            <span class="n">_identifier</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:d}</span><span class="s1">.</span><span class="si">{1:d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode_id</span><span class="p">,</span>
+                                               <span class="n">_mechanism</span><span class="o">.</span><span class="n">mechanism_id</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s1">&#39;mechanism&#39;</span><span class="p">,</span>
+                                  <span class="n">identifier</span><span class="o">=</span><span class="n">_identifier</span><span class="p">,</span>
+                                  <span class="n">parent</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">mode_id</span><span class="p">),</span>
+                                  <span class="n">data</span><span class="o">=</span><span class="n">_data_package</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_id</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">_mechanism</span><span class="o">.</span><span class="n">mechanism_id</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_select_all_cause</span><span class="p">(</span><span class="n">_identifier</span><span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.hardware.components package &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ramstk.views.gtk3.hazard_analysis package" href="ramstk.views.gtk3.hazard_analysis.html" />
+    <link rel="prev" title="ramstk.views.gtk3.hardware package" href="ramstk.views.gtk3.hardware.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../contributing.html" >Contributing</a> &#187;</li>
+          <li><a href="modules.html" >ramstk</a> &#187;</li>
+          <li><a href="ramstk.html" >ramstk package</a> &#187;</li>
+          <li><a href="ramstk.views.html" >ramstk.views package</a> &#187;</li>
+          <li><a href="ramstk.views.gtk3.html" >ramstk.views.gtk3 package</a> &#187;</li>
+          <li><a href="ramstk.views.gtk3.hardware.html" accesskey="U">ramstk.views.gtk3.hardware package</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="ramstk-views-gtk3-hardware-components-package">
+<h1>ramstk.views.gtk3.hardware.components package<a class="headerlink" href="#ramstk-views-gtk3-hardware-components-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-ramstk.views.gtk3.hardware.components.capacitor">
+<span id="ramstk-views-gtk3-hardware-components-capacitor-module"></span><h2>ramstk.views.gtk3.hardware.components.capacitor module<a class="headerlink" href="#module-ramstk.views.gtk3.hardware.components.capacitor" title="Permalink to this headline">¶</a></h2>
+<p>Capacitor Work View Panels.</p>
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.capacitor.AssessmentInputPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.capacitor.</code><code class="sig-name descname">AssessmentInputPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/capacitor.html#AssessmentInputPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.capacitor.AssessmentInputPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel" title="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel</span></code></a></p>
+<p>Display Capacitor assessment input attribute data.</p>
+<p>The Capacitor assessment input view displays all the assessment inputs for
+the selected capacitor.  This includes, currently, inputs for
+MIL-HDBK-217FN2 parts count and part stress analyses.  The attributes of a
+Capacitor assessment input view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_dic_quality</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of MIL-HDBK-217 capacitor quality
+levels.  Key is capacitor subcategory ID; values are lists of quality
+levels.</p></li>
+<li><p><strong>_dic_specifications</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of capacitor MIL-SPECs.  Key is
+capacitor subcategory ID; values are lists of specifications.</p></li>
+<li><p><strong>_dic_styles</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of capacitor styles defined in the
+MIL-SPECs.  Key is capacitor subcategory ID; values are lists of
+styles.</p></li>
+<li><p><strong>_lst_labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – list of label text to display for the capacitor
+MIL-HDBK-217 input parameters.</p></li>
+<li><p><strong>_lst_widgets</strong> – the list of widgets to display in the panel.  These
+are listed in the order they should appear on the panel.</p></li>
+<li><p><strong>cmbConfiguration</strong> – select and display the configuration of the
+capacitor.</p></li>
+<li><p><strong>cmbConstruction</strong> – select and display the method of construction of the
+capacitor.</p></li>
+<li><p><strong>cmbSpecification</strong> – select and display the governing specification of
+the capacitor.</p></li>
+<li><p><strong>cmbStyle</strong> – select and display the style of the capacitor.</p></li>
+<li><p><strong>txtCapacitance</strong> – enter and display the capacitance rating of the
+capacitor.</p></li>
+<li><p><strong>txtESR</strong> – enter and display the equivalent series resistance.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ramstk.views.gtk3.hardware.components.capacitor.AssessmentInputPanel.do_load_comboboxes">
+<code class="sig-name descname">do_load_comboboxes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subcategory_id</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/capacitor.html#AssessmentInputPanel.do_load_comboboxes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.capacitor.AssessmentInputPanel.do_load_comboboxes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the capacitor assessment input RAMSTKComboBox()s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>subcategory_id</strong> – the subcategory ID of the selected capacitor.
+This is unused in this method but required because this method is a
+PyPubSub listener.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.capacitor.AssessmentResultPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.capacitor.</code><code class="sig-name descname">AssessmentResultPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/capacitor.html#AssessmentResultPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.capacitor.AssessmentResultPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel" title="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel</span></code></a></p>
+<p>Displays capacitor assessment results attribute data.</p>
+<p>The capacitor assessment result view displays all the assessment results
+for the selected capacitor.  This includes, currently, results for
+MIL-HDBK-217FN2 parts count and MIL-HDBK-217FN2 part stress methods.  The
+attributes of a capacitor assessment result view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_dic_part_stress</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of MIL-HDBK-217F part stress
+models.  The key is the subcategory ID attribute of the component.</p></li>
+<li><p><strong>_lst_labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – list of label text to display for the capacitor
+MIL-HDBK-217 input parameters.</p></li>
+<li><p><strong>self.txtLambdaB</strong> – displays the base hazard rate for the Hardware
+item.</p></li>
+<li><p><strong>txtPiCV</strong> – displays the capacitance factor for the capacitor.</p></li>
+<li><p><strong>txtPiCF</strong> – displays the configuration factor for the capacitor.</p></li>
+<li><p><strong>txtPiC</strong> – displays the construction factor for the capacitor.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.views.gtk3.hardware.components.connection">
+<span id="ramstk-views-gtk3-hardware-components-connection-module"></span><h2>ramstk.views.gtk3.hardware.components.connection module<a class="headerlink" href="#module-ramstk.views.gtk3.hardware.components.connection" title="Permalink to this headline">¶</a></h2>
+<p>Connection Work View.</p>
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.connection.AssessmentInputPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.connection.</code><code class="sig-name descname">AssessmentInputPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/connection.html#AssessmentInputPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.connection.AssessmentInputPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel" title="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel</span></code></a></p>
+<p>Displays connection assessment input attribute data.</p>
+<p>The Connection assessment input view displays all the assessment inputs for
+the selected connection.  This includes, currently, inputs for
+MIL-HDBK-217FN2 parts count and part stress analysis.  The attributes of a
+Connection assessment input view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_dic_quality</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of MIL-HDBK-217 capacitor quality
+levels.  Key is capacitor subcategory ID; values are lists of quality
+levels.</p></li>
+<li><p><strong>_dic_insert</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – <dl class="simple">
+<dt>dictionary of connector insert materials.  First</dt><dd><p>key is connector type ID, second key is connector specification ID;
+values are lists of insert materials.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">cvar dict _dic_insert</dt>
+<dd class="field-odd"><p>dictionary of connector insert materials.  First
+key is connector type ID, second key is connector specification ID;
+values are lists of insert materials.</p>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>_dic_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of connector types.  Key is connector
+subcategory ID; values are lists of types.</p></li>
+<li><p><strong>_lst_labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – list of label text to display for the capacitor
+MIL-HDBK-217 input parameters.</p></li>
+<li><p><strong>_lst_widgets</strong> – the list of widgets to display in the panel.  These
+are listed in the order they should appear on the panel.</p></li>
+<li><p><strong>_hazard_rate_method_id</strong> – the ID of the method to use for estimating
+the Hardware item’s hazard rate.</p></li>
+<li><p><strong>_subcategory_id</strong> – the ID of the Hardware item’s subcategory.</p></li>
+<li><p><strong>_title</strong> – the text to put on the RAMSTKFrame() holding the
+assessment input widgets.</p></li>
+<li><p><strong>fmt</strong> – the formatting to use when displaying float values.</p></li>
+<li><p><strong>cmbInsert</strong> – select and display the available insert materials for the
+connector.</p></li>
+<li><p><strong>cmbSpecification</strong> – select and display the governing specification of
+the connection.</p></li>
+<li><p><strong>cmbType</strong> – select and display the type of the connection.</p></li>
+<li><p><strong>txtActivePins</strong> – enter and display the number of active pins in the
+connector.</p></li>
+<li><p><strong>txtAmpsContact</strong> – enter and display the amps carried by the pins in the
+connector.</p></li>
+<li><p><strong>txtContactGauge</strong> – enter and display the contact gauge of the
+connector.</p></li>
+<li><p><strong>txtMating</strong> – enter and display the number of mate/demate cycles the
+connector undergoes per 1000 hours.</p></li>
+<li><p><strong>txtNHand</strong> – enter and display the number of hand soldered PTH
+connections.</p></li>
+<li><p><strong>txtNPlanes</strong> – enter and display the number of layers in the circuit
+board the PTH needs to penetrate.</p></li>
+<li><p><strong>txtNWave</strong> – enter and display the number of wave soldered PTH
+connections.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ramstk.views.gtk3.hardware.components.connection.AssessmentInputPanel.do_load_comboboxes">
+<code class="sig-name descname">do_load_comboboxes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subcategory_id</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/connection.html#AssessmentInputPanel.do_load_comboboxes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.connection.AssessmentInputPanel.do_load_comboboxes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the connection RKTComboBox()s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>subcategory_id</strong> – the subcategory ID of the selected capacitor.
+This is unused in this method but required because this method is a
+PyPubSub listener.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.connection.AssessmentResultPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.connection.</code><code class="sig-name descname">AssessmentResultPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/connection.html#AssessmentResultPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.connection.AssessmentResultPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel" title="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel</span></code></a></p>
+<p>Displays connection assessment results attribute data.</p>
+<p>The connection assessment result view displays all the assessment results
+for the selected connection.  This includes, currently, results for
+MIL-HDBK-217FN2 parts count and MIL-HDBK-217FN2 part stress methods.  The
+attributes of a connection assessment result view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_dic_part_stress</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of MIL-HDBK-217F part stress
+models.  The key is the subcategory ID attribute of the component.</p></li>
+<li><p><strong>_lst_labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – list of label text to display for the capacitor
+MIL-HDBK-217 input parameters.</p></li>
+<li><p><strong>_hazard_rate_method_id</strong> – the ID of the method to use for estimating
+the Hardware item’s hazard rate.</p></li>
+<li><p><strong>_subcategory_id</strong> – the ID of the Hardware item’s subcategory.</p></li>
+<li><p><strong>fmt</strong> – the formatting to use when displaying float values.</p></li>
+<li><p><strong>lblModel</strong> – displays the hazard rate model use to estimate the
+Hardware item’s hazard rate.</p></li>
+<li><p><strong>self.txtLambdaB</strong> – displays the base hazard rate for the Hardware
+item.</p></li>
+<li><p><strong>txtPiC</strong> – displays the construction factor for the connection.
+:ivar txtPiE: displays the environment factor for the Hardware item.</p></li>
+<li><p><strong>txtPiK</strong> – displays the capacitance factor for the connection.</p></li>
+<li><p><strong>txtPiP</strong> – displays the configuration factor for the connection.</p></li>
+<li><p><strong>txtPiQ</strong> – displays the quality factor for the Hardware item.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.views.gtk3.hardware.components.inductor">
+<span id="ramstk-views-gtk3-hardware-components-inductor-module"></span><h2>ramstk.views.gtk3.hardware.components.inductor module<a class="headerlink" href="#module-ramstk.views.gtk3.hardware.components.inductor" title="Permalink to this headline">¶</a></h2>
+<p>Inductor Work View.</p>
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.inductor.AssessmentInputPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.inductor.</code><code class="sig-name descname">AssessmentInputPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/inductor.html#AssessmentInputPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.inductor.AssessmentInputPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel" title="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel</span></code></a></p>
+<p>Displays Inductor assessment input attribute data.</p>
+<p>The Inductor assessment input view displays all the assessment inputs for
+the selected inductor.  This includes, currently, inputs for
+MIL-HDBK-217FN2 parts count and part stress analysis.  The attributes of an
+Inductor assessment input view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_dic_insulation</strong> – dictionary of insulation classes.  Key is
+inductor subcategory ID; values are lists of insulation classes.</p></li>
+<li><p><strong>_dic_specifications</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of inductor MIL-SPECs.  Key is
+inductor subcategory ID; values are lists of specifications.</p></li>
+<li><p><strong>_lst_labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – list of label text to display for the capacitor
+MIL-HDBK-217 input parameters.</p></li>
+<li><p><strong>_lst_widgets</strong> – the list of widgets to display in the panel.  These
+are listed in the order they should appear on the panel.</p></li>
+<li><p><strong>cmbInsulation</strong> – select and display the insulation class of the
+inductor.</p></li>
+<li><p><strong>cmbSpecification</strong> – select and display the governing specification for
+the inductor.</p></li>
+<li><p><strong>cmbConstruction</strong> – select and display the method of construction of the
+inductor.</p></li>
+<li><p><strong>cmbFamily</strong> – select and display the family of the transformer.</p></li>
+<li><p><strong>txtArea</strong> – enter and display the heat dissipating area of the inductor.</p></li>
+<li><p><strong>txtWeight</strong> – enter and display the weight of the inductor.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ramstk.views.gtk3.hardware.components.inductor.AssessmentInputPanel.do_load_comboboxes">
+<code class="sig-name descname">do_load_comboboxes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subcategory_id</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/inductor.html#AssessmentInputPanel.do_load_comboboxes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.inductor.AssessmentInputPanel.do_load_comboboxes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the capacitor assessment input RAMSTKComboBox().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>subcategory_id</strong> – the subcategory ID of the selected capacitor.
+This is unused in this method but required because this method is a
+PyPubSub listener.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.inductor.AssessmentResultPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.inductor.</code><code class="sig-name descname">AssessmentResultPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/inductor.html#AssessmentResultPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.inductor.AssessmentResultPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel" title="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel</span></code></a></p>
+<p>Displays Inductor assessment results attribute data.</p>
+<p>The Inductor assessment result view displays all the assessment results
+for the selected inductor.  This includes, currently, results for
+MIL-HDBK-217FN2 parts count and part stress methods.  The attributes of an
+Inductor assessment result view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_dic_part_stress</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of MIL-HDBK-217F part stress
+models.  The key is the subcategory ID attribute of the component.</p></li>
+<li><p><strong>_lst_labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – list of label text to display for the capacitor
+MIL-HDBK-217 input parameters.</p></li>
+<li><p><strong>self.txtLambdaB</strong> – displays the base hazard rate for the Hardware
+item.</p></li>
+<li><p><strong>txtPiC</strong> – displays the construction factor for the Hardware item.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.views.gtk3.hardware.components.integrated_circuit">
+<span id="ramstk-views-gtk3-hardware-components-integrated-circuit-module"></span><h2>ramstk.views.gtk3.hardware.components.integrated_circuit module<a class="headerlink" href="#module-ramstk.views.gtk3.hardware.components.integrated_circuit" title="Permalink to this headline">¶</a></h2>
+<p>Integrated Circuit Work View.</p>
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.integrated_circuit.AssessmentInputPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.integrated_circuit.</code><code class="sig-name descname">AssessmentInputPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/integrated_circuit.html#AssessmentInputPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.integrated_circuit.AssessmentInputPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel" title="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel</span></code></a></p>
+<p>Display IC assessment input attribute data in the RAMSTK Work Book.</p>
+<p>The Integrated Circuit assessment input view displays all the assessment
+inputs for the selected integrated circuit.  This includes, currently,
+inputs for MIL-HDBK-217FN2.  The attributes of an integrated circuit
+assessment input view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_dic_technology</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of integrated circuit package
+technologies.  Key is integrated circuit subcategory ID; values are
+lists of technologies.</p></li>
+<li><p><strong>cmbApplication</strong> – select and display the application of the integrated
+circuit.</p></li>
+<li><p><strong>cmbConstruction</strong> – select and display the construction of the
+integrated circuit.</p></li>
+<li><p><strong>cmbECC</strong> – select and display the error correction code used by the
+EEPROM.</p></li>
+<li><p><strong>cmbManufacturing</strong> – select and display the manufacturing approach for
+the integrated circuit.</p></li>
+<li><p><strong>cmbPackage</strong> – select and display the package type of the integrated
+circuit.</p></li>
+<li><p><strong>cmbTechnology</strong> – select and display the technology used in the
+integrated circuit.</p></li>
+<li><p><strong>cmbType</strong> – select and display the type of the integrated circuit.</p></li>
+<li><p><strong>txtArea</strong> – enter and display the die area of the integrated circuit.</p></li>
+<li><p><strong>txtFeatureSize</strong> – enter and display the feature size (in microns) of
+the VLSI.</p></li>
+<li><p><strong>txtNActivePins</strong> – enter and display the number of active pins.</p></li>
+<li><p><strong>txtNCycles</strong> – enter and display the number of programming cycles over
+the life of the PROM.</p></li>
+<li><p><strong>txtNElements</strong> – enter and display the number of elements (transistors,
+gates, etc.) in the integrated circuit.</p></li>
+<li><p><strong>txtOperatingLife</strong> – enter and display the operating life of the
+integrated circuit.</p></li>
+<li><p><strong>txtThetaJC</strong> – enter and display the junction - case thermal resistance
+of the integrated circuit.</p></li>
+<li><p><strong>txtVoltageESD</strong> – enter and display the ESD threshold voltage of the
+VLSI.</p></li>
+<li><p><strong>txtYearsInProduction</strong> – enter and display the number of years the
+integrated circuit type has been in production.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ramstk.views.gtk3.hardware.components.integrated_circuit.AssessmentInputPanel.do_load_comboboxes">
+<code class="sig-name descname">do_load_comboboxes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subcategory_id</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/integrated_circuit.html#AssessmentInputPanel.do_load_comboboxes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.integrated_circuit.AssessmentInputPanel.do_load_comboboxes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the integrated circuit RAMSTKComboBox()s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>subcategory_id</strong> – the subcategory ID of the selected IC.  This is
+unused in this method but required because this method is a
+PyPubSub listener.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.integrated_circuit.AssessmentResultPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.integrated_circuit.</code><code class="sig-name descname">AssessmentResultPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/integrated_circuit.html#AssessmentResultPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.integrated_circuit.AssessmentResultPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel" title="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel</span></code></a></p>
+<p>Display IC assessment results attribute data in the RAMSTK Work Book.</p>
+<p>The Integrated Circuit assessment result view displays all the assessment
+results for the selected integrated circuit.  This includes, currently,
+results for MIL-HDBK-217FN2 parts count and MIL-HDBK-217FN2 part stress
+methods.  The attributes of a integrated circuit assessment result view
+are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>txtC1</strong> – displays the die complexity hazard rate of the integrated
+circuit.</p></li>
+<li><p><strong>txtPiT</strong> – displays the temperature factor for the integrated circuit.</p></li>
+<li><p><strong>txtC2</strong> – displays the package failure rate for the integrated circuit.</p></li>
+<li><p><strong>txtPiL</strong> – displays the learning factor for the integrated circuit.</p></li>
+<li><p><strong>txtLambdaCYC</strong> – displays the read/write cycling induced hazard rate for
+the EEPROM.</p></li>
+<li><p><strong>txtLambdaBD</strong> – displays the die base hazard rate for the VLSI device.</p></li>
+<li><p><strong>txtPiMFG</strong> – displays the manufacturing process correction factor for
+VLSI device.</p></li>
+<li><p><strong>txtPiCD</strong> – displays the die complexity correction factor for the VLSI
+device.</p></li>
+<li><p><strong>txtLambdaBP</strong> – displays the package base hazard rate for the VLSI
+device.</p></li>
+<li><p><strong>txtPiPT</strong> – displays the package type correction factor for the VLSI
+device.</p></li>
+<li><p><strong>txtLambdaEOS</strong> – displays the electrical overstress hazard rate for the
+VLSI device.</p></li>
+<li><p><strong>txtPiA</strong> – displays the application factor for the integrated circuit.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.views.gtk3.hardware.components.meter">
+<span id="ramstk-views-gtk3-hardware-components-meter-module"></span><h2>ramstk.views.gtk3.hardware.components.meter module<a class="headerlink" href="#module-ramstk.views.gtk3.hardware.components.meter" title="Permalink to this headline">¶</a></h2>
+<p>Meter Work View.</p>
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.meter.AssessmentInputPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.meter.</code><code class="sig-name descname">AssessmentInputPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/meter.html#AssessmentInputPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.meter.AssessmentInputPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel" title="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel</span></code></a></p>
+<p>Display Meter assessment input attribute data in the RAMSTK Work Book.</p>
+<p>The Meter assessment input view displays all the assessment inputs for
+the selected Meter item.  This includes, currently, inputs for
+MIL-HDBK-217FN2.  The attributes of a Meter assessment input view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_dic_quality</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of meter quality levels.  Key is
+meter subcategory ID; values are lists of quality levels.</p></li>
+<li><p><strong>_dic_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of meter types.  Key is meter
+subcategory ID; values are lists of types.</p></li>
+<li><p><strong>_dic_specification</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of meter MIL-SPECs.  Key is
+meter tye ID; values are lists of specifications.</p></li>
+<li><p><strong>_dic_insert</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of meter insert materials.  First
+key is meter type ID, second key is meter specification ID; values are
+lists of insert materials.</p></li>
+<li><p><strong>cmbApplication</strong> – select and display the application of the meter.</p></li>
+<li><p><strong>cmbType</strong> – select and display the type of meter.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ramstk.views.gtk3.hardware.components.meter.AssessmentInputPanel.do_load_comboboxes">
+<code class="sig-name descname">do_load_comboboxes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subcategory_id</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/meter.html#AssessmentInputPanel.do_load_comboboxes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.meter.AssessmentInputPanel.do_load_comboboxes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the meter assessment input RAMSTKComboBox()s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>subcategory_id</strong> – the subcategory ID of the selected capacitor.
+This is unused in this method but required because this method is a
+PyPubSub listener.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.meter.AssessmentResultPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.meter.</code><code class="sig-name descname">AssessmentResultPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/meter.html#AssessmentResultPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.meter.AssessmentResultPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel" title="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel</span></code></a></p>
+<p>Display Meter assessment results attribute data in the RAMSTK Work Book.</p>
+<p>The Meter assessment result view displays all the assessment results
+for the selected meter.  This includes, currently, results for
+MIL-HDBK-217FN2 parts count and MIL-HDBK-217FN2 part stress methods.  The
+attributes of a meter assessment result view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>txtPiA</strong> – displays the application factor for the panel meter.</p></li>
+<li><p><strong>txtPiF</strong> – displays the function factor for the panel meter.</p></li>
+<li><p><strong>txtPiT</strong> – displays the temperature stress factor for the elapsed time
+meter.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.views.gtk3.hardware.components.miscellaneous">
+<span id="ramstk-views-gtk3-hardware-components-miscellaneous-module"></span><h2>ramstk.views.gtk3.hardware.components.miscellaneous module<a class="headerlink" href="#module-ramstk.views.gtk3.hardware.components.miscellaneous" title="Permalink to this headline">¶</a></h2>
+<p>Miscellaneous Parts Work View.</p>
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.miscellaneous.AssessmentInputPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.miscellaneous.</code><code class="sig-name descname">AssessmentInputPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/miscellaneous.html#AssessmentInputPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.miscellaneous.AssessmentInputPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel" title="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel</span></code></a></p>
+<p>Display Miscellaneous assessment input attribute data.</p>
+<p>The Miscellaneous hardware assessment input view displays all the
+assessment inputs for the selected miscellaneous hardware item.  This
+includes, currently, inputs for MIL-HDBK-217FN2.  The attributes of a
+Miscellaneous hardware assessment input view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmbApplication</strong> – select and display the application of the
+miscellaneous item (lamps only).</p></li>
+<li><p><strong>cmbType</strong> – the type of miscellaneous item (filters only).</p></li>
+<li><p><strong>txtFrequency</strong> – enter and display the operating frequency of the
+miscellaneous item (crystals only).</p></li>
+<li><p><strong>txtUtilization</strong> – enter and display the utilization factor of the
+miscellaneous item (lamps only).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ramstk.views.gtk3.hardware.components.miscellaneous.AssessmentInputPanel.do_load_comboboxes">
+<code class="sig-name descname">do_load_comboboxes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subcategory_id</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/miscellaneous.html#AssessmentInputPanel.do_load_comboboxes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.miscellaneous.AssessmentInputPanel.do_load_comboboxes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the miscellaneous assessment input RKTComboBox()s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>subcategory_id</strong> – the subcategory ID of the selected capacitor.
+This is unused in this method but required because this method is a
+PyPubSub listener.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.miscellaneous.AssessmentResultPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.miscellaneous.</code><code class="sig-name descname">AssessmentResultPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/miscellaneous.html#AssessmentResultPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.miscellaneous.AssessmentResultPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel" title="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel</span></code></a></p>
+<p>Display Misc assessment results attribute data in the RAMSTK Work Book.</p>
+<p>The Miscellaneous hardware item assessment result view displays all the
+assessment results for the selected miscellaneous hardware item.  This
+includes, currently, results for MIL-HDBK-217FN2 parts count and
+MIL-HDBK-217FN2 part stress methods.  The attributes of a miscellaneous
+hardware item assessment result view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>txtPiA</strong> – displays the application factor for the miscellaneous
+hardware item.</p></li>
+<li><p><strong>txtPiU</strong> – displays the utilization factor for the miscellaneous
+hardware item.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.views.gtk3.hardware.components.panels">
+<span id="ramstk-views-gtk3-hardware-components-panels-module"></span><h2>ramstk.views.gtk3.hardware.components.panels module<a class="headerlink" href="#module-ramstk.views.gtk3.hardware.components.panels" title="Permalink to this headline">¶</a></h2>
+<p>The RAMSTK Component Base Work View.</p>
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.panels.</code><code class="sig-name descname">RAMSTKAssessmentInputPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/panels.html#RAMSTKAssessmentInputPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel" title="ramstk.views.gtk3.widgets.panel.RAMSTKPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.widgets.panel.RAMSTKPanel</span></code></a></p>
+<p>Display Hardware assessment input attribute data.</p>
+<p>The Hardware assessment input view displays all the assessment inputs for
+the selected Hardware item.  This includes, currently, inputs for
+MIL-HDBK-217FN2 parts count and part stress analyses.  The attributes of a
+Hardware assessment input view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_hazard_rate_method_id</strong> – the ID of the method to use for estimating
+the Hardware item’s hazard rate.</p></li>
+<li><p><strong>_subcategory_id</strong> – the ID of the Hardware item’s subcategory.</p></li>
+<li><p><strong>_title</strong> – the text to put on the RAMSTKFrame() holding the
+assessment input widgets.</p></li>
+<li><p><strong>cmbQuality</strong> – select and display the quality level of the hardware
+item.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel.do_load_panel">
+<code class="sig-name descname">do_load_panel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span>Any<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/panels.html#RAMSTKAssessmentInputPanel.do_load_panel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel.do_load_panel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the component common widgets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>attributes</strong> – the attributes dictionary for the selected
+Component.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel.do_set_properties">
+<code class="sig-name descname">do_set_properties</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span>Any<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/panels.html#RAMSTKAssessmentInputPanel.do_set_properties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel.do_set_properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set properties for Hardware assessment input widgets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.panels.</code><code class="sig-name descname">RAMSTKAssessmentResultPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/panels.html#RAMSTKAssessmentResultPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel" title="ramstk.views.gtk3.widgets.panel.RAMSTKPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.widgets.panel.RAMSTKPanel</span></code></a></p>
+<p>Display Hardware assessment results attribute data.</p>
+<p>The Hardware assessment result view displays all the assessment results
+for the selected hardware item.  This includes, currently, results for
+MIL-HDBK-217FN2 parts count and MIL-HDBK-217FN2 part stress methods.  The
+attributes of a Hardware assessment result view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_lst_labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the text to use for the assessment results widget
+labels.</p></li>
+<li><p><strong>_hardware_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – the ID of the Hardware item currently being
+displayed.</p></li>
+<li><p><strong>_subcategory_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – the ID of the subcategory for the hardware item
+currently being displayed.</p></li>
+<li><p><strong>_lblModel</strong> – the <code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.gui.gtk.ramstk.Label.RAMSTKLabel</span></code> to
+display the failure rate mathematical model used.</p></li>
+<li><p><strong>txtLambdaB</strong> – displays the base hazard rate of the hardware item.</p></li>
+<li><p><strong>txtPiQ</strong> – displays the quality factor for the hardware item.</p></li>
+<li><p><strong>txtPiE</strong> – displays the environment factor for the hardware item.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel.do_load_panel">
+<code class="sig-name descname">do_load_panel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span>Any<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/panels.html#RAMSTKAssessmentResultPanel.do_load_panel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel.do_load_panel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the Hardware assessment results page.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>attributes</strong> – the attributes dict for the selected Hardware.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel.do_set_properties">
+<code class="sig-name descname">do_set_properties</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span>Any<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/panels.html#RAMSTKAssessmentResultPanel.do_set_properties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel.do_set_properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set properties for Meter assessment result widgets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.panels.RAMSTKStressInputPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.panels.</code><code class="sig-name descname">RAMSTKStressInputPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/panels.html#RAMSTKStressInputPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKStressInputPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel" title="ramstk.views.gtk3.widgets.panel.RAMSTKPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.widgets.panel.RAMSTKPanel</span></code></a></p>
+<p>Display hardware item stress input attribute data.</p>
+<p>The hardware item stress input view displays all the assessment inputs for
+the selected hardware item.  This includes, currently, stress inputs for
+MIL-HDBK-217FN2.  The attributes of a hardware item stress input view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_lst_labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the text to use for the assessment input widget
+labels.</p></li>
+<li><p><strong>_dtc_data_controller</strong> – the Hardware BoM data controller instance.</p></li>
+<li><p><strong>_hardware_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – the ID of the Hardware item currently being
+displayed.</p></li>
+<li><p><strong>_subcategory_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – the ID of the subcategory for the hardware item
+currently being displayed.</p></li>
+<li><p><strong>txtTemperatureRatedMin</strong> – enter and display the minimum rated
+temperature of the hardware item.</p></li>
+<li><p><strong>txtTemperatureKnee</strong> – enter and display the temperature above which the
+hardware item must be derated.</p></li>
+<li><p><strong>txtTemperatureRatedMax</strong> – enter and display the maximum rated
+temperature of the hardware item.</p></li>
+<li><p><strong>txtCurrentRated</strong> – enter and display the current rating of the hardware
+item.</p></li>
+<li><p><strong>txtCurrentOperating</strong> – enter and display the operating current of the
+hardware item.</p></li>
+<li><p><strong>txtPowerRated</strong> – enter and display the rated power of the hardware
+item.</p></li>
+<li><p><strong>txtPowerOperating</strong> – enter and display the operating power of the
+hardware item.</p></li>
+<li><p><strong>txtVoltageRated</strong> – enter and display the rated voltage of the
+hardware item.</p></li>
+<li><p><strong>txtVoltageAC</strong> – enter and display the operating ac voltage of the
+hardware item.</p></li>
+<li><p><strong>txtVoltageDC</strong> – enter and display the operating DC voltage of the
+hardware item.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.panels.RAMSTKStressResultPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.panels.</code><code class="sig-name descname">RAMSTKStressResultPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/panels.html#RAMSTKStressResultPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKStressResultPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel" title="ramstk.views.gtk3.widgets.panel.RAMSTKPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.widgets.panel.RAMSTKPanel</span></code></a></p>
+<p>Display Hardware stress results attribute data in the RAMSTK Work Book.</p>
+<p>The Hardware stress result view displays all the stress results for the
+selected hardware item.  This includes, currently, results for
+MIL-HDBK-217FN2 parts count and part stress methods.  The attributes of a
+Hardware stress result view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_lst_labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the text to use for the stress results widget
+labels.</p></li>
+<li><p><strong>_hardware_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – the ID of the Hardware item currently being
+displayed.</p></li>
+<li><p><strong>_subcategory_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – the ID of the subcategory for the hardware item
+currently being displayed.</p></li>
+<li><p><strong>fmt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – the format string for displaying numbers.</p></li>
+<li><p><strong>chkOverstressed</strong> – display whether or not the selected hardware item is
+overstressed.</p></li>
+<li><p><strong>pltDerate</strong> – displays the derating curves and the design operating
+point relative to those curves.</p></li>
+<li><p><strong>txtCurrentRatio</strong> – display the ratio of operating current to rated
+current.</p></li>
+<li><p><strong>txtPowerRatio</strong> – display the ratio of operating power to rated power.</p></li>
+<li><p><strong>txtVoltageRatio</strong> – display the ratio of operating voltage (ac + DC) to
+rated voltage.</p></li>
+<li><p><strong>txtReason</strong> – display the reason(s) the hardware item is overstressed.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.views.gtk3.hardware.components.relay">
+<span id="ramstk-views-gtk3-hardware-components-relay-module"></span><h2>ramstk.views.gtk3.hardware.components.relay module<a class="headerlink" href="#module-ramstk.views.gtk3.hardware.components.relay" title="Permalink to this headline">¶</a></h2>
+<p>Relay Work View.</p>
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.relay.AssessmentInputPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.relay.</code><code class="sig-name descname">AssessmentInputPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/relay.html#AssessmentInputPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.relay.AssessmentInputPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel" title="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel</span></code></a></p>
+<p>Display Relay assessment input attribute data in the RAMSTK Work Book.</p>
+<p>The Relay assessment input view displays all the assessment inputs for
+the selected relay.  This includes, currently, inputs for
+MIL-HDBK-217FN2.  The attributes of a Relay assessment input view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_dic_specifications</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of relay MIL-SPECs.  Key is
+relay subcategory ID; values are lists of specifications.</p></li>
+<li><p><strong>_dic_styles</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of relay styles defined in the
+MIL-SPECs.  Key is relay subcategory ID; values are lists of styles.</p></li>
+<li><p><strong>cmbType</strong> – select and display the type of relay.</p></li>
+<li><p><strong>cmbLoadType</strong> – select and display the type of load the relay is
+switching.</p></li>
+<li><p><strong>cmbContactForm</strong> – select and display the form of the relay contacts.</p></li>
+<li><p><strong>cmbContactRating</strong> – select and display the rating of the relay
+contacts.</p></li>
+<li><p><strong>cmbApplication</strong> – select and display the relay application.</p></li>
+<li><p><strong>cmbConstruction</strong> – select and display the relay’s method of
+construction.</p></li>
+<li><p><strong>txtCycles</strong> – enter and display the number of relay cycles per hour.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ramstk.views.gtk3.hardware.components.relay.AssessmentInputPanel.do_load_comboboxes">
+<code class="sig-name descname">do_load_comboboxes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subcategory_id</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/relay.html#AssessmentInputPanel.do_load_comboboxes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.relay.AssessmentInputPanel.do_load_comboboxes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the Relay RAMSTKComboBox()s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>subcategory_id</strong> – the subcategory ID of the selected capacitor.
+This is unused in this method but required because this method is a
+PyPubSub listener.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.relay.AssessmentResultPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.relay.</code><code class="sig-name descname">AssessmentResultPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/relay.html#AssessmentResultPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.relay.AssessmentResultPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel" title="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel</span></code></a></p>
+<p>Display Relay assessment results attribute data in the RAMSTK Work Book.</p>
+<p>The Relay assessment result view displays all the assessment results
+for the selected relay.  This includes, currently, results for
+MIL-HDBK-217FN2 parts count and MIL-HDBK-217FN2 part stress methods.  The
+attributes of a relay assessment result view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>txtPiC</strong> – displays the contact form factor for the relay.</p></li>
+<li><p><strong>txtPiCYC</strong> – displays the cycling factor for the relay.</p></li>
+<li><p><strong>txtPiL</strong> – displays the load stress factor for the relay.</p></li>
+<li><p><strong>txtPiF</strong> – displays the application and construction factor for the</p></li>
+</ul>
+</dd>
+</dl>
+<p>relay.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.views.gtk3.hardware.components.resistor">
+<span id="ramstk-views-gtk3-hardware-components-resistor-module"></span><h2>ramstk.views.gtk3.hardware.components.resistor module<a class="headerlink" href="#module-ramstk.views.gtk3.hardware.components.resistor" title="Permalink to this headline">¶</a></h2>
+<p>Resistor Work View.</p>
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.resistor.AssessmentInputPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.resistor.</code><code class="sig-name descname">AssessmentInputPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/resistor.html#AssessmentInputPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.resistor.AssessmentInputPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel" title="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel</span></code></a></p>
+<p>Display Resistor assessment input attribute data.</p>
+<p>The Resistor assessment input view displays all the assessment inputs for
+the selected resistor.  This includes, currently, inputs for
+MIL-HDBK-217FN2.  The attributes of a Resistor assessment input view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_dic_specifications</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of resistor MIL-SPECs.  Key is
+resistor subcategory ID; values are lists of specifications.</p></li>
+<li><p><strong>_dic_styles</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of resistor styles defined in the
+MIL-SPECs.  Key is resistor subcategory ID; values are lists of styles.</p></li>
+<li><p><strong>cmbSpecification</strong> – select and display the governing specification of
+the resistor.</p></li>
+<li><p><strong>cmbType</strong> – select and display the type of thermistor.</p></li>
+<li><p><strong>cmbConstruction</strong> – select and display the method of construction of the
+resistor.</p></li>
+<li><p><strong>txtResistance</strong> – enter and display the resistance of the resistor.</p></li>
+<li><p><strong>txtNElements</strong> – enter and display the number of active resistors in a
+resistor network or the number of potentiometers taps.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ramstk.views.gtk3.hardware.components.resistor.AssessmentInputPanel.do_load_comboboxes">
+<code class="sig-name descname">do_load_comboboxes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subcategory_id</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/resistor.html#AssessmentInputPanel.do_load_comboboxes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.resistor.AssessmentInputPanel.do_load_comboboxes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the Resistor RKTComboBox()s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>subcategory_id</strong> – the subcategory ID of the selected capacitor.
+This is unused in this method but required because this method is a
+PyPubSub listener.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.resistor.AssessmentResultPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.resistor.</code><code class="sig-name descname">AssessmentResultPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/resistor.html#AssessmentResultPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.resistor.AssessmentResultPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel" title="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel</span></code></a></p>
+<p>Display Resistor assessment results attribute data.</p>
+<p>The Resistor assessment result view displays all the assessment results
+for the selected resistor.  This includes, currently, results for
+MIL-HDBK-217FN2 parts count and MIL-HDBK-217FN2 part stress methods.  The
+attributes of a Resistor assessment result view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>txtPiR</strong> – displays the resistance factor for the resistor.</p></li>
+<li><p><strong>txtPiT</strong> – displays the temperature factor for the resistor.</p></li>
+<li><p><strong>txtPiNR</strong> – displays the number of resistors factor for the resistor.</p></li>
+<li><p><strong>txtPiTAPS</strong> – displays the potentiometer taps factor for the resistor.</p></li>
+<li><p><strong>txtPiV</strong> – displays the voltage factor for the resistor.</p></li>
+<li><p><strong>txtPiC</strong> – displays the construction class factor for the resistor.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.views.gtk3.hardware.components.semiconductor">
+<span id="ramstk-views-gtk3-hardware-components-semiconductor-module"></span><h2>ramstk.views.gtk3.hardware.components.semiconductor module<a class="headerlink" href="#module-ramstk.views.gtk3.hardware.components.semiconductor" title="Permalink to this headline">¶</a></h2>
+<p>Semiconductor Work View.</p>
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.semiconductor.AssessmentInputPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.semiconductor.</code><code class="sig-name descname">AssessmentInputPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/semiconductor.html#AssessmentInputPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.semiconductor.AssessmentInputPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel" title="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel</span></code></a></p>
+<p>Display Semiconductor assessment input attribute data.</p>
+<p>The Semiconductor assessment input view displays all the assessment inputs
+for the selected semiconductor.  This includes, currently, inputs for
+MIL-HDBK-217FN2.  The attributes of a Semiconductor assessment input view
+are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_dic_applications</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of semiconductor applications.
+Key is semiconductor subcategory ID; values are lists of applications.</p></li>
+<li><p><strong>_dic_matchings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of network matching types.  Key is
+semiconductor subcategory ID; values are lists of network matching
+types.</p></li>
+<li><p><strong>_dic_quality</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of semiconductor quality levels.  Key
+is semiconductor subcategory ID; values are lists of quality levels.</p></li>
+<li><p><strong>_dic_types</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of semiconductor types.  Key is the
+semiconductor subcategory ID; values are lists of semiconductor types.</p></li>
+<li><p><strong>cmbApplication</strong> – select and display the application of the
+semiconductor.</p></li>
+<li><p><strong>cmbConstruction</strong> – select and display the construction of the
+semiconductor.</p></li>
+<li><p><strong>cmbMatching</strong> – select and display the matching arrangement for the
+semiconductor.</p></li>
+<li><p><strong>cmbPackage</strong> – select and display the type of package for the
+semiconductor.</p></li>
+<li><p><strong>cmbType</strong> – select and display the type of semiconductor.</p></li>
+<li><p><strong>txtFrequencyOperating</strong> – enter and display the operating frequency of
+the semiconductor.</p></li>
+<li><p><strong>txtNElements</strong> – enter and display the number of elements in the
+optoelectronic display.</p></li>
+<li><p><strong>txtThetaJC</strong> – enter and display the junction-case thermal resistance.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ramstk.views.gtk3.hardware.components.semiconductor.AssessmentInputPanel.do_load_comboboxes">
+<code class="sig-name descname">do_load_comboboxes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subcategory_id</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/semiconductor.html#AssessmentInputPanel.do_load_comboboxes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.semiconductor.AssessmentInputPanel.do_load_comboboxes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the Semiconductor RKTComboBox()s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>subcategory_id</strong> – the subcategory ID of the selected capacitor.
+This is unused in this method but required because this method is a
+PyPubSub listener.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.semiconductor.AssessmentResultPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.semiconductor.</code><code class="sig-name descname">AssessmentResultPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/semiconductor.html#AssessmentResultPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.semiconductor.AssessmentResultPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel" title="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel</span></code></a></p>
+<p>Display semiconductor assessment results attribute data.</p>
+<p>The semiconductor assessment result view displays all the assessment
+results for the selected semiconductor.  This includes, currently, results
+for MIL-HDBK-217FN2 parts count and part stress methods.  The attributes of
+a semiconductor assessment result view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>txtPiT</strong> – displays the temperature factor for the semiconductor.</p></li>
+<li><p><strong>txtPiA</strong> – displays the application factor for the semiconductor.</p></li>
+<li><p><strong>txtPiC</strong> – displays the construction factor for the semiconductor.</p></li>
+<li><p><strong>txtPiI</strong> – displays the forward current factor for the semiconductor.</p></li>
+<li><p><strong>txtPiM</strong> – displays the matching network factor for the semiconductor.</p></li>
+<li><p><strong>txtPiP</strong> – displays the power degradation factor for the semiconductor.</p></li>
+<li><p><strong>txtPiR</strong> – displays the power rating factor for the semiconductor.</p></li>
+<li><p><strong>txtPiS</strong> – displays the electrical stress factor for the semiconductor.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.views.gtk3.hardware.components.switch">
+<span id="ramstk-views-gtk3-hardware-components-switch-module"></span><h2>ramstk.views.gtk3.hardware.components.switch module<a class="headerlink" href="#module-ramstk.views.gtk3.hardware.components.switch" title="Permalink to this headline">¶</a></h2>
+<p>Switch Work View.</p>
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.switch.AssessmentInputPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.switch.</code><code class="sig-name descname">AssessmentInputPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/switch.html#AssessmentInputPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.switch.AssessmentInputPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel" title="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentInputPanel</span></code></a></p>
+<p>Display Switch assessment input attribute data in the RAMSTK Work Book.</p>
+<p>The Switch assessment input view displays all the assessment inputs for
+the selected switch.  This includes, currently, inputs for
+MIL-HDBK-217FN2.  The attributes of a switch assessment input view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_dic_applications</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of switch applications.  Key is
+switch subcategory ID; values are lists of applications.</p></li>
+<li><p><strong>_dic_construction</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of switch construction methods.
+Key is switch subcategory ID; values are lists of construction methods.</p></li>
+<li><p><strong>_dic_contact_forms</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary of switch contact forms.  Key is
+switch subcategory ID; values are lists of contact forms.</p></li>
+<li><p><strong>cmbApplication</strong> – select and display the switch application.</p></li>
+<li><p><strong>cmbConstruction</strong> – select and display the switch construction method.</p></li>
+<li><p><strong>cmbContactForm</strong> – select and display the switch contact form.</p></li>
+<li><p><strong>txtNCycles</strong> – enter and display the number of switch cycles/hour.</p></li>
+<li><p><strong>txtNElements</strong> – enter and display the number of switch wafers.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ramstk.views.gtk3.hardware.components.switch.AssessmentInputPanel.do_load_comboboxes">
+<code class="sig-name descname">do_load_comboboxes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subcategory_id</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/switch.html#AssessmentInputPanel.do_load_comboboxes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.switch.AssessmentInputPanel.do_load_comboboxes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the switch RKTComboBox().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>subcategory_id</strong> – the subcategory ID of the selected capacitor.
+This is unused in this method but required because this method is a
+PyPubSub listener.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.hardware.components.switch.AssessmentResultPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.hardware.components.switch.</code><code class="sig-name descname">AssessmentResultPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/hardware/components/switch.html#AssessmentResultPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.hardware.components.switch.AssessmentResultPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel" title="ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.hardware.components.panels.RAMSTKAssessmentResultPanel</span></code></a></p>
+<p>Display Switch assessment results attribute data.</p>
+<p>The Switch assessment result view displays all the assessment results
+for the selected switch.  This includes, currently, results for
+MIL-HDBK-217FN2 parts count and MIL-HDBK-217FN2 part stress methods.  The
+attributes of a switch assessment result view are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>txtPiC</strong> – displays the contact form and quantity factor for the switch.</p></li>
+<li><p><strong>txtPiCYC</strong> – displays the cycling factor for the switch.</p></li>
+<li><p><strong>txtPiL</strong> – displays the load stress factor for the switch.</p></li>
+<li><p><strong>txtPiN</strong> – displays the number of active contacts factor for the switch.</p></li>
+<li><p><strong>txtPiU</strong> – displays the use factor for the breaker.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.views.gtk3.hardware.components">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ramstk.views.gtk3.hardware.components" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTK GTK3 hardware component package.</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">ramstk.views.gtk3.hardware.components package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.hardware.components.capacitor">ramstk.views.gtk3.hardware.components.capacitor module</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.hardware.components.connection">ramstk.views.gtk3.hardware.components.connection module</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.hardware.components.inductor">ramstk.views.gtk3.hardware.components.inductor module</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.hardware.components.integrated_circuit">ramstk.views.gtk3.hardware.components.integrated_circuit module</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.hardware.components.meter">ramstk.views.gtk3.hardware.components.meter module</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.hardware.components.miscellaneous">ramstk.views.gtk3.hardware.components.miscellaneous module</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.hardware.components.panels">ramstk.views.gtk3.hardware.components.panels module</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.hardware.components.relay">ramstk.views.gtk3.hardware.components.relay module</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.hardware.components.resistor">ramstk.views.gtk3.hardware.components.resistor module</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.hardware.components.semiconductor">ramstk.views.gtk3.hardware.components.semiconductor module</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.hardware.components.switch">ramstk.views.gtk3.hardware.components.switch module</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.hardware.components">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ramstk.views.gtk3.hardware.html"
+                        title="previous chapter">ramstk.views.gtk3.hardware package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ramstk.views.gtk3.hazard_analysis.html"
+                        title="next chapter">ramstk.views.gtk3.hazard_analysis package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/ramstk.views.gtk3.hardware.components.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ramstk.views.gtk3.hazard_analysis.html" title="ramstk.views.gtk3.hazard_analysis package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ramstk.views.gtk3.hardware.html" title="ramstk.views.gtk3.hardware package"
+             accesskey="P">previous</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

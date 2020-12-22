@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.analyses.criticality &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    
+    <script src="../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.analyses.criticality</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.analyses.criticality.py is part of the RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2019 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;FMEA Criticality Analysis Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.exceptions</span> <span class="kn">import</span> <span class="n">OutOfRangeError</span>
+
+
+<div class="viewcode-block" id="calculate_rpn"><a class="viewcode-back" href="../../../api/ramstk.analyses.html#ramstk.analyses.criticality.calculate_rpn">[docs]</a><span class="k">def</span> <span class="nf">calculate_rpn</span><span class="p">(</span><span class="n">sod</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the Risk Priority Number (RPN).</span>
+
+<span class="sd">        RPN = S * O * D</span>
+
+<span class="sd">        &gt;&gt;&gt; SOD = {&#39;rpn_severity&#39;: 5, &#39;rpn_occurrence&#39;: 8, &#39;rpn_detection&#39;: 7}</span>
+<span class="sd">        &gt;&gt;&gt; criticality.calculate_rpn(SOD)</span>
+<span class="sd">        280</span>
+
+<span class="sd">        &gt;&gt;&gt; SOD[&#39;rpn_severity&#39;] = 0</span>
+<span class="sd">        &gt;&gt;&gt; criticality.calculate_rpn(SOD)</span>
+<span class="sd">        Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">        ramstk.exceptions.OutOfRangeError: RPN severity is outside the range [1, 10].   # noqa</span>
+
+
+<span class="sd">    :param sod: a dict containing the S, O, and D values from which to</span>
+<span class="sd">        calculate the RPN.</span>
+<span class="sd">    :return: _rpn; the calculated risk priority number (RPN).</span>
+<span class="sd">    :rtype: int</span>
+<span class="sd">    :raise: OutOfRangeError if one of the inputs falls outside the range</span>
+<span class="sd">        [1, 10].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">sod</span><span class="p">[</span><span class="s1">&#39;rpn_severity&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">11</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">OutOfRangeError</span><span class="p">((</span><span class="s2">&quot;RPN severity is outside the range [1, 10].&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">sod</span><span class="p">[</span><span class="s1">&#39;rpn_occurrence&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">11</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">OutOfRangeError</span><span class="p">((</span><span class="s2">&quot;RPN occurrence is outside the range [1, 10].&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">sod</span><span class="p">[</span><span class="s1">&#39;rpn_detection&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">11</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">OutOfRangeError</span><span class="p">((</span><span class="s2">&quot;RPN detection is outside the range [1, 10].&quot;</span><span class="p">))</span>
+
+    <span class="n">_rpn</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">sod</span><span class="p">[</span><span class="s1">&#39;rpn_severity&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">sod</span><span class="p">[</span><span class="s1">&#39;rpn_occurrence&#39;</span><span class="p">])</span>
+            <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">sod</span><span class="p">[</span><span class="s1">&#39;rpn_detection&#39;</span><span class="p">]))</span>
+
+    <span class="k">return</span> <span class="n">_rpn</span></div>
+
+
+<div class="viewcode-block" id="calculate_mode_hazard_rate"><a class="viewcode-back" href="../../../api/ramstk.analyses.html#ramstk.analyses.criticality.calculate_mode_hazard_rate">[docs]</a><span class="k">def</span> <span class="nf">calculate_mode_hazard_rate</span><span class="p">(</span><span class="n">item_hr</span><span class="p">,</span> <span class="n">mode_ratio</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the failure mode hazard rate.</span>
+
+<span class="sd">        &gt;&gt;&gt; item_hr=0.000617</span>
+<span class="sd">        &gt;&gt;&gt; mode_ratio=0.23</span>
+<span class="sd">        &gt;&gt;&gt; calculate_mode_hazard_rate(item_hr, mode_ratio)</span>
+<span class="sd">        0.00014191</span>
+
+<span class="sd">    :param item_hr: the hazard rate of the (hardware) item the mode is</span>
+<span class="sd">        associated with.</span>
+<span class="sd">    :param mode_ratio:</span>
+<span class="sd">    :return: _mode_hazard_rate; the hazard rate of the failure mode.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: OutOfRangeError if passed a negative item hazard rate or a mode</span>
+<span class="sd">        ratio outside [0.0, 1.0].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">item_hr</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">OutOfRangeError</span><span class="p">((</span><span class="s2">&quot;calculate_mode_hazard_rate() was passed a &quot;</span>
+                               <span class="s2">&quot;negative value for the item hazard rate.&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">mode_ratio</span> <span class="o">&lt;=</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">OutOfRangeError</span><span class="p">((</span><span class="s2">&quot;calculate_mode_hazard_rate() was passed a &quot;</span>
+                               <span class="s2">&quot;failure mode ratio outside the range of &quot;</span>
+                               <span class="s2">&quot;[0.0, 1.0].&quot;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">item_hr</span> <span class="o">*</span> <span class="n">mode_ratio</span></div>
+
+
+<div class="viewcode-block" id="calculate_mode_criticality"><a class="viewcode-back" href="../../../api/ramstk.analyses.html#ramstk.analyses.criticality.calculate_mode_criticality">[docs]</a><span class="k">def</span> <span class="nf">calculate_mode_criticality</span><span class="p">(</span><span class="n">mode_hr</span><span class="p">,</span> <span class="n">mode_op_time</span><span class="p">,</span> <span class="n">eff_prob</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the MIL-HDBK-1629A, Task 102 criticality.</span>
+
+<span class="sd">        &gt;&gt;&gt; mode_hr=0.00021595</span>
+<span class="sd">        &gt;&gt;&gt; mode_op_time=4.15</span>
+<span class="sd">        &gt;&gt;&gt; eff_prob=1.0</span>
+<span class="sd">        &gt;&gt;&gt; calculate_mode_criticality(mode_hr, mode_op_time, eff_prob)</span>
+
+<span class="sd">    :param mode_hr: the hazard rate of the failure mode.</span>
+<span class="sd">    :param mode_op_time: the operating time of the failure mode (i.e.,</span>
+<span class="sd">        the time at risk).</span>
+<span class="sd">    :param eff_prob: the probability the end effect is the one observed.</span>
+<span class="sd">    :return: _criticality; the calculated Task 102 criticality.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: OutOfRangeError if passed a negative mode operating time or an</span>
+<span class="sd">        effect probability outside [0.0, 1.0].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">mode_op_time</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">OutOfRangeError</span><span class="p">((</span><span class="s2">&quot;calculate_mode_criticality() was passed a &quot;</span>
+                               <span class="s2">&quot;negative value for failure mode operating &quot;</span>
+                               <span class="s2">&quot;time.&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">eff_prob</span> <span class="o">&lt;=</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">OutOfRangeError</span><span class="p">((</span><span class="s2">&quot;calculate_mode_criticality() was passed a &quot;</span>
+                               <span class="s2">&quot;failure effect probability outside the range &quot;</span>
+                               <span class="s2">&quot;of [0.0, 1.0].&quot;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">mode_hr</span> <span class="o">*</span> <span class="n">mode_op_time</span> <span class="o">*</span> <span class="n">eff_prob</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

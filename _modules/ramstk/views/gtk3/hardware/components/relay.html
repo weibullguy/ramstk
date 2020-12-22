@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.hardware.components.relay &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../../" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script src="../../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.hardware.components.relay</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.views.gtk3.hardware.components.relay.py is part of the RAMSTK</span>
+<span class="c1">#       Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2020 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;Relay Work View.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="c1"># noinspection PyPackageRequirements</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3</span> <span class="kn">import</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.widgets</span> <span class="kn">import</span> <span class="n">RAMSTKComboBox</span><span class="p">,</span> <span class="n">RAMSTKEntry</span>
+
+<span class="c1"># RAMSTK Local Imports</span>
+<span class="kn">from</span> <span class="nn">.panels</span> <span class="kn">import</span> <span class="n">RAMSTKAssessmentInputPanel</span><span class="p">,</span> <span class="n">RAMSTKAssessmentResultPanel</span>
+
+
+<div class="viewcode-block" id="AssessmentInputPanel"><a class="viewcode-back" href="../../../../../../api/ramstk.views.gtk3.hardware.components.html#ramstk.views.gtk3.hardware.components.relay.AssessmentInputPanel">[docs]</a><span class="k">class</span> <span class="nc">AssessmentInputPanel</span><span class="p">(</span><span class="n">RAMSTKAssessmentInputPanel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Display Relay assessment input attribute data in the RAMSTK Work Book.</span>
+
+<span class="sd">    The Relay assessment input view displays all the assessment inputs for</span>
+<span class="sd">    the selected relay.  This includes, currently, inputs for</span>
+<span class="sd">    MIL-HDBK-217FN2.  The attributes of a Relay assessment input view are:</span>
+
+<span class="sd">    :cvar dict _dic_specifications: dictionary of relay MIL-SPECs.  Key is</span>
+<span class="sd">        relay subcategory ID; values are lists of specifications.</span>
+<span class="sd">    :cvar dict _dic_styles: dictionary of relay styles defined in the</span>
+<span class="sd">        MIL-SPECs.  Key is relay subcategory ID; values are lists of styles.</span>
+
+<span class="sd">    :ivar cmbType: select and display the type of relay.</span>
+<span class="sd">    :ivar cmbLoadType: select and display the type of load the relay is</span>
+<span class="sd">        switching.</span>
+<span class="sd">    :ivar cmbContactForm: select and display the form of the relay contacts.</span>
+<span class="sd">    :ivar cmbContactRating: select and display the rating of the relay</span>
+<span class="sd">        contacts.</span>
+<span class="sd">    :ivar cmbApplication: select and display the relay application.</span>
+<span class="sd">    :ivar cmbConstruction: select and display the relay&#39;s method of</span>
+<span class="sd">        construction.</span>
+<span class="sd">    :ivar txtCycles: enter and display the number of relay cycles per hour.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Define private dict class attributes.</span>
+    <span class="n">_dic_quality</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;S&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;R&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;MIL-C-15305&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;MIL-SPEC&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]]</span>
+    <span class="p">}</span>
+    <span class="c1"># Key is subcategory ID.  Index is type ID.</span>
+    <span class="n">_dic_pc_types</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;General Purpose&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Contactor, High Current&quot;</span><span class="p">)],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Latching&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Reed&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Thermal, Bi-Metal&quot;</span><span class="p">)],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Meter Movement&quot;</span><span class="p">)]],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Solid State&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Hybrid and Solid State Time Delay&quot;</span><span class="p">)]]</span>
+    <span class="p">}</span>
+    <span class="c1"># Key is subcategory ID, index is type ID.</span>
+    <span class="n">_dic_types</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;85C Rated&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;125C Rated&quot;</span><span class="p">)]],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Solid State&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Solid State Time Delay&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Hybrid&quot;</span><span class="p">)]]</span>
+    <span class="p">}</span>
+    <span class="c1"># Key is contact rating ID.  Index is application ID.</span>
+    <span class="n">_dic_application</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Dry Circuit&quot;</span><span class="p">)]],</span>
+        <span class="mi">2</span><span class="p">:</span>
+        <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;General Purpose&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Sensitive (0 - 100mW)&quot;</span><span class="p">)],</span>
+         <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Polarized&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Vibrating Reed&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;High Speed&quot;</span><span class="p">)],</span>
+         <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Thermal Time Delay&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Electronic Time Delay, Non-Thermal&quot;</span><span class="p">)],</span>
+         <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Latching, Magnetic&quot;</span><span class="p">)]],</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;High Voltage&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Medium Power&quot;</span><span class="p">)]],</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Contactors, High Current&quot;</span><span class="p">)]],</span>
+    <span class="p">}</span>
+    <span class="c1"># First key is contact rating ID, second key is application ID.  Index is</span>
+    <span class="c1"># construction ID.</span>
+    <span class="n">_dic_construction</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Armature (Long)&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Dry Reed&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Mercury Wetted&quot;</span><span class="p">)],</span>
+                <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Magnetic Latching&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Balanced Armature&quot;</span><span class="p">)],</span>
+                <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Solenoid&quot;</span><span class="p">)]]</span>
+        <span class="p">},</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Armature (Long)&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Balanced Armature&quot;</span><span class="p">)],</span>
+                <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Solenoid&quot;</span><span class="p">)]],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Armature (LOng and Short)&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Mercury Wetted&quot;</span><span class="p">)],</span>
+                <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Magnetic Latching&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Meter Movement&quot;</span><span class="p">)],</span>
+                <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Balanced Armature&quot;</span><span class="p">)]],</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Armature (Short)&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Meter Movement&quot;</span><span class="p">)]],</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Dry Reed&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Mercury Wetted&quot;</span><span class="p">)]],</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Armature (Balanced and Short)&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Dry Reed&quot;</span><span class="p">)]],</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Bimetal&quot;</span><span class="p">)]],</span>
+            <span class="mi">8</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Dry Reed&quot;</span><span class="p">)],</span>
+                <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Mercury Wetted&quot;</span><span class="p">)],</span>
+                <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Balanced Armature&quot;</span><span class="p">)],</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Vacuum (Glass)&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Vacuum (Ceramic)&quot;</span><span class="p">)]],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Armature (Long and Short)&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Mercury Wetted&quot;</span><span class="p">)],</span>
+                <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Magnetic Latching&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Mechanical Latching&quot;</span><span class="p">)],</span>
+                <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Balanced Armature&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Solenoid&quot;</span><span class="p">)]]</span>
+        <span class="p">},</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Armature (Short)&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Mechanical Latching&quot;</span><span class="p">)],</span>
+                <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Balanced Armature&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Solenoid&quot;</span><span class="p">)]]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Define private list class attributes.</span>
+
+    <span class="c1"># Index is the technology ID (load type).</span>
+    <span class="n">_lst_technology</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Resistive&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Inductive&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lamp&quot;</span><span class="p">)]]</span>
+
+    <span class="c1"># Index is the contact form ID.</span>
+    <span class="n">_lst_contact_form</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;SPST&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;DPST&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;SPDT&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;3PST&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;4PST&quot;</span><span class="p">],</span>
+                         <span class="p">[</span><span class="s2">&quot;DPDT&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;3PDT&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;4PDT&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;6PDT&quot;</span><span class="p">]]</span>
+
+    <span class="c1"># Index is contact rating ID.</span>
+    <span class="n">_lst_contact_rating</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Signal Current (low mV and mA)&quot;</span><span class="p">)],</span>
+                           <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;0 - 5 Amp&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;5 - 20 Amp&quot;</span><span class="p">)],</span>
+                           <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;20 - 600 Amp&quot;</span><span class="p">)]]</span>
+
+    <span class="c1"># Define private scalar class attributes.</span>
+
+    <span class="c1"># Define public dictionary class attributes.</span>
+
+    <span class="c1"># Define public list class attributes.</span>
+
+    <span class="c1"># Define public scalar class attributes.</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the Relay assessment input view.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_keys</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;quality_id&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;type_id&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;technology_id&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;contact_form_id&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;contact_rating_id&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;application_id&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;construction_id&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">7</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;n_cycles&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_labels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Quality Level:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Type:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Load Type&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Contact Form:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Contact Rating:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Application:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Construction:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Number of Cycles/Hour:&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The quality level of the relay.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The relay type.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The type of load the relay is switching.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The contact form of the relay.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The rating of the relay contacts.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The type of relay application.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The method of construction of the relay.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The number of relay on/off cycles per hour.&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbApplication</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbContactForm</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbContactRating</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbLoadType</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtCycles</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_updater</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;quality_id&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;type_id&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="s1">&#39;technology_id&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbLoadType</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="s1">&#39;contact_form_id&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbContactForm</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+            <span class="s1">&#39;contact_rating_id&#39;</span><span class="p">:</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbContactRating</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+            <span class="s1">&#39;application_id&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbApplication</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+            <span class="s1">&#39;construction&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+            <span class="s1">&#39;n_cycles&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">txtCycles</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbLoadType</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbContactForm</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbContactRating</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbApplication</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtCycles</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_properties</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_make_panel_fixed</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_callbacks</span><span class="p">()</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_load_comboboxes</span><span class="p">,</span> <span class="s1">&#39;changed_subcategory&#39;</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_load_panel</span><span class="p">,</span>
+                      <span class="s1">&#39;succeed_get_all_hardware_attributes&#39;</span><span class="p">)</span>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="c1"># noinspection PyUnusedLocal</span>
+<div class="viewcode-block" id="AssessmentInputPanel.do_load_comboboxes"><a class="viewcode-back" href="../../../../../../api/ramstk.views.gtk3.hardware.components.html#ramstk.views.gtk3.hardware.components.relay.AssessmentInputPanel.do_load_comboboxes">[docs]</a>    <span class="k">def</span> <span class="nf">do_load_comboboxes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subcategory_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the Relay RAMSTKComboBox()s.</span>
+
+<span class="sd">        :param subcategory_id: the subcategory ID of the selected capacitor.</span>
+<span class="sd">            This is unused in this method but required because this method is a</span>
+<span class="sd">            PyPubSub listener.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_load_quality_combo</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_load_type_combo</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbLoadType</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_technology</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbContactForm</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_contact_form</span><span class="p">,</span>
+                                          <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbContactRating</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_contact_rating</span><span class="p">,</span>
+                                            <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_do_load_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the Relay assessment input widgets.</span>
+
+<span class="sd">        :param attributes: the attributes dictionary for the selected</span>
+<span class="sd">        Relay.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_load_panel</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;type_id&#39;</span><span class="p">],</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbLoadType</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;technology_id&#39;</span><span class="p">],</span>
+                                       <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbContactForm</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;contact_form_id&#39;</span><span class="p">],</span>
+                                          <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbContactRating</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;contact_rating_id&#39;</span><span class="p">],</span>
+                                            <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">__do_load_application_combo</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbApplication</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;application_id&#39;</span><span class="p">],</span>
+                                          <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">__do_load_construction_combo</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;construction_id&#39;</span><span class="p">],</span>
+                                           <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtCycles</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;n_cycles&#39;</span><span class="p">]),</span>
+                                     <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>  <span class="c1"># noqa</span>
+
+    <span class="k">def</span> <span class="nf">_do_set_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set widget sensitivity as needed for the selected relay.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbLoadType</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbContactForm</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbContactRating</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbApplication</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtCycles</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbLoadType</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbContactForm</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbContactRating</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbApplication</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtCycles</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_load_application_combo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the selections in the Relay application RAMSTKComboBox().</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_contact_rating_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbContactRating</span><span class="o">.</span><span class="n">get_active</span><span class="p">())</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_application</span><span class="p">[</span><span class="n">_contact_rating_id</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbApplication</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="n">_data</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_load_construction_combo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the selections in the Relay construction RAMSTKComboBox().</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_application_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbApplication</span><span class="o">.</span><span class="n">get_active</span><span class="p">())</span>
+        <span class="n">_contact_rating_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbContactRating</span><span class="o">.</span><span class="n">get_active</span><span class="p">())</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_construction</span><span class="p">[</span><span class="n">_contact_rating_id</span><span class="p">][</span><span class="n">_application_id</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="n">_data</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_load_quality_combo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the selections in the Relay quality RAMSTKComboBox().</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">_data</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Established Reliability&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="s2">&quot;MIL-SPEC&quot;</span><span class="p">],</span>
+                     <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_quality</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="n">_data</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_load_type_combo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the selections in the Relay type RAMSTKComboBox().</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_types</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="n">_data</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__set_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set callback methods for Relay assessment input widgets.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># ----- COMBOBOXES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbApplication</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbApplication</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+                                                     <span class="bp">self</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span>
+                                                     <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbApplication</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_combo_changed</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+                                                      <span class="bp">self</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span>
+                                                      <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbContactForm</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbContactForm</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+                                                     <span class="bp">self</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span>
+                                                     <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbContactRating</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbContactRating</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+                                                       <span class="bp">self</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span>
+                                                       <span class="mi">4</span><span class="p">,</span>
+                                                       <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbContactRating</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_combo_changed</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbLoadType</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbLoadType</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+
+        <span class="c1"># ----- ENTRIES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtCycles</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtCycles</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;focus-out-event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_changed_entry</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span>
+            <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__set_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set properties for Relay assessment input widgets.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">()</span>
+
+        <span class="c1"># ----- ENTRIES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtCycles</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">tooltip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
+                                         <span class="n">width</span><span class="o">=</span><span class="mi">125</span><span class="p">)</span>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="c1"># noinspection PyUnusedLocal</span>
+    <span class="k">def</span> <span class="nf">_on_combo_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__combo</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve RAMSTKCombo() changes and assign to Relay attribute.</span>
+
+<span class="sd">        This method is called by:</span>
+
+<span class="sd">            * Gtk.Combo() &#39;changed&#39; signal</span>
+
+<span class="sd">        :param __combo: the RAMSTKCombo() that called this method.  This</span>
+<span class="sd">            parameter is unused in this method but is required because the</span>
+<span class="sd">            widget provides it to the callback function.</span>
+<span class="sd">        :param index: the position in the signal handler list associated</span>
+<span class="sd">            with the calling RAMSTKComboBox().  Indices are:</span>
+
+<span class="sd">            +-------+------------------+-------+------------------+</span>
+<span class="sd">            | Index | Widget           | Index | Widget           |</span>
+<span class="sd">            +=======+==================+=======+==================+</span>
+<span class="sd">            |   4   | cmbContactRating |   5   | cmbApplication   |</span>
+<span class="sd">            +-------+------------------+-------+------------------+</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__do_load_application_combo</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__do_load_construction_combo</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="AssessmentResultPanel"><a class="viewcode-back" href="../../../../../../api/ramstk.views.gtk3.hardware.components.html#ramstk.views.gtk3.hardware.components.relay.AssessmentResultPanel">[docs]</a><span class="k">class</span> <span class="nc">AssessmentResultPanel</span><span class="p">(</span><span class="n">RAMSTKAssessmentResultPanel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Display Relay assessment results attribute data in the RAMSTK Work Book.</span>
+
+<span class="sd">    The Relay assessment result view displays all the assessment results</span>
+<span class="sd">    for the selected relay.  This includes, currently, results for</span>
+<span class="sd">    MIL-HDBK-217FN2 parts count and MIL-HDBK-217FN2 part stress methods.  The</span>
+<span class="sd">    attributes of a relay assessment result view are:</span>
+
+<span class="sd">    :ivar txtPiC: displays the contact form factor for the relay.</span>
+<span class="sd">    :ivar txtPiCYC: displays the cycling factor for the relay.</span>
+<span class="sd">    :ivar txtPiL: displays the load stress factor for the relay.</span>
+<span class="sd">    :ivar txtPiF: displays the application and construction factor for the</span>
+<span class="sd">    relay.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Define private dict class attributes.</span>
+    <span class="n">_dic_part_stress</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;L&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;C&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&quot;</span>
+        <span class="s2">&quot;&gt;CYC&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;F&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&quot;</span>
+        <span class="s2">&quot;&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&gt;&lt;/span&gt; &quot;</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Define private list class attributes.</span>
+
+    <span class="c1"># Define private scalar class attributes.</span>
+
+    <span class="c1"># Define public dictionary class attributes.</span>
+
+    <span class="c1"># Define public list class attributes.</span>
+
+    <span class="c1"># Define public scalar class attributes.</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the Relay assessment result view.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_labels</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;:&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;:&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&gt;:&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="se">\u03C0</span><span class="s1">&lt;sub&gt;C&lt;/sub&gt;:&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="se">\u03C0</span><span class="s1">&lt;sub&gt;CYC&lt;/sub&gt;:&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="se">\u03C0</span><span class="s1">&lt;sub&gt;F&lt;/sub&gt;:&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="se">\u03C0</span><span class="s1">&lt;sub&gt;L&lt;/sub&gt;:&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The assessment model used to calculate the relay hazard rate.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The base hazard rate for the relay.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The quality factor for the relay.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The environment factor for the relay.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The contact form factor for the relay.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The cycling factor for the relay.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The application and construction factor for the relay.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The load stress factor for the relay.&#39;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiC</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiCYC</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiF</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiL</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lblModel</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtLambdaB</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiQ</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiE</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiC</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiCYC</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiF</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiL</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_make_panel_fixed</span><span class="p">()</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_load_panel</span><span class="p">,</span>
+                      <span class="s1">&#39;succeed_get_all_hardware_attributes&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_load_panel</span><span class="p">,</span> <span class="s1">&#39;succeed_calculate_hardware&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_load_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the Relay assessment results widgets.</span>
+
+<span class="sd">        :param attributes: the attributes dictionary for the selected relay.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_load_panel</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiC</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piC&#39;</span><span class="p">])))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiCYC</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piCYC&#39;</span><span class="p">])))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiF</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piF&#39;</span><span class="p">])))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiL</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piL&#39;</span><span class="p">])))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_set_sensitive</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_do_set_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set widget sensitivity as needed for the selected relay.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiQ</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiC</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiCYC</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiF</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiL</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiE</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">txtPiC</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">txtPiCYC</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">txtPiF</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">txtPiL</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

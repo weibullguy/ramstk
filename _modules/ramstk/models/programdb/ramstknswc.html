@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.models.programdb.ramstknswc &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.models.programdb.ramstknswc</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.data.storage.RAMSTKNSWC.py is part of The RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2017 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;RAMSTKNSWC Table Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">Integer</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">relationship</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.db</span> <span class="kn">import</span> <span class="n">RAMSTK_BASE</span>
+<span class="kn">from</span> <span class="nn">ramstk.models</span> <span class="kn">import</span> <span class="n">RAMSTKBaseTable</span>
+
+
+<span class="c1"># pylint: disable=R0902</span>
+<div class="viewcode-block" id="RAMSTKNSWC"><a class="viewcode-back" href="../../../../api/ramstk.models.programdb.html#ramstk.models.programdb.ramstknswc.RAMSTKNSWC">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKNSWC</span><span class="p">(</span><span class="n">RAMSTK_BASE</span><span class="p">,</span> <span class="n">RAMSTKBaseTable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class to represent ramstk_nswc table in the RAMSTK Program database.</span>
+
+<span class="sd">    This table shares a One-to-One relationship with ramstk_hardware.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__defaults__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;Cac&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Calt&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cb&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cbl&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cbt&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cbv&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cc&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Ccf&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Ccp&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Ccs&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Ccv&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Ccw&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cd&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cdc&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cdl&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cdp&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cds&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cdt&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cdw&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cdy&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Ce&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cf&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cg&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cga&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cgl&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cgp&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cgs&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cgt&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cgv&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Ch&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Ci&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Ck&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cl&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Clc&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cm&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cmu&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cn&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cnp&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cnw&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cp&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cpd&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cpf&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cpv&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cq&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cr&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Crd&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cs&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Csc&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Csf&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cst&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Csv&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Csw&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Csz&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Ct&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cv&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cw&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;Cy&#39;</span><span class="p">:</span> <span class="mf">0.0</span>
+    <span class="p">}</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;ramstk_nswc&#39;</span>
+    <span class="n">__table_args__</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;extend_existing&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+
+    <span class="n">hardware_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_hardware_id&#39;</span><span class="p">,</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;ramstk_hardware.fld_hardware_id&#39;</span><span class="p">),</span>
+        <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">Cac</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_ac&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cac&#39;</span><span class="p">])</span>
+    <span class="n">Calt</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_alt&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Calt&#39;</span><span class="p">])</span>
+    <span class="n">Cb</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_b&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cb&#39;</span><span class="p">])</span>
+    <span class="n">Cbl</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_bl&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cbl&#39;</span><span class="p">])</span>
+    <span class="n">Cbt</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_bt&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cbt&#39;</span><span class="p">])</span>
+    <span class="n">Cbv</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_bv&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cbv&#39;</span><span class="p">])</span>
+    <span class="n">Cc</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_c&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cc&#39;</span><span class="p">])</span>
+    <span class="n">Ccf</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_cf&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Ccf&#39;</span><span class="p">])</span>
+    <span class="n">Ccp</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_cp&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Ccp&#39;</span><span class="p">])</span>
+    <span class="n">Ccs</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_cs&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Ccs&#39;</span><span class="p">])</span>
+    <span class="n">Ccv</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_cv&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Ccv&#39;</span><span class="p">])</span>
+    <span class="n">Ccw</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_cw&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Ccw&#39;</span><span class="p">])</span>
+    <span class="n">Cd</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_d&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cd&#39;</span><span class="p">])</span>
+    <span class="n">Cdc</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_dc&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cdc&#39;</span><span class="p">])</span>
+    <span class="n">Cdl</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_dl&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cdl&#39;</span><span class="p">])</span>
+    <span class="n">Cdp</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_dp&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cdp&#39;</span><span class="p">])</span>
+    <span class="n">Cds</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_ds&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cds&#39;</span><span class="p">])</span>
+    <span class="n">Cdt</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_dt&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cdt&#39;</span><span class="p">])</span>
+    <span class="n">Cdw</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_dw&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cdw&#39;</span><span class="p">])</span>
+    <span class="n">Cdy</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_dy&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cdy&#39;</span><span class="p">])</span>
+    <span class="n">Ce</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_e&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Ce&#39;</span><span class="p">])</span>
+    <span class="n">Cf</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_f&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cf&#39;</span><span class="p">])</span>
+    <span class="n">Cg</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_g&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cg&#39;</span><span class="p">])</span>
+    <span class="n">Cga</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_ga&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cga&#39;</span><span class="p">])</span>
+    <span class="n">Cgl</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_gl&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cgl&#39;</span><span class="p">])</span>
+    <span class="n">Cgp</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_gp&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cgp&#39;</span><span class="p">])</span>
+    <span class="n">Cgs</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_gs&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cgs&#39;</span><span class="p">])</span>
+    <span class="n">Cgt</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_gt&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cgt&#39;</span><span class="p">])</span>
+    <span class="n">Cgv</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_gv&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cgv&#39;</span><span class="p">])</span>
+    <span class="n">Ch</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_h&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Ch&#39;</span><span class="p">])</span>
+    <span class="n">Ci</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_i&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Ci&#39;</span><span class="p">])</span>
+    <span class="n">Ck</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_k&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Ck&#39;</span><span class="p">])</span>
+    <span class="n">Cl</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_l&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cl&#39;</span><span class="p">])</span>
+    <span class="n">Clc</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_lc&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Clc&#39;</span><span class="p">])</span>
+    <span class="n">Cm</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_m&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cm&#39;</span><span class="p">])</span>
+    <span class="n">Cmu</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_mu&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cmu&#39;</span><span class="p">])</span>
+    <span class="n">Cn</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_n&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cn&#39;</span><span class="p">])</span>
+    <span class="n">Cnp</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_np&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cnp&#39;</span><span class="p">])</span>
+    <span class="n">Cnw</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_nw&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cnw&#39;</span><span class="p">])</span>
+    <span class="n">Cp</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_p&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cp&#39;</span><span class="p">])</span>
+    <span class="n">Cpd</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_pd&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cpd&#39;</span><span class="p">])</span>
+    <span class="n">Cpf</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_pf&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cpf&#39;</span><span class="p">])</span>
+    <span class="n">Cpv</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_pv&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cpv&#39;</span><span class="p">])</span>
+    <span class="n">Cq</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_q&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cq&#39;</span><span class="p">])</span>
+    <span class="n">Cr</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_r&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cr&#39;</span><span class="p">])</span>
+    <span class="n">Crd</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_rd&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Crd&#39;</span><span class="p">])</span>
+    <span class="n">Cs</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_s&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cs&#39;</span><span class="p">])</span>
+    <span class="n">Csc</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_sc&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Csc&#39;</span><span class="p">])</span>
+    <span class="n">Csf</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_sf&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Csf&#39;</span><span class="p">])</span>
+    <span class="n">Cst</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_st&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cst&#39;</span><span class="p">])</span>
+    <span class="n">Csv</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_sv&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Csv&#39;</span><span class="p">])</span>
+    <span class="n">Csw</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_sw&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Csw&#39;</span><span class="p">])</span>
+    <span class="n">Csz</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_sz&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Csz&#39;</span><span class="p">])</span>
+    <span class="n">Ct</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_t&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Ct&#39;</span><span class="p">])</span>
+    <span class="n">Cv</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_v&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cv&#39;</span><span class="p">])</span>
+    <span class="n">Cw</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_w&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cw&#39;</span><span class="p">])</span>
+    <span class="n">Cy</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_c_y&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;Cy&#39;</span><span class="p">])</span>
+
+    <span class="c1"># Define the relationships to other tables in the RAMSTK Program database.</span>
+    <span class="n">hardware</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+        <span class="s1">&#39;RAMSTKHardware&#39;</span><span class="p">,</span>
+        <span class="n">back_populates</span><span class="o">=</span><span class="s1">&#39;nswc&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="RAMSTKNSWC.get_attributes"><a class="viewcode-back" href="../../../../api/ramstk.models.programdb.html#ramstk.models.programdb.ramstknswc.RAMSTKNSWC.get_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve the current values of the RAMSTKNSWC data model attributes.</span>
+
+<span class="sd">        :return: {hardware_id, Cac, Calt, Cb, Cbl, Cbt, Cbv, Cc, Ccf, Ccp, Ccs,</span>
+<span class="sd">                  Ccv, Ccw, Cd, Cdc, Cdl, Cdp, Cds, Cdw, Cdy, Ce, Cf, Cg, Cga,</span>
+<span class="sd">                  Cgl, Cgp, Cgs, Cgt, Cgv, Ch, Ci, Ck, Cl, Clc, Cm, Cmu, Cn,</span>
+<span class="sd">                  Cnp, Cnw, Cp, Cpd, Cpf, Cpv, Cq, Cr, Crd, Cs, Csc, Csf, Cst,</span>
+<span class="sd">                  Csv, Csw, Csz, Ct, Cv, Cw, Cy} pairs.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_attributes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;hardware_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hardware_id</span><span class="p">,</span>
+            <span class="s1">&#39;Cac&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cac</span><span class="p">,</span>
+            <span class="s1">&#39;Calt&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Calt</span><span class="p">,</span>
+            <span class="s1">&#39;Cb&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cb</span><span class="p">,</span>
+            <span class="s1">&#39;Cbl&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cbl</span><span class="p">,</span>
+            <span class="s1">&#39;Cbt&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cbt</span><span class="p">,</span>
+            <span class="s1">&#39;Cbv&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cbv</span><span class="p">,</span>
+            <span class="s1">&#39;Cc&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cc</span><span class="p">,</span>
+            <span class="s1">&#39;Ccf&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ccf</span><span class="p">,</span>
+            <span class="s1">&#39;Ccp&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ccp</span><span class="p">,</span>
+            <span class="s1">&#39;Ccs&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ccs</span><span class="p">,</span>
+            <span class="s1">&#39;Ccv&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ccv</span><span class="p">,</span>
+            <span class="s1">&#39;Ccw&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ccw</span><span class="p">,</span>
+            <span class="s1">&#39;Cd&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cd</span><span class="p">,</span>
+            <span class="s1">&#39;Cdc&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cdc</span><span class="p">,</span>
+            <span class="s1">&#39;Cdl&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cdl</span><span class="p">,</span>
+            <span class="s1">&#39;Cdp&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cdp</span><span class="p">,</span>
+            <span class="s1">&#39;Cds&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cds</span><span class="p">,</span>
+            <span class="s1">&#39;Cdt&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cdt</span><span class="p">,</span>
+            <span class="s1">&#39;Cdw&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cdw</span><span class="p">,</span>
+            <span class="s1">&#39;Cdy&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cdy</span><span class="p">,</span>
+            <span class="s1">&#39;Ce&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ce</span><span class="p">,</span>
+            <span class="s1">&#39;Cf&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cf</span><span class="p">,</span>
+            <span class="s1">&#39;Cg&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cg</span><span class="p">,</span>
+            <span class="s1">&#39;Cga&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cga</span><span class="p">,</span>
+            <span class="s1">&#39;Cgl&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cgl</span><span class="p">,</span>
+            <span class="s1">&#39;Cgp&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cgp</span><span class="p">,</span>
+            <span class="s1">&#39;Cgs&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cgs</span><span class="p">,</span>
+            <span class="s1">&#39;Cgt&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cgt</span><span class="p">,</span>
+            <span class="s1">&#39;Cgv&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cgv</span><span class="p">,</span>
+            <span class="s1">&#39;Ch&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ch</span><span class="p">,</span>
+            <span class="s1">&#39;Ci&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ci</span><span class="p">,</span>
+            <span class="s1">&#39;Ck&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ck</span><span class="p">,</span>
+            <span class="s1">&#39;Cl&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cl</span><span class="p">,</span>
+            <span class="s1">&#39;Clc&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Clc</span><span class="p">,</span>
+            <span class="s1">&#39;Cm&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cm</span><span class="p">,</span>
+            <span class="s1">&#39;Cmu&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cmu</span><span class="p">,</span>
+            <span class="s1">&#39;Cn&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cn</span><span class="p">,</span>
+            <span class="s1">&#39;Cnp&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cnp</span><span class="p">,</span>
+            <span class="s1">&#39;Cnw&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cnw</span><span class="p">,</span>
+            <span class="s1">&#39;Cp&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cp</span><span class="p">,</span>
+            <span class="s1">&#39;Cpd&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cpd</span><span class="p">,</span>
+            <span class="s1">&#39;Cpf&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cpf</span><span class="p">,</span>
+            <span class="s1">&#39;Cpv&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cpv</span><span class="p">,</span>
+            <span class="s1">&#39;Cq&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cq</span><span class="p">,</span>
+            <span class="s1">&#39;Cr&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cr</span><span class="p">,</span>
+            <span class="s1">&#39;Crd&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Crd</span><span class="p">,</span>
+            <span class="s1">&#39;Cs&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cs</span><span class="p">,</span>
+            <span class="s1">&#39;Csc&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Csc</span><span class="p">,</span>
+            <span class="s1">&#39;Csf&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Csf</span><span class="p">,</span>
+            <span class="s1">&#39;Cst&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cst</span><span class="p">,</span>
+            <span class="s1">&#39;Csv&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Csv</span><span class="p">,</span>
+            <span class="s1">&#39;Csw&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Csw</span><span class="p">,</span>
+            <span class="s1">&#39;Csz&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Csz</span><span class="p">,</span>
+            <span class="s1">&#39;Ct&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ct</span><span class="p">,</span>
+            <span class="s1">&#39;Cv&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cv</span><span class="p">,</span>
+            <span class="s1">&#39;Cw&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cw</span><span class="p">,</span>
+            <span class="s1">&#39;Cy&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cy</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">_attributes</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

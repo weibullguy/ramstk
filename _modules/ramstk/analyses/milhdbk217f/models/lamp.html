@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.analyses.milhdbk217f.models.lamp &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.analyses.milhdbk217f.models.lamp</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.analyses.prediction.Lamp.py is part of the RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2017 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;Lamp MIL-HDBK-217F Calculations Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="n">PART_COUNT_LAMBDA_B</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">3.9</span><span class="p">,</span> <span class="mf">7.8</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">16.0</span><span class="p">,</span> <span class="mf">16.0</span><span class="p">,</span> <span class="mf">16.0</span><span class="p">,</span> <span class="mf">19.0</span><span class="p">,</span> <span class="mf">23.0</span><span class="p">,</span> <span class="mf">19.0</span><span class="p">,</span> <span class="mf">2.7</span><span class="p">,</span> <span class="mf">16.0</span><span class="p">,</span>
+        <span class="mf">23.0</span><span class="p">,</span> <span class="mf">100.0</span>
+    <span class="p">],</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">13.0</span><span class="p">,</span> <span class="mf">26.0</span><span class="p">,</span> <span class="mf">38.0</span><span class="p">,</span> <span class="mf">38.0</span><span class="p">,</span> <span class="mf">51.0</span><span class="p">,</span> <span class="mf">51.0</span><span class="p">,</span> <span class="mf">51.0</span><span class="p">,</span> <span class="mf">64.0</span><span class="p">,</span> <span class="mf">77.0</span><span class="p">,</span> <span class="mf">64.0</span><span class="p">,</span> <span class="mf">9.0</span><span class="p">,</span> <span class="mf">51.0</span><span class="p">,</span>
+        <span class="mf">77.0</span><span class="p">,</span> <span class="mf">350.0</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+<span class="n">PI_E</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">27.0</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="calculate_part_count"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.lamp.calculate_part_count">[docs]</a><span class="k">def</span> <span class="nf">calculate_part_count</span><span class="p">(</span><span class="o">**</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Wrap get_part_count_lambda_b().</span>
+
+<span class="sd">    This wrapper allows us to pass an attributes dict from a generic parts</span>
+<span class="sd">    count function.</span>
+
+<span class="sd">    :param attributes: the attributes for the connection being calculated.</span>
+<span class="sd">    :return: _base_hr; the parts count base hazard rates.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">get_part_count_lambda_b</span><span class="p">(</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;application_id&#39;</span><span class="p">],</span>  <span class="c1"># type: ignore</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;environment_active_id&#39;</span><span class="p">])</span>  <span class="c1"># type: ignore</span></div>
+
+
+<div class="viewcode-block" id="calculate_part_stress"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.lamp.calculate_part_stress">[docs]</a><span class="k">def</span> <span class="nf">calculate_part_stress</span><span class="p">(</span><span class="o">**</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the part stress hazard rate for a lamp.</span>
+
+<span class="sd">    This function calculates the MIL-HDBK-217F hazard rate using the part</span>
+<span class="sd">    stress method.</span>
+
+<span class="sd">    :return: attributes; the keyword argument (hardware attribute)</span>
+<span class="sd">             dictionary with updated values.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">attributes</span><span class="p">[</span>
+        <span class="s1">&#39;lambda_b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.074</span> <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;voltage_rated&#39;</span><span class="p">]</span><span class="o">**</span><span class="mf">1.29</span>  <span class="c1"># type: ignore</span>
+
+    <span class="c1"># Determine the utilization factor (piU).</span>
+    <span class="k">if</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;duty_cycle&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">10.0</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piU&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># type: ignore</span>
+    <span class="k">elif</span> <span class="mf">10.0</span> <span class="o">&lt;=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;duty_cycle&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">90.0</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piU&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.72</span>  <span class="c1"># type: ignore</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piU&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># type: ignore</span>
+
+    <span class="c1"># Determine the application factor (piA).</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="mf">3.3</span> <span class="k">if</span> <span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;application_id&#39;</span><span class="p">])</span> <span class="o">-</span>  <span class="c1"># type: ignore</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">else</span> <span class="mf">1.0</span><span class="p">)</span>
+
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;lambda_b&#39;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+        <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piU&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piA&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piE&#39;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">attributes</span></div>
+
+
+<div class="viewcode-block" id="get_part_count_lambda_b"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.lamp.get_part_count_lambda_b">[docs]</a><span class="k">def</span> <span class="nf">get_part_count_lambda_b</span><span class="p">(</span><span class="n">application_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                            <span class="n">environment_active_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Retrieve the part count hazard rate for a lamp.</span>
+
+<span class="sd">    This function calculates the MIL-HDBK-217F hazard rate using the parts</span>
+<span class="sd">    count method.</span>
+
+<span class="sd">    :param application_id: the lamp application identifier.</span>
+<span class="sd">    :param environment_active_id: the operating environment identifier.</span>
+<span class="sd">    :return: _base_hr; the base part count hazard rate.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: IndexError if passed an unknown active environment ID.</span>
+<span class="sd">    :raise: KeyError if passed an unknown application ID.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">PART_COUNT_LAMBDA_B</span><span class="p">[</span><span class="n">application_id</span><span class="p">][</span><span class="n">environment_active_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

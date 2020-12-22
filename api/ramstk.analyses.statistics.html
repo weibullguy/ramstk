@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.analyses.statistics package &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ramstk.controllers package" href="ramstk.controllers.html" />
+    <link rel="prev" title="ramstk.analyses.milhdbk217f.models package" href="ramstk.analyses.milhdbk217f.models.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../contributing.html" >Contributing</a> &#187;</li>
+          <li><a href="modules.html" >ramstk</a> &#187;</li>
+          <li><a href="ramstk.html" >ramstk package</a> &#187;</li>
+          <li><a href="ramstk.analyses.html" accesskey="U">ramstk.analyses package</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="ramstk-analyses-statistics-package">
+<h1>ramstk.analyses.statistics package<a class="headerlink" href="#ramstk-analyses-statistics-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-ramstk.analyses.statistics.bounds">
+<span id="ramstk-analyses-statistics-bounds-module"></span><h2>ramstk.analyses.statistics.bounds module<a class="headerlink" href="#module-ramstk.analyses.statistics.bounds" title="Permalink to this headline">¶</a></h2>
+<p>Functions for performing calculations associated with statistical bounds.</p>
+<dl class="py function">
+<dt id="ramstk.analyses.statistics.bounds.calculate_crow_bounds">
+<code class="sig-prename descclassname">ramstk.analyses.statistics.bounds.</code><code class="sig-name descname">calculate_crow_bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_failures</span></em>, <em class="sig-param"><span class="n">t_star</span></em>, <em class="sig-param"><span class="n">_lambda</span></em>, <em class="sig-param"><span class="n">beta</span></em>, <em class="sig-param"><span class="n">alpha</span></em>, <em class="sig-param"><span class="n">metric</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/analyses/statistics/bounds.html#calculate_crow_bounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.statistics.bounds.calculate_crow_bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate confidence bounds based on Dr. Larry Crow’s methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_failures</strong> – the total number of failures in the data set.</p></li>
+<li><p><strong>t_star</strong> – termination time.</p></li>
+<li><p><strong>_lambda</strong> – the estimated scale parameter.</p></li>
+<li><p><strong>beta</strong> – the estimated shape parameter.</p></li>
+<li><p><strong>alpha</strong> – the desired confidence level of the bounds.</p></li>
+<li><p><strong>metric</strong> – indicates which metric the bounds are being calculated for.
+1 = shape (beta)
+2 = scale (lambda)
+3 = cumulative failure intensity
+4 = instantaneous MTBF (future)</p></li>
+<li><p><strong>data</strong> – the type of data set being passed.
+1 = Type I or time terminated test
+2 = Type II or failure terminated test (default)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>_crow_l, _crow_u; the lower and upper bound on the metric.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple of floats</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ramstk.analyses.statistics.bounds.calculate_fisher_bounds">
+<code class="sig-prename descclassname">ramstk.analyses.statistics.bounds.</code><code class="sig-name descname">calculate_fisher_bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">metric</span></em>, <em class="sig-param"><span class="n">variance</span></em>, <em class="sig-param"><span class="n">alpha</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/analyses/statistics/bounds.html#calculate_fisher_bounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.statistics.bounds.calculate_fisher_bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the Fisher Information Matrix based confidence bounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>metric</strong> – the point estimate of the metric to calculate bounds
+for.</p></li>
+<li><p><strong>variance</strong> – the variance of the metric to calculate bounds for.</p></li>
+<li><p><strong>alpha</strong> – the confidence level of the calculated bounds.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>_fisher_l, _fisher_u; the lower and upper Fisher bounds.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple of floats</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ramstk.analyses.statistics.bounds.calculate_nhpp_mean_variance">
+<code class="sig-prename descclassname">ramstk.analyses.statistics.bounds.</code><code class="sig-name descname">calculate_nhpp_mean_variance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_failures</span></em>, <em class="sig-param"><span class="n">max_time</span></em>, <em class="sig-param"><span class="n">alpha</span></em>, <em class="sig-param"><span class="n">beta</span></em>, <em class="sig-param"><span class="n">metric</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/analyses/statistics/bounds.html#calculate_nhpp_mean_variance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.statistics.bounds.calculate_nhpp_mean_variance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the variance for the NHPP and Crow-AMSAA models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_failures</strong> – total number of failures in the data set.</p></li>
+<li><p><strong>max_time</strong> – total observation time or maximum failure time.</p></li>
+<li><p><strong>alpha</strong> – the point estimate of the alpha (scale) parameter.</p></li>
+<li><p><strong>beta</strong> – the point estimate of the beta (shape) parameter.</p></li>
+<li><p><strong>metric</strong> – the metric to calculate the variance for.
+- 1 = Cumulative MTBF.
+- 2 = Instantaneous MTBF.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the variance of the selected mean.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ramstk.analyses.statistics.bounds.calculate_variance_covariance">
+<code class="sig-prename descclassname">ramstk.analyses.statistics.bounds.</code><code class="sig-name descname">calculate_variance_covariance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_failures</span></em>, <em class="sig-param"><span class="n">max_time</span></em>, <em class="sig-param"><span class="n">alpha</span></em>, <em class="sig-param"><span class="n">beta</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/analyses/statistics/bounds.html#calculate_variance_covariance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.statistics.bounds.calculate_variance_covariance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate variance-covariance matrix for NHPP and Crow-AMSAA models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_failures</strong> – total number of failures in the data set.</p></li>
+<li><p><strong>max_time</strong> – total observation time or maximum failure time.</p></li>
+<li><p><strong>alpha</strong> – the point estimate of the alpha (scale) parameter.</p></li>
+<li><p><strong>beta</strong> – the point estimate of the beta (shape) parameter.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>the variance-covariance matrix for alpha and beta.  It has the
+form:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>[[Var(alpha), Cov(alpha, beta)],</dt><dd><p>[Cov(alpha, beta), Var(beta)]]</p>
+</dd>
+</dl>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of lists</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ramstk.analyses.statistics.bounds.do_calculate_beta_bounds">
+<code class="sig-prename descclassname">ramstk.analyses.statistics.bounds.</code><code class="sig-name descname">do_calculate_beta_bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">minimum</span></em>, <em class="sig-param"><span class="n">likely</span></em>, <em class="sig-param"><span class="n">maximum</span></em>, <em class="sig-param"><span class="n">alpha</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/analyses/statistics/bounds.html#do_calculate_beta_bounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.statistics.bounds.do_calculate_beta_bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the mean, standard error, and bounds of the beta distribution.</p>
+<p>These are the project management estimators, not exact calculations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>minimum</strong> – the minimum expected value.</p></li>
+<li><p><strong>likely</strong> – most likely value.</p></li>
+<li><p><strong>maximum</strong> – the maximum expected value.</p></li>
+<li><p><strong>alpha</strong> – the desired confidence level.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>_meanll, _mean, _meanul, _sd; the calculated mean, bounds, and
+standard error.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple of floats</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.analyses.statistics">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ramstk.analyses.statistics" title="Permalink to this headline">¶</a></h2>
+<p>The RAMSTK statistical analyses package.</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">ramstk.analyses.statistics package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-ramstk.analyses.statistics.bounds">ramstk.analyses.statistics.bounds module</a></li>
+<li><a class="reference internal" href="#module-ramstk.analyses.statistics">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ramstk.analyses.milhdbk217f.models.html"
+                        title="previous chapter">ramstk.analyses.milhdbk217f.models package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ramstk.controllers.html"
+                        title="next chapter">ramstk.controllers package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/ramstk.analyses.statistics.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ramstk.controllers.html" title="ramstk.controllers package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ramstk.analyses.milhdbk217f.models.html" title="ramstk.analyses.milhdbk217f.models package"
+             accesskey="P">previous</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

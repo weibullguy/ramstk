@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.books.listbook &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.books.listbook</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.views.gtk3.books.listbook.py is part of the RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2020 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;RAMSTK GTK3 List Book Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.configuration</span> <span class="kn">import</span> <span class="n">RAMSTKUserConfiguration</span>
+<span class="kn">from</span> <span class="nn">ramstk.logger</span> <span class="kn">import</span> <span class="n">RAMSTKLogManager</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.failure_definition</span> <span class="kn">import</span> <span class="n">lvwFailureDefinition</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.function</span> <span class="kn">import</span> <span class="n">mtxFunctionHardware</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.hardware</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">mtxHardwareRequirement</span><span class="p">,</span> <span class="n">mtxHardwareValidation</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.requirement</span> <span class="kn">import</span> <span class="n">mtxRequirementHardware</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.stakeholder</span> <span class="kn">import</span> <span class="n">lvwStakeholders</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.usage_profile</span> <span class="kn">import</span> <span class="n">lvwUsageProfile</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.validation</span> <span class="kn">import</span> <span class="n">mtxValidationRequirement</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.widgets</span> <span class="kn">import</span> <span class="n">RAMSTKBaseBook</span>
+
+
+<div class="viewcode-block" id="RAMSTKListBook"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.books.html#ramstk.views.gtk3.books.listbook.RAMSTKListBook">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKListBook</span><span class="p">(</span><span class="n">RAMSTKBaseBook</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The List Book class for the GTK3 multiple window interface.</span>
+
+<span class="sd">    The List Book provides the container for any List Views and Matrix Views</span>
+<span class="sd">    associated with the RAMSTK module selected in the RAMSTK Module View.</span>
+<span class="sd">    Attributes of the List Book are:</span>
+
+<span class="sd">    :ivar dict dic_list_view: dictionary containing the List Views and/or</span>
+<span class="sd">        Matrix Views to load into the RAMSTK List Book for each RAMSTK module.</span>
+<span class="sd">        Key is the RAMSTK module name; value is a list of Views associated with</span>
+<span class="sd">        that RAMSTK module.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="n">RAMSTKUserConfiguration</span><span class="p">,</span>
+                 <span class="n">logger</span><span class="p">:</span> <span class="n">RAMSTKLogManager</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the RAMSTK List View class.</span>
+
+<span class="sd">        :param configuration: the RAMSTKUserConfiguration() class instance.</span>
+<span class="sd">        :param logger: the RAMSTKLogManager class instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">RAMSTKBaseBook</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_list_views</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;revision&#39;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="n">lvwUsageProfile</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">),</span>
+                <span class="n">lvwFailureDefinition</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+            <span class="p">],</span>
+            <span class="s1">&#39;function&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">mtxFunctionHardware</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">)],</span>
+            <span class="s1">&#39;requirement&#39;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="n">lvwStakeholders</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">),</span>
+                <span class="n">mtxRequirementHardware</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+            <span class="p">],</span>
+            <span class="s1">&#39;hardware&#39;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="n">mtxHardwareRequirement</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">),</span>
+                <span class="n">mtxHardwareValidation</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+            <span class="p">],</span>
+            <span class="s1">&#39;validation&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">mtxValidationRequirement</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">)]</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_module</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_properties</span><span class="p">(</span><span class="s1">&#39;listbook&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_module_change</span><span class="p">,</span> <span class="s1">&#39;mvwSwitchedPage&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_close</span><span class="p">,</span> <span class="s1">&#39;succeed_closed_program&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_on_close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Clear the List Views when a RAMSTK Program database is closed.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_list_views</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">_listview</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_list_views</span><span class="p">[</span><span class="n">_key</span><span class="p">]:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">_view</span> <span class="o">=</span> <span class="n">_listview</span><span class="o">.</span><span class="n">treeview</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="n">_view</span> <span class="o">=</span> <span class="n">_listview</span><span class="o">.</span><span class="n">matrix</span>
+
+                <span class="n">_model</span> <span class="o">=</span> <span class="n">_view</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+                <span class="n">_columns</span> <span class="o">=</span> <span class="n">_view</span><span class="o">.</span><span class="n">get_columns</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">_column</span> <span class="ow">in</span> <span class="n">_columns</span><span class="p">:</span>
+                    <span class="n">_view</span><span class="o">.</span><span class="n">remove_column</span><span class="p">(</span><span class="n">_column</span><span class="p">)</span>
+
+                <span class="n">_model</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_on_module_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load List Views for the RAMSTK module selected in the Module Book.</span>
+
+<span class="sd">        :param module: the name of the RAMSTK workflow module that has</span>
+<span class="sd">            been selected in the Module Book.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_module</span> <span class="o">=</span> <span class="n">module</span>
+
+        <span class="k">for</span> <span class="n">_page</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">_page</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">_list</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_list_views</span><span class="p">[</span><span class="n">module</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">insert_page</span><span class="p">(</span><span class="n">_list</span><span class="p">,</span> <span class="n">_list</span><span class="o">.</span><span class="n">hbx_tab_label</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.books package &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ramstk.views.gtk3.failure_definition package" href="ramstk.views.gtk3.failure_definition.html" />
+    <link rel="prev" title="ramstk.views.gtk3.assistants package" href="ramstk.views.gtk3.assistants.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../contributing.html" >Contributing</a> &#187;</li>
+          <li><a href="modules.html" >ramstk</a> &#187;</li>
+          <li><a href="ramstk.html" >ramstk package</a> &#187;</li>
+          <li><a href="ramstk.views.html" >ramstk.views package</a> &#187;</li>
+          <li><a href="ramstk.views.gtk3.html" accesskey="U">ramstk.views.gtk3 package</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="ramstk-views-gtk3-books-package">
+<h1>ramstk.views.gtk3.books package<a class="headerlink" href="#ramstk-views-gtk3-books-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-ramstk.views.gtk3.books.listbook">
+<span id="ramstk-views-gtk3-books-listbook-module"></span><h2>ramstk.views.gtk3.books.listbook module<a class="headerlink" href="#module-ramstk.views.gtk3.books.listbook" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTK GTK3 List Book Module.</p>
+<dl class="py class">
+<dt id="ramstk.views.gtk3.books.listbook.RAMSTKListBook">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.books.listbook.</code><code class="sig-name descname">RAMSTKListBook</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">configuration</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.configuration.RAMSTKUserConfiguration" title="ramstk.configuration.RAMSTKUserConfiguration">ramstk.configuration.RAMSTKUserConfiguration</a></span></em>, <em class="sig-param"><span class="n">logger</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.logger.RAMSTKLogManager" title="ramstk.logger.RAMSTKLogManager">ramstk.logger.RAMSTKLogManager</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/views/gtk3/books/listbook.html#RAMSTKListBook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.books.listbook.RAMSTKListBook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.basebook.RAMSTKBaseBook" title="ramstk.views.gtk3.widgets.basebook.RAMSTKBaseBook"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.widgets.basebook.RAMSTKBaseBook</span></code></a></p>
+<p>The List Book class for the GTK3 multiple window interface.</p>
+<p>The List Book provides the container for any List Views and Matrix Views
+associated with the RAMSTK module selected in the RAMSTK Module View.
+Attributes of the List Book are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><p><strong>dic_list_view</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary containing the List Views and/or
+Matrix Views to load into the RAMSTK List Book for each RAMSTK module.
+Key is the RAMSTK module name; value is a list of Views associated with
+that RAMSTK module.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.views.gtk3.books.modulebook">
+<span id="ramstk-views-gtk3-books-modulebook-module"></span><h2>ramstk.views.gtk3.books.modulebook module<a class="headerlink" href="#module-ramstk.views.gtk3.books.modulebook" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTK Module Book Module.</p>
+<dl class="py class">
+<dt id="ramstk.views.gtk3.books.modulebook.RAMSTKModuleBook">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.books.modulebook.</code><code class="sig-name descname">RAMSTKModuleBook</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">configuration</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.configuration.RAMSTKUserConfiguration" title="ramstk.configuration.RAMSTKUserConfiguration">ramstk.configuration.RAMSTKUserConfiguration</a></span></em>, <em class="sig-param"><span class="n">logger</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.logger.RAMSTKLogManager" title="ramstk.logger.RAMSTKLogManager">ramstk.logger.RAMSTKLogManager</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/views/gtk3/books/modulebook.html#RAMSTKModuleBook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.books.modulebook.RAMSTKModuleBook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.basebook.RAMSTKBaseBook" title="ramstk.views.gtk3.widgets.basebook.RAMSTKBaseBook"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.widgets.basebook.RAMSTKBaseBook</span></code></a></p>
+<p>Display Module Views for the RAMSTK modules.</p>
+<p>Attributes of the Module Book are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><p><strong>_dic_module_views</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – dictionary containing the Module View to
+load into the RAMSTK Module Book for each RAMSTK module.  Key is the
+RAMSTK module name; value is the View associated with that RAMSTK
+module.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.views.gtk3.books.workbook">
+<span id="ramstk-views-gtk3-books-workbook-module"></span><h2>ramstk.views.gtk3.books.workbook module<a class="headerlink" href="#module-ramstk.views.gtk3.books.workbook" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTK GTK3 Work Book Module.</p>
+<dl class="py class">
+<dt id="ramstk.views.gtk3.books.workbook.RAMSTKWorkBook">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.books.workbook.</code><code class="sig-name descname">RAMSTKWorkBook</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">configuration</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.configuration.RAMSTKUserConfiguration" title="ramstk.configuration.RAMSTKUserConfiguration">ramstk.configuration.RAMSTKUserConfiguration</a></span></em>, <em class="sig-param"><span class="n">logger</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.logger.RAMSTKLogManager" title="ramstk.logger.RAMSTKLogManager">ramstk.logger.RAMSTKLogManager</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/views/gtk3/books/workbook.html#RAMSTKWorkBook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.books.workbook.RAMSTKWorkBook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.basebook.RAMSTKBaseBook" title="ramstk.views.gtk3.widgets.basebook.RAMSTKBaseBook"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.widgets.basebook.RAMSTKBaseBook</span></code></a></p>
+<p>The Work Book for the pyGObject (GTK3) interface.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.views.gtk3.books">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ramstk.views.gtk3.books" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTK GTK3 Books Package.</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">ramstk.views.gtk3.books package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.books.listbook">ramstk.views.gtk3.books.listbook module</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.books.modulebook">ramstk.views.gtk3.books.modulebook module</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.books.workbook">ramstk.views.gtk3.books.workbook module</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.books">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ramstk.views.gtk3.assistants.html"
+                        title="previous chapter">ramstk.views.gtk3.assistants package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ramstk.views.gtk3.failure_definition.html"
+                        title="next chapter">ramstk.views.gtk3.failure_definition package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/ramstk.views.gtk3.books.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ramstk.views.gtk3.failure_definition.html" title="ramstk.views.gtk3.failure_definition package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ramstk.views.gtk3.assistants.html" title="ramstk.views.gtk3.assistants package"
+             accesskey="P">previous</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

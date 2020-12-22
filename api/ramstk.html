@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk package &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ramstk.analyses package" href="ramstk.analyses.html" />
+    <link rel="prev" title="ramstk" href="modules.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../contributing.html" >Contributing</a> &#187;</li>
+          <li><a href="modules.html" accesskey="U">ramstk</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="ramstk-package">
+<h1>ramstk package<a class="headerlink" href="#ramstk-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ramstk.analyses.html">ramstk.analyses package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.analyses.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.analyses.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.analyses.html#module-ramstk.analyses.allocation">ramstk.analyses.allocation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.analyses.html#module-ramstk.analyses.criticality">ramstk.analyses.criticality module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.analyses.html#module-ramstk.analyses.derating">ramstk.analyses.derating module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.analyses.html#module-ramstk.analyses.dormancy">ramstk.analyses.dormancy module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.analyses.html#module-ramstk.analyses.fha">ramstk.analyses.fha module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.analyses.html#module-ramstk.analyses.improvementfactor">ramstk.analyses.improvementfactor module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.analyses.html#module-ramstk.analyses.similaritem">ramstk.analyses.similaritem module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.analyses.html#module-ramstk.analyses.stress">ramstk.analyses.stress module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.analyses.html#module-ramstk.analyses">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ramstk.controllers.html">ramstk.controllers package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.html#module-ramstk.controllers.managers">ramstk.controllers.managers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.html#module-ramstk.controllers">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ramstk.db.html">ramstk.db package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.db.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.db.html#module-ramstk.db.base">ramstk.db.base module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.db.html#module-ramstk.db.common">ramstk.db.common module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.db.html#module-ramstk.db.program">ramstk.db.program module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.db.html#module-ramstk.db">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ramstk.exim.html">ramstk.exim package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.exim.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.exim.html#module-ramstk.exim.export">ramstk.exim.export module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.exim.html#module-ramstk.exim.imports">ramstk.exim.imports module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.exim.html#module-ramstk.exim">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ramstk.models.html">ramstk.models package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.models.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.models.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.models.html#module-ramstk.models.tables">ramstk.models.tables module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.models.html#module-ramstk.models">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ramstk.views.html">ramstk.views package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.views.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.views.html#module-ramstk.views">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-ramstk.configuration">
+<span id="ramstk-configuration-module"></span><h2>ramstk.configuration module<a class="headerlink" href="#module-ramstk.configuration" title="Permalink to this headline">¶</a></h2>
+<p>Configuration information and methods for RAMSTK.</p>
+<dl class="py class">
+<dt id="ramstk.configuration.RAMSTKSiteConfiguration">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.configuration.</code><code class="sig-name descname">RAMSTKSiteConfiguration</code><a class="reference internal" href="../_modules/ramstk/configuration.html#RAMSTKSiteConfiguration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.configuration.RAMSTKSiteConfiguration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Class for site-wide RAMSTK configuration settings.</p>
+<dl class="py method">
+<dt id="ramstk.configuration.RAMSTKSiteConfiguration.do_create_site_configuration">
+<code class="sig-name descname">do_create_site_configuration</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/configuration.html#RAMSTKSiteConfiguration.do_create_site_configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.configuration.RAMSTKSiteConfiguration.do_create_site_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the default site configuration file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.configuration.RAMSTKSiteConfiguration.get_site_configuration">
+<code class="sig-name descname">get_site_configuration</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/configuration.html#RAMSTKSiteConfiguration.get_site_configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.configuration.RAMSTKSiteConfiguration.get_site_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the site configuration file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.configuration.RAMSTKSiteConfiguration.set_site_directories">
+<code class="sig-name descname">set_site_directories</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/configuration.html#RAMSTKSiteConfiguration.set_site_directories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.configuration.RAMSTKSiteConfiguration.set_site_directories" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the site-wide RAMSTK directories.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.configuration.RAMSTKUserConfiguration">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.configuration.</code><code class="sig-name descname">RAMSTKUserConfiguration</code><a class="reference internal" href="../_modules/ramstk/configuration.html#RAMSTKUserConfiguration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.configuration.RAMSTKUserConfiguration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>RAMSTK configuration class.</p>
+<p>Attributes of the Configuration class are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>RAMSTK_FORMAT_FILE</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Dictionary containing the path to the format
+files to use for various widgets.  Keys are the name of the RAMSTK
+work stream module, values are the absolute path to the format file
+for that work stream module.</p></li>
+<li><p><strong>RAMSTK_COLORS</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Dictionary containing the colors to use for
+various widgets.</p></li>
+<li><p><strong>RAMSTK_COM_INFO</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – <p>Dictionary for the RAMSTK common database
+connection information.  The information contained is:</p>
+<blockquote>
+<div><table class="docutils align-default">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 76%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Information</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>host</p></td>
+<td><p>Host name</p></td>
+</tr>
+<tr class="row-odd"><td><p>port</p></td>
+<td><p>Host port</p></td>
+</tr>
+<tr class="row-even"><td><p>database</p></td>
+<td><p>Database name</p></td>
+</tr>
+<tr class="row-odd"><td><p>user</p></td>
+<td><p>User name</p></td>
+</tr>
+<tr class="row-even"><td><p>password</p></td>
+<td><p>User password</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</p></li>
+<li><p><a class="reference internal" href="#ramstk.configuration.RAMSTKUserConfiguration.RAMSTK_PROG_INFO" title="ramstk.configuration.RAMSTKUserConfiguration.RAMSTK_PROG_INFO"><strong>RAMSTK_PROG_INFO</strong></a> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – <p>Dictionary for RAMSTK Program database
+connection information.  The information contained is:</p>
+<blockquote>
+<div><table class="docutils align-default">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 76%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Information</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>host</p></td>
+<td><p>Host name</p></td>
+</tr>
+<tr class="row-odd"><td><p>port</p></td>
+<td><p>Host port</p></td>
+</tr>
+<tr class="row-even"><td><p>database</p></td>
+<td><p>Database name</p></td>
+</tr>
+<tr class="row-odd"><td><p>user</p></td>
+<td><p>User name</p></td>
+</tr>
+<tr class="row-even"><td><p>password</p></td>
+<td><p>User password</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</p></li>
+<li><p><strong>RAMSTK_TABPOS</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – <p>Dictionary containing the location of tabs in the
+three main Gtk.Notebook() widgets.  Can be one of:</p>
+<blockquote>
+<div><ul>
+<li><p>Top</p></li>
+<li><p>Bottom</p></li>
+<li><p>Left</p></li>
+<li><p>Right</p></li>
+</ul>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 41%" />
+<col style="width: 27%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Notebook</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>listbook</p></td>
+<td><p>Module Book</p></td>
+<td><p><em>top</em></p></td>
+</tr>
+<tr class="row-odd"><td><p>modulebook</p></td>
+<td><p>Work Book</p></td>
+<td><p><em>bottom</em></p></td>
+</tr>
+<tr class="row-even"><td><p>workbook</p></td>
+<td><p>List Book</p></td>
+<td><p><em>bottom</em></p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</p></li>
+<li><p><strong>RAMSTK_SEVERITY</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Dictionary for failure severity categories.</p></li>
+<li><p><strong>RAMSTK_HAZARDS</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Dictionary for potential hazards.</p></li>
+<li><p><strong>RAMSTK_REQUIREMENT_TYPES</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Dictionary of requirement types.</p></li>
+<li><p><strong>RAMSTK_RPN_SEVERITY</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Dictionary for RPN Severity categories.</p></li>
+<li><p><strong>RAMSTK_RPN_OCCURRENCE</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Dictionary for RPN Occurrence categories.</p></li>
+<li><p><strong>RAMSTK_RPN_DETECTION</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Dictionary for RPN Detection categories.</p></li>
+<li><p><strong>RAMSTK_MODULES</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – <p>Dictionary of active modules in the open RAMSTK
+Program database.  Where 1 = active and 0 = inactive.  Keys are:</p>
+<blockquote>
+<div><ul>
+<li><p>Function</p></li>
+<li><p>Hardware</p></li>
+<li><p>Requirements</p></li>
+<li><p>Revision</p></li>
+<li><p>Validation</p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>RAMSTK_PAGE_NUMBER</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – Dictionary indicating which page each RAMSTK
+module occupies in the ModuleBook.</p></li>
+<li><p><strong>RAMSTK_RISK_POINTS</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – <p>List for risk level cutoffs.  Cutoffs are:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 79%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Index</p></th>
+<th class="head"><p>Risk Level Cutoff Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>Low to medium</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>Medium to high</p></td>
+</tr>
+</tbody>
+</table>
+</p></li>
+<li><p><strong>RAMSTK_HR_MULTIPLIER</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – The failure rate multiplier.  All failure
+rates will be multiplied by this value for display.  This allows
+failure rates to display without using scientific notation.  Set to one
+to use scientific notation.  Default value is <em>1000000.0</em>.</p></li>
+<li><p><strong>RAMSTK_MTIME</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – The default mission time for new RAMSTK Programs.</p></li>
+<li><p><strong>RAMSTK_DEC_PLACES</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Number of decimal places to show in numerical
+results.  Default value is <em>6</em>.</p></li>
+<li><p><strong>RAMSTK_MODE_SOURCE</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – <p>Indicator variable used to determine which
+failure mode source to use.  Sources are:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>FMD-97</p></li>
+<li><p>MIL-STD-338</p></li>
+</ol>
+</div></blockquote>
+</p></li>
+<li><p><strong>RAMSTK_CONF_DIR</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Path to the directory containing configuration
+files used by RAMSTK.</p></li>
+<li><p><strong>RAMSTK_DATA_DIR</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Path to the directory containing data files used
+by RAMSTK.</p></li>
+<li><p><strong>RAMSTK_ICON_DIR</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Path to the directory containing icon files used
+by RAMSTK.</p></li>
+<li><p><strong>RAMSTK_LOG_DIR</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Path to the directory containing log files used
+by RAMSTK.</p></li>
+<li><p><a class="reference internal" href="#ramstk.configuration.RAMSTKUserConfiguration.RAMSTK_PROG_DIR" title="ramstk.configuration.RAMSTKUserConfiguration.RAMSTK_PROG_DIR"><strong>RAMSTK_PROG_DIR</strong></a> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Path to the base directory containing RAMSTK
+Program database files.  This is only used when the backend is SQLite3.</p></li>
+<li><p><strong>RAMSTK_GUI_LAYOUT</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – <p>Layout of the GUI to use.  Possible options
+are:</p>
+<blockquote>
+<div><ul>
+<li><dl class="simple">
+<dt>basic - a single window embedded with the Module Book, Work Book,</dt><dd><p>and List Book.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>advanced - multiple windows; one each for the Module Book, Work</dt><dd><p>Book, and List Book.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p>Default value is <em>basic</em>.</p>
+</p></li>
+<li><p><strong>RAMSTK_COM_BACKEND</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – <p>RAMSTK common database backend to use.
+Options are:</p>
+<blockquote>
+<div><ul>
+<li><p>mysql (future)</p></li>
+<li><p>sqlite</p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>RAMSTK_BACKEND</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – <p>RAMSTK Program database backend to use.  Options
+are:</p>
+<blockquote>
+<div><ul>
+<li><p>mysql (future)</p></li>
+<li><p>sqlite</p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>RAMSTK_LOCALE</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The language locale to use with RAMSTK.  Default
+value is <em>en_US</em>.</p></li>
+<li><p><strong>RAMSTK_OS</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The operating system RAMSTK is currently running on.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="ramstk.configuration.RAMSTKUserConfiguration.RAMSTK_PROG_DIR">
+<code class="sig-name descname">RAMSTK_PROG_DIR</code><em class="property">: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></em><a class="headerlink" href="#ramstk.configuration.RAMSTKUserConfiguration.RAMSTK_PROG_DIR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.configuration.RAMSTKUserConfiguration.RAMSTK_PROG_INFO">
+<code class="sig-name descname">RAMSTK_PROG_INFO</code><em class="property">: Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">]</span></em><a class="headerlink" href="#ramstk.configuration.RAMSTKUserConfiguration.RAMSTK_PROG_INFO" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.configuration.RAMSTKUserConfiguration.do_create_user_configuration">
+<code class="sig-name descname">do_create_user_configuration</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/configuration.html#RAMSTKUserConfiguration.do_create_user_configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.configuration.RAMSTKUserConfiguration.do_create_user_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the default user configuration file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.configuration.RAMSTKUserConfiguration.get_user_configuration">
+<code class="sig-name descname">get_user_configuration</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/configuration.html#RAMSTKUserConfiguration.get_user_configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.configuration.RAMSTKUserConfiguration.get_user_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the RAMSTK user configuration file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.configuration.RAMSTKUserConfiguration.set_user_configuration">
+<code class="sig-name descname">set_user_configuration</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/configuration.html#RAMSTKUserConfiguration.set_user_configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.configuration.RAMSTKUserConfiguration.set_user_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write changes to the user’s configuration file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.configuration.RAMSTKUserConfiguration.set_user_directories">
+<code class="sig-name descname">set_user_directories</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/configuration.html#RAMSTKUserConfiguration.set_user_directories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.configuration.RAMSTKUserConfiguration.set_user_directories" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the user-specific configuration directories.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.exceptions">
+<span id="ramstk-exceptions-module"></span><h2>ramstk.exceptions module<a class="headerlink" href="#module-ramstk.exceptions" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTK Exceptions Module.</p>
+<dl class="py exception">
+<dt id="ramstk.exceptions.DataAccessError">
+<em class="property">exception </em><code class="sig-prename descclassname">ramstk.exceptions.</code><code class="sig-name descname">DataAccessError</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/exceptions.html#DataAccessError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.exceptions.DataAccessError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.exceptions.RAMSTKError" title="ramstk.exceptions.RAMSTKError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.exceptions.RAMSTKError</span></code></a></p>
+<p>Exception raised when attempting to access non-existent data.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="ramstk.exceptions.OutOfRangeError">
+<em class="property">exception </em><code class="sig-prename descclassname">ramstk.exceptions.</code><code class="sig-name descname">OutOfRangeError</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/exceptions.html#OutOfRangeError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.exceptions.OutOfRangeError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.exceptions.RAMSTKError" title="ramstk.exceptions.RAMSTKError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.exceptions.RAMSTKError</span></code></a></p>
+<p>Exception raised when an input value is outside legal limits.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="ramstk.exceptions.RAMSTKError">
+<em class="property">exception </em><code class="sig-prename descclassname">ramstk.exceptions.</code><code class="sig-name descname">RAMSTKError</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span> <span class="o">=</span> <span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/exceptions.html#RAMSTKError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.exceptions.RAMSTKError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Basic exception for errors raised by RAMSTK.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.logger">
+<span id="ramstk-logger-module"></span><h2>ramstk.logger module<a class="headerlink" href="#module-ramstk.logger" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTK Logger Module.</p>
+<dl class="py class">
+<dt id="ramstk.logger.RAMSTKLogManager">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.logger.</code><code class="sig-name descname">RAMSTKLogManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">log_file</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/logger.html#RAMSTKLogManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.logger.RAMSTKLogManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Class to manage logging of RAMSTK messages.</p>
+<dl class="py method">
+<dt id="ramstk.logger.RAMSTKLogManager.do_create_logger">
+<code class="sig-name descname">do_create_logger</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">logger_name</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">log_level</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">to_tty</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/logger.html#RAMSTKLogManager.do_create_logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.logger.RAMSTKLogManager.do_create_logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a logger instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>logger_name</strong> – the name of the logger used in the application.</p></li>
+<li><p><strong>log_level</strong> – the level of messages to log.</p></li>
+<li><p><strong>to_tty</strong> – boolean indicating whether this logger will
+also dump messages to the terminal.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.logger.RAMSTKLogManager.do_log_critical">
+<code class="sig-name descname">do_log_critical</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">logger_name</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">message</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/logger.html#RAMSTKLogManager.do_log_critical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.logger.RAMSTKLogManager.do_log_critical" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log CRITICAL level messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>logger_name</strong> – the name of the logger used in the application.</p></li>
+<li><p><strong>message</strong> – the message to log.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.logger.RAMSTKLogManager.do_log_debug">
+<code class="sig-name descname">do_log_debug</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">logger_name</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">message</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/logger.html#RAMSTKLogManager.do_log_debug"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.logger.RAMSTKLogManager.do_log_debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log DEBUG level messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>logger_name</strong> – the name of the logger used in the application.</p></li>
+<li><p><strong>message</strong> – the message to log.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.logger.RAMSTKLogManager.do_log_error">
+<code class="sig-name descname">do_log_error</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">logger_name</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">message</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/logger.html#RAMSTKLogManager.do_log_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.logger.RAMSTKLogManager.do_log_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log ERROR level messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>logger_name</strong> – the name of the logger used in the application.</p></li>
+<li><p><strong>message</strong> – the message to log.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.logger.RAMSTKLogManager.do_log_exception">
+<code class="sig-name descname">do_log_exception</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">logger_name</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">exception</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/logger.html#RAMSTKLogManager.do_log_exception"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.logger.RAMSTKLogManager.do_log_exception" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log EXCEPTIONS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>logger_name</strong> – the name of the logger used in the application.</p></li>
+<li><p><strong>exception</strong> – the exception to log.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.logger.RAMSTKLogManager.do_log_info">
+<code class="sig-name descname">do_log_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">logger_name</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">message</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/logger.html#RAMSTKLogManager.do_log_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.logger.RAMSTKLogManager.do_log_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log INFO level messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>logger_name</strong> – the name of the logger used in the application.</p></li>
+<li><p><strong>message</strong> – the message to log.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.logger.RAMSTKLogManager.do_log_warning">
+<code class="sig-name descname">do_log_warning</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">logger_name</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">message</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/logger.html#RAMSTKLogManager.do_log_warning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.logger.RAMSTKLogManager.do_log_warning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log WARN level messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>logger_name</strong> – the name of the logger used in the application.</p></li>
+<li><p><strong>message</strong> – the message to log.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.logger.RAMSTKLogManager.loggers">
+<code class="sig-name descname">loggers</code><em class="property">: Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.9)">logging.Logger</a><span class="p">]</span></em><em class="property"> = {}</em><a class="headerlink" href="#ramstk.logger.RAMSTKLogManager.loggers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.ramstk">
+<span id="ramstk-ramstk-module"></span><h2>ramstk.ramstk module<a class="headerlink" href="#module-ramstk.ramstk" title="Permalink to this headline">¶</a></h2>
+<p>The RAMSTK program manager.</p>
+<dl class="py class">
+<dt id="ramstk.ramstk.RAMSTKProgramManager">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.ramstk.</code><code class="sig-name descname">RAMSTKProgramManager</code><a class="reference internal" href="../_modules/ramstk/ramstk.html#RAMSTKProgramManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.ramstk.RAMSTKProgramManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>The RAMSTK program manager class.</p>
+<p>The RAMSTK program manager is responsible for managing all the analysis,
+data, and matrix managers associated with the RAMSTK program database that
+is currently open.  The attributes of a RAMSTK program manager are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dic_managers</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – a dict containing the instances of all the
+analysis, data, and matrix managers associated with the currently
+active run of RAMSTK.  The first key is the workstream module name
+which has a dict as a value.  The key of this second dict is the type
+of manager (analysis, data, matrix) and the value will be the instance
+of the applicable manager.</p></li>
+<li><p><strong>program_dao</strong> – the BaseDatabase() object that will connect to the
+RAMSTK program database.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ramstk.ramstk.RAMSTKProgramManager.do_close_program">
+<code class="sig-name descname">do_close_program</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/ramstk.html#RAMSTKProgramManager.do_close_program"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.ramstk.RAMSTKProgramManager.do_close_program" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the open RAMSTK Program database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p>AttributeError if a database isn’t open.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.ramstk.RAMSTKProgramManager.do_create_program">
+<code class="sig-name descname">do_create_program</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">program_db</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.db.html#ramstk.db.base.BaseDatabase" title="ramstk.db.base.BaseDatabase">ramstk.db.base.BaseDatabase</a></span></em>, <em class="sig-param"><span class="n">database</span><span class="p">:</span> <span class="n">Dict</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/ramstk.html#RAMSTKProgramManager.do_create_program"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.ramstk.RAMSTKProgramManager.do_create_program" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new RAMSTK Program database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>program_db</strong> (<a class="reference internal" href="ramstk.db.html#ramstk.db.base.BaseDatabase" title="ramstk.db.base.BaseDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.db.base.BaseDatabase</span></code></a>) – the BaseDatabase() that is to be used to create and
+connect to the new RAMSTK program database.</p></li>
+<li><p><strong>database</strong> – a dict containing the database connection
+arguments.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.ramstk.RAMSTKProgramManager.do_open_program">
+<code class="sig-name descname">do_open_program</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">program_db</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.db.html#ramstk.db.base.BaseDatabase" title="ramstk.db.base.BaseDatabase">ramstk.db.base.BaseDatabase</a></span></em>, <em class="sig-param"><span class="n">database</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/ramstk.html#RAMSTKProgramManager.do_open_program"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.ramstk.RAMSTKProgramManager.do_open_program" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open an RAMSTK Program database for analyses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>program_db</strong> – the BaseDatabase() that is to be used to create and
+connect to the new RAMSTK program database.</p></li>
+<li><p><strong>database</strong> – a dictionary of parameters to pass to the DAO.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.ramstk.RAMSTKProgramManager.do_save_program">
+<em class="property">static </em><code class="sig-name descname">do_save_program</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/ramstk.html#RAMSTKProgramManager.do_save_program"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.ramstk.RAMSTKProgramManager.do_save_program" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the open RAMSTK Program database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.utilities">
+<span id="ramstk-utilities-module"></span><h2>ramstk.utilities module<a class="headerlink" href="#module-ramstk.utilities" title="Permalink to this headline">¶</a></h2>
+<p>Utility functions for interacting with the RAMSTK application.</p>
+<dl class="py function">
+<dt id="ramstk.utilities.boolean_to_integer">
+<code class="sig-prename descclassname">ramstk.utilities.</code><code class="sig-name descname">boolean_to_integer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">boolean</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a><a class="reference internal" href="../_modules/ramstk/utilities.html#boolean_to_integer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.utilities.boolean_to_integer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert boolean representations of TRUE/FALSE to an integer value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>boolean</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – the boolean to convert.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>_result</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ramstk.utilities.date_to_ordinal">
+<code class="sig-prename descclassname">ramstk.utilities.</code><code class="sig-name descname">date_to_ordinal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">date</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a><a class="reference internal" href="../_modules/ramstk/utilities.html#date_to_ordinal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.utilities.date_to_ordinal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert date strings to ordinal dates for use in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>date</strong> – the date string to convert.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>ordinal representation of the passed date.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ramstk.utilities.dir_exists">
+<code class="sig-prename descclassname">ramstk.utilities.</code><code class="sig-name descname">dir_exists</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">directory</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a><a class="reference internal" href="../_modules/ramstk/utilities.html#dir_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.utilities.dir_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a directory exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>directory</strong> – a string representing the directory path to check
+for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>False if the directory does not exist, True otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ramstk.utilities.file_exists">
+<code class="sig-prename descclassname">ramstk.utilities.</code><code class="sig-name descname">file_exists</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_file</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a><a class="reference internal" href="../_modules/ramstk/utilities.html#file_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.utilities.file_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a file exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>_file</strong> – a string representing the filepath to check for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the file exists, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ramstk.utilities.get_install_prefix">
+<code class="sig-prename descclassname">ramstk.utilities.</code><code class="sig-name descname">get_install_prefix</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><a class="reference internal" href="../_modules/ramstk/utilities.html#get_install_prefix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.utilities.get_install_prefix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the prefix that this code was installed into.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ramstk.utilities.integer_to_boolean">
+<code class="sig-prename descclassname">ramstk.utilities.</code><code class="sig-name descname">integer_to_boolean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">integer</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a><a class="reference internal" href="../_modules/ramstk/utilities.html#integer_to_boolean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.utilities.integer_to_boolean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert an integer to boolean value.</p>
+<p>Any value greater than zero is returned as True, all others are returned as
+False.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>integer</strong> – the integer to convert.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>_result</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+<dt class="field-even">Raise</dt>
+<dd class="field-even"><p>TypeError if passed a string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ramstk.utilities.none_to_default">
+<code class="sig-prename descclassname">ramstk.utilities.</code><code class="sig-name descname">none_to_default</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field</span><span class="p">:</span> <span class="n">Any</span></em>, <em class="sig-param"><span class="n">default</span><span class="p">:</span> <span class="n">Any</span></em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="../_modules/ramstk/utilities.html#none_to_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.utilities.none_to_default" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert None values into default values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field</strong> – the original value that may be None.</p></li>
+<li><p><strong>default</strong> – the new, default, value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>field; the new value if field is None, the old value
+otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ramstk.utilities.none_to_string">
+<code class="sig-prename descclassname">ramstk.utilities.</code><code class="sig-name descname">none_to_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><a class="reference internal" href="../_modules/ramstk/utilities.html#none_to_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.utilities.none_to_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert None types to an empty string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>string</strong> – the string to convert.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>string; the converted string.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ramstk.utilities.ordinal_to_date">
+<code class="sig-prename descclassname">ramstk.utilities.</code><code class="sig-name descname">ordinal_to_date</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ordinal</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><a class="reference internal" href="../_modules/ramstk/utilities.html#ordinal_to_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.utilities.ordinal_to_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert ordinal dates to date strings in ISO-8601 format.</p>
+<p>Defaults to the current date if a bad value is passed as the argument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ordinal</strong> – the ordinal date to convert.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the ISO-8601 date representation of the passed ordinal.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ramstk.utilities.split_string">
+<code class="sig-prename descclassname">ramstk.utilities.</code><code class="sig-name descname">split_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">]</span><a class="reference internal" href="../_modules/ramstk/utilities.html#split_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.utilities.split_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split a colon-delimited string into its constituent parts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>string</strong> – the colon delimited string that needs to be split into
+a list.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>_strlist</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of strings</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ramstk.utilities.string_to_boolean">
+<code class="sig-prename descclassname">ramstk.utilities.</code><code class="sig-name descname">string_to_boolean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a><a class="reference internal" href="../_modules/ramstk/utilities.html#string_to_boolean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.utilities.string_to_boolean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert string representations of TRUE/FALSE to an boolean value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>string</strong> – the string to convert.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>_result</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ramstk" title="Permalink to this headline">¶</a></h2>
+<p>Reliability, Availability, Maintainability, and Safety ToolKit package.</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">ramstk package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-ramstk.configuration">ramstk.configuration module</a></li>
+<li><a class="reference internal" href="#module-ramstk.exceptions">ramstk.exceptions module</a></li>
+<li><a class="reference internal" href="#module-ramstk.logger">ramstk.logger module</a></li>
+<li><a class="reference internal" href="#module-ramstk.ramstk">ramstk.ramstk module</a></li>
+<li><a class="reference internal" href="#module-ramstk.utilities">ramstk.utilities module</a></li>
+<li><a class="reference internal" href="#module-ramstk">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="modules.html"
+                        title="previous chapter">ramstk</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ramstk.analyses.html"
+                        title="next chapter">ramstk.analyses package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/ramstk.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ramstk.analyses.html" title="ramstk.analyses package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="ramstk"
+             accesskey="P">previous</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

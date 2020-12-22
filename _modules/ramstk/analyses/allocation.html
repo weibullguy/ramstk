@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.analyses.allocation &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    
+    <script src="../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.analyses.allocation</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.analyses.Allocation.py is part of the RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2019 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;Reliability Allocation Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">exp</span><span class="p">,</span> <span class="n">log</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+
+
+<span class="k">def</span> <span class="nf">_calculate_agree_apportionment</span><span class="p">(</span>
+        <span class="n">parent_goal</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Perform an AGREE apportionment of a reliability requirement.</span>
+
+<span class="sd">    .. note:: the AGREE method uses MTBF as the parent goal.</span>
+
+<span class="sd">    :param parent_goal: the reliability goal of the parent hardware</span>
+<span class="sd">        item.</span>
+<span class="sd">    :param attributes: the Allocation attributes dict.</span>
+<span class="sd">    :return: attributes; the Allocation attributes dict with updated</span>
+<span class="sd">    values.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_time_i</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;mission_time&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;duty_cycle&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="mf">100.0</span>
+    <span class="n">_weight_factor</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;weight_factor&#39;</span><span class="p">])</span>
+    <span class="n">_n_sub_systems</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;n_sub_systems&#39;</span><span class="p">])</span>
+    <span class="n">_n_sub_elements</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;n_sub_elements&#39;</span><span class="p">])</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_mtbf_alloc</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="p">((</span><span class="n">_n_sub_systems</span> <span class="o">*</span> <span class="n">_weight_factor</span> <span class="o">*</span> <span class="n">_time_i</span><span class="p">)</span> <span class="o">/</span>
+                            <span class="p">(</span><span class="n">_n_sub_elements</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">log</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">parent_goal</span><span class="p">)))))</span>
+        <span class="n">_hazard_rate_alloc</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">_mtbf_alloc</span>
+        <span class="n">_reliability_alloc</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">_hazard_rate_alloc</span> <span class="o">*</span> <span class="n">_time_i</span><span class="p">)</span>
+
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;mtbf_alloc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_mtbf_alloc</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_alloc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_hazard_rate_alloc</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;reliability_alloc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_reliability_alloc</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+            <span class="s1">&#39;fail_allocate_reliability&#39;</span><span class="p">,</span>
+            <span class="n">error_message</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Failed to apportion reliability using the &quot;</span>
+                           <span class="s2">&quot;AGREE method; zero or negative value &quot;</span>
+                           <span class="s2">&quot;passed for parent hardware item&#39;s goal.  &quot;</span>
+                           <span class="s2">&quot;Parent goal is </span><span class="si">{0:f}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">parent_goal</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;fail_allocate_reliability&#39;</span><span class="p">,</span>
+                        <span class="n">error_message</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Failed to apportion reliability using &quot;</span>
+                                       <span class="s2">&quot;the AGREE method; one or more inputs &quot;</span>
+                                       <span class="s2">&quot;had a value of 0.0.  Subsystem &quot;</span>
+                                       <span class="s2">&quot;mission time=</span><span class="si">{0:f}</span><span class="s2">, weight &quot;</span>
+                                       <span class="s2">&quot;factor=</span><span class="si">{1:f}</span><span class="s2">, # of subsystems=</span><span class="si">{2:d}</span><span class="s2">, &quot;</span>
+                                       <span class="s2">&quot;# of subelements=</span><span class="si">{3:d}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                           <span class="n">_time_i</span><span class="p">,</span> <span class="n">_weight_factor</span><span class="p">,</span>
+                                           <span class="n">_n_sub_systems</span><span class="p">,</span> <span class="n">_n_sub_elements</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">attributes</span>
+
+
+<span class="k">def</span> <span class="nf">_calculate_arinc_apportionment</span><span class="p">(</span>
+        <span class="n">parent_goal</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Perform an ARINC apportionment of the reliability requirement.</span>
+
+<span class="sd">    :param parent_goal: the reliability goal of the parent hardware</span>
+<span class="sd">        item.</span>
+<span class="sd">    :param attributes: the Allocation attributes dict.</span>
+<span class="sd">    :return: attributes; the Allocation attributes dict with updated</span>
+<span class="sd">        values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_mission_time</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;mission_time&#39;</span><span class="p">])</span>
+    <span class="n">_weight_factor</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;weight_factor&#39;</span><span class="p">])</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_hazard_rate_alloc</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">_weight_factor</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">parent_goal</span><span class="p">)</span>
+        <span class="n">_mtbf_alloc</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">_hazard_rate_alloc</span>
+        <span class="n">_reliability_alloc</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">_hazard_rate_alloc</span>
+                                      <span class="o">*</span> <span class="n">_mission_time</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+        <span class="n">_mtbf_alloc</span> <span class="o">=</span> <span class="n">_hazard_rate_alloc</span> <span class="o">=</span> <span class="n">_reliability_alloc</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;fail_allocate_reliability&#39;</span><span class="p">,</span>
+                        <span class="n">error_message</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Failed to apportion reliability using &quot;</span>
+                                       <span class="s2">&quot;the ARINC method; one or more inputs &quot;</span>
+                                       <span class="s2">&quot;had a value of 0.0. Weight &quot;</span>
+                                       <span class="s2">&quot;factor=</span><span class="si">{0:f}</span><span class="s2"> and parent &quot;</span>
+                                       <span class="s2">&quot;goal=</span><span class="si">{1:f}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                           <span class="n">_weight_factor</span><span class="p">,</span> <span class="n">parent_goal</span><span class="p">))</span>
+
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;mtbf_alloc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_mtbf_alloc</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_alloc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_hazard_rate_alloc</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;reliability_alloc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_reliability_alloc</span>
+
+    <span class="k">return</span> <span class="n">attributes</span>
+
+
+<span class="k">def</span> <span class="nf">_calculate_equal_apportionment</span><span class="p">(</span>
+        <span class="n">parent_goal</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Perform an equal apportionment of the reliability goal.</span>
+
+<span class="sd">    :param parent_goal: the reliability goal of the parent hardware</span>
+<span class="sd">        item.</span>
+<span class="sd">    :param attributes: the Allocation attributes dict.</span>
+<span class="sd">    :return: attributes; the Allocation attributes dict with updated</span>
+<span class="sd">        values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_mission_time</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;mission_time&#39;</span><span class="p">])</span>
+    <span class="n">_weight_factor</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;weight_factor&#39;</span><span class="p">])</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_reliability_alloc</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">parent_goal</span><span class="p">)</span><span class="o">**</span><span class="n">_weight_factor</span>
+        <span class="n">_hazard_rate_alloc</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">log</span><span class="p">(</span><span class="n">_reliability_alloc</span><span class="p">)</span>
+                                   <span class="o">/</span> <span class="n">_mission_time</span><span class="p">)</span>
+        <span class="n">_mtbf_alloc</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">_hazard_rate_alloc</span>
+
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_alloc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_hazard_rate_alloc</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;mtbf_alloc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_mtbf_alloc</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;reliability_alloc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_reliability_alloc</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">parent_goal</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;fail_allocate_reliability&#39;</span><span class="p">,</span>
+                <span class="n">error_message</span><span class="o">=</span><span class="p">(</span>
+                    <span class="s2">&quot;Failed to apportion reliability using the &quot;</span>
+                    <span class="s2">&quot;equal method; a negative or zero value passed for &quot;</span>
+                    <span class="s2">&quot;parent hardware item&#39;s goal.  Parent goal is &quot;</span>
+                    <span class="s2">&quot;</span><span class="si">{0:f}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">parent_goal</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+            <span class="s1">&#39;fail_allocate_reliability&#39;</span><span class="p">,</span>
+            <span class="n">error_message</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Failed to apportion reliability using the &quot;</span>
+                           <span class="s2">&quot;equal method; a negative or zero value passed for &quot;</span>
+                           <span class="s2">&quot;parent hardware item&#39;s goal.  Parent goal is &quot;</span>
+                           <span class="s2">&quot;</span><span class="si">{0:f}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">parent_goal</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+            <span class="s1">&#39;fail_allocate_reliability&#39;</span><span class="p">,</span>
+            <span class="n">error_message</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Failed to apportion reliability using the &quot;</span>
+                           <span class="s2">&quot;equal method; one or more inputs had a &quot;</span>
+                           <span class="s2">&quot;value of 0.0. Mission time=</span><span class="si">{0:f}</span><span class="s2"> and &quot;</span>
+                           <span class="s2">&quot;weight factor=</span><span class="si">{1:f}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                               <span class="n">_mission_time</span><span class="p">,</span> <span class="n">_weight_factor</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">attributes</span>
+
+
+<span class="k">def</span> <span class="nf">_calculate_foo_apportionment</span><span class="p">(</span><span class="n">parent_goal</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">cum_weight</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                 <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Perform a feasibility of objectives (FOO) apportionment.</span>
+
+<span class="sd">    :param parent_goal: the failure rate requirement to allocate.</span>
+<span class="sd">    :param cum_weight: the cumulative weight factor for all subordinate</span>
+<span class="sd">        assemblies.</span>
+<span class="sd">    :param attributes: the Allocation attributes dict.</span>
+<span class="sd">    :return: attributes; the Allocation attributes dict with updated</span>
+<span class="sd">        values.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_intricacy</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;int_factor&#39;</span><span class="p">])</span>
+    <span class="n">_state_of_art</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;soa_factor&#39;</span><span class="p">])</span>
+    <span class="n">_operating_time</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;op_time_factor&#39;</span><span class="p">])</span>
+    <span class="n">_environment</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;env_factor&#39;</span><span class="p">])</span>
+    <span class="n">_mission_time</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;mission_time&#39;</span><span class="p">])</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_weight_factor</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="p">(</span><span class="n">_intricacy</span> <span class="o">*</span> <span class="n">_state_of_art</span> <span class="o">*</span> <span class="n">_operating_time</span>
+                               <span class="o">*</span> <span class="n">_environment</span><span class="p">)</span>
+        <span class="n">_percent_weight_factor</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="p">(</span><span class="n">_weight_factor</span> <span class="o">/</span> <span class="nb">int</span><span class="p">(</span><span class="n">cum_weight</span><span class="p">))</span>
+
+        <span class="n">_hazard_rate_alloc</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">_percent_weight_factor</span> <span class="o">*</span> <span class="n">parent_goal</span>
+        <span class="n">_mtbf_alloc</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">_hazard_rate_alloc</span>
+        <span class="n">_reliability_alloc</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">_hazard_rate_alloc</span>
+                                      <span class="o">*</span> <span class="n">_mission_time</span><span class="p">)</span>
+
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;weight_factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_weight_factor</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;percent_weight_factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_percent_weight_factor</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_alloc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_hazard_rate_alloc</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;mtbf_alloc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_mtbf_alloc</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;reliability_alloc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_reliability_alloc</span>
+    <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+            <span class="s1">&#39;fail_allocate_reliability&#39;</span><span class="p">,</span>
+            <span class="n">error_message</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Failed to apportion reliability using the &quot;</span>
+                           <span class="s2">&quot;Feasibility of Objectives method; one or &quot;</span>
+                           <span class="s2">&quot;more inputs had a value of 0.0. &quot;</span>
+                           <span class="s2">&quot;Intricacy factor=</span><span class="si">{0:d}</span><span class="s2">, state of the art &quot;</span>
+                           <span class="s2">&quot;factor=</span><span class="si">{1:d}</span><span class="s2">, operating time &quot;</span>
+                           <span class="s2">&quot;factor=</span><span class="si">{2:d}</span><span class="s2">, environment factor=</span><span class="si">{3:d}</span><span class="s2">, &quot;</span>
+                           <span class="s2">&quot;cumulative weight=</span><span class="si">{4:d}</span><span class="s2">, parent &quot;</span>
+                           <span class="s2">&quot;goal=</span><span class="si">{5:f}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_intricacy</span><span class="p">,</span> <span class="n">_state_of_art</span><span class="p">,</span>
+                                                 <span class="n">_operating_time</span><span class="p">,</span> <span class="n">_environment</span><span class="p">,</span>
+                                                 <span class="n">cum_weight</span><span class="p">,</span> <span class="n">parent_goal</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">attributes</span>
+
+
+<span class="k">def</span> <span class="nf">_from_hazard_rate_goal</span><span class="p">(</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the MTBF and reliability goals given the hazard rate goal.</span>
+
+<span class="sd">    :param attributes: the Allocation attributes dict.</span>
+<span class="sd">    :return: attributes; the Allocation attributes dict with updated</span>
+<span class="sd">        values.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_mission_time</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;mission_time&#39;</span><span class="p">])</span>
+    <span class="n">_hazard_rate_goal</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_goal&#39;</span><span class="p">])</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_mtbf_goal</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">_hazard_rate_goal</span>
+        <span class="n">_reliability_goal</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">_mission_time</span> <span class="o">/</span> <span class="n">_mtbf_goal</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+        <span class="n">_mtbf_goal</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">_reliability_goal</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+            <span class="s1">&#39;fail_calculate_allocation_goal&#39;</span><span class="p">,</span>
+            <span class="n">error_message</span><span class="o">=</span><span class="p">(</span>
+                <span class="s2">&quot;Failed to calculate the MTBF and &quot;</span>
+                <span class="s2">&quot;reliability goals given the hazard rate &quot;</span>
+                <span class="s2">&quot;goal.  Hazard rate goal=</span><span class="si">{0:f}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_hazard_rate_goal</span><span class="p">))</span>
+
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;mtbf_goal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_mtbf_goal</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;reliability_goal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_reliability_goal</span>
+
+    <span class="k">return</span> <span class="n">attributes</span>
+
+
+<span class="k">def</span> <span class="nf">_from_mtbf_goal</span><span class="p">(</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the hazard rate and reliability goals given the MTBF goal.</span>
+
+<span class="sd">    :param attributes: the Allocation attributes dict.</span>
+<span class="sd">    :return: attributes; the Allocation attributes dict with updated</span>
+<span class="sd">        values.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_mission_time</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;mission_time&#39;</span><span class="p">])</span>
+    <span class="n">_mtbf_goal</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;mtbf_goal&#39;</span><span class="p">])</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_hazard_rate_goal</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">_mtbf_goal</span>
+        <span class="n">_reliability_goal</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">_mission_time</span> <span class="o">/</span> <span class="n">_mtbf_goal</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+        <span class="n">_hazard_rate_goal</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">_reliability_goal</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+            <span class="s1">&#39;fail_calculate_allocation_goal&#39;</span><span class="p">,</span>
+            <span class="n">error_message</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Failed to calculate the hazard rate and &quot;</span>
+                           <span class="s2">&quot;reliability goals given the MTBF goal.  &quot;</span>
+                           <span class="s2">&quot;MTBF goal=</span><span class="si">{0:f}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_mtbf_goal</span><span class="p">))</span>
+
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_goal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_hazard_rate_goal</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;reliability_goal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_reliability_goal</span>
+
+    <span class="k">return</span> <span class="n">attributes</span>
+
+
+<span class="k">def</span> <span class="nf">_from_reliability_goal</span><span class="p">(</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the MTBF and hazard rate goals given the reliability goal.</span>
+
+<span class="sd">    :param attributes: the Allocation attributes dict.</span>
+<span class="sd">    :return: attributes; the Allocation attributes dict with updated</span>
+<span class="sd">        values.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_mission_time</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;mission_time&#39;</span><span class="p">])</span>
+    <span class="n">_reliability_goal</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;reliability_goal&#39;</span><span class="p">])</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_mtbf_goal</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">_mission_time</span> <span class="o">/</span> <span class="n">log</span><span class="p">(</span><span class="n">_reliability_goal</span><span class="p">))</span>
+        <span class="n">_hazard_rate_goal</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">_mtbf_goal</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">_mtbf_goal</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">_hazard_rate_goal</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+            <span class="s1">&#39;fail_calculate_allocation_goal&#39;</span><span class="p">,</span>
+            <span class="n">error_message</span><span class="o">=</span><span class="p">(</span>
+                <span class="s2">&quot;Failed to calculate the MTBF and &quot;</span>
+                <span class="s2">&quot;hazard rate goals given the reliability &quot;</span>
+                <span class="s2">&quot;goal.  Reliability goal=</span><span class="si">{0:f}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_reliability_goal</span><span class="p">))</span>
+
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_goal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_hazard_rate_goal</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;mtbf_goal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_mtbf_goal</span>
+
+    <span class="k">return</span> <span class="n">attributes</span>
+
+
+<div class="viewcode-block" id="do_allocate_reliability"><a class="viewcode-back" href="../../../api/ramstk.analyses.html#ramstk.analyses.allocation.do_allocate_reliability">[docs]</a><span class="k">def</span> <span class="nf">do_allocate_reliability</span><span class="p">(</span><span class="n">parent_goal</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">cumulative_weight</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                            <span class="o">**</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the reliability allocation.</span>
+
+<span class="sd">    :param parent_goal: the parent assembly&#39;s reliability goal.</span>
+<span class="sd">    :param cumulative_weight: the cumulative weighting of all child assemblies.</span>
+<span class="sd">        Used for feasibility of objectives method only.</span>
+<span class="sd">    :param attributes: the Allocation attributes dict.</span>
+<span class="sd">    :return: attributes; the Allocation attributes dict with updated values.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;allocation_method_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">_calculate_equal_apportionment</span><span class="p">(</span><span class="n">parent_goal</span><span class="p">,</span> <span class="n">attributes</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;allocation_method_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">_calculate_agree_apportionment</span><span class="p">(</span><span class="n">parent_goal</span><span class="p">,</span> <span class="n">attributes</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;allocation_method_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">_calculate_arinc_apportionment</span><span class="p">(</span><span class="n">parent_goal</span><span class="p">,</span> <span class="n">attributes</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;allocation_method_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">_calculate_foo_apportionment</span><span class="p">(</span><span class="n">parent_goal</span><span class="p">,</span>
+                                                  <span class="n">cumulative_weight</span><span class="p">,</span>
+                                                  <span class="n">attributes</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_hazard_rate_alloc</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">_mtbf_alloc</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">_reliability_alloc</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_alloc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_hazard_rate_alloc</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;mtbf_alloc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_mtbf_alloc</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;reliability_alloc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_reliability_alloc</span>
+
+    <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_allocate_reliability&#39;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="do_calculate_goals"><a class="viewcode-back" href="../../../api/ramstk.analyses.html#ramstk.analyses.allocation.do_calculate_goals">[docs]</a><span class="k">def</span> <span class="nf">do_calculate_goals</span><span class="p">(</span><span class="o">**</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the other two reliability metrics from the third.</span>
+
+<span class="sd">    :param attributes: the Allocation attributes dict.</span>
+<span class="sd">    :return: attributes; the Allocation attributes dict with updated values.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;goal_measure_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Reliability goal</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">_from_reliability_goal</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;goal_measure_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># Hazard rate goal</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">_from_hazard_rate_goal</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;goal_measure_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># MTBF goal</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">_from_mtbf_goal</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_hazard_rate_goal</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">_mtbf_goal</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">_reliability_goal</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_goal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_hazard_rate_goal</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;mtbf_goal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_mtbf_goal</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;reliability_goal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_reliability_goal</span>
+
+    <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_calculate_allocation_goals&#39;</span><span class="p">,</span>
+                    <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">attributes</span></div>
+
+
+<div class="viewcode-block" id="get_allocation_goal"><a class="viewcode-back" href="../../../api/ramstk.analyses.html#ramstk.analyses.allocation.get_allocation_goal">[docs]</a><span class="k">def</span> <span class="nf">get_allocation_goal</span><span class="p">(</span><span class="o">**</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Retrieve the reliability goal for the hardware item.</span>
+
+<span class="sd">    Used to select the goal for the parent hardware item prior to calling</span>
+<span class="sd">    the do_allocate_reliability() method.</span>
+
+<span class="sd">    :param attributes: the selected item&#39;s Allocation attributes dict.</span>
+<span class="sd">    :return: _goal</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: KeyError if the passed attributes dict doesn&#39;t contain the</span>
+<span class="sd">        allocation_method_id, hazard_rate_goal, and/or reliability_goal key.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;allocation_method_id&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]:</span>  <span class="c1"># ARINC or FOO.</span>
+        <span class="n">_goal</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_goal&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_goal</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;reliability_goal&#39;</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">_goal</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.requirement package &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ramstk.views.gtk3.revision package" href="ramstk.views.gtk3.revision.html" />
+    <link rel="prev" title="ramstk.views.gtk3.pof package" href="ramstk.views.gtk3.pof.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../contributing.html" >Contributing</a> &#187;</li>
+          <li><a href="modules.html" >ramstk</a> &#187;</li>
+          <li><a href="ramstk.html" >ramstk package</a> &#187;</li>
+          <li><a href="ramstk.views.html" >ramstk.views package</a> &#187;</li>
+          <li><a href="ramstk.views.gtk3.html" accesskey="U">ramstk.views.gtk3 package</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="ramstk-views-gtk3-requirement-package">
+<h1>ramstk.views.gtk3.requirement package<a class="headerlink" href="#ramstk-views-gtk3-requirement-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-ramstk.views.gtk3.requirement.listview">
+<span id="ramstk-views-gtk3-requirement-listview-module"></span><h2>ramstk.views.gtk3.requirement.listview module<a class="headerlink" href="#module-ramstk.views.gtk3.requirement.listview" title="Permalink to this headline">¶</a></h2>
+<p>The RAMSTK Requirement List View Module.</p>
+<dl class="py class">
+<dt id="ramstk.views.gtk3.requirement.listview.RequirementHardware">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.requirement.listview.</code><code class="sig-name descname">RequirementHardware</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">configuration</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.configuration.RAMSTKUserConfiguration" title="ramstk.configuration.RAMSTKUserConfiguration">ramstk.configuration.RAMSTKUserConfiguration</a></span></em>, <em class="sig-param"><span class="n">logger</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.logger.RAMSTKLogManager" title="ramstk.logger.RAMSTKLogManager">ramstk.logger.RAMSTKLogManager</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/views/gtk3/requirement/listview.html#RequirementHardware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.requirement.listview.RequirementHardware" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKListView" title="ramstk.views.gtk3.widgets.baseview.RAMSTKListView"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.widgets.baseview.RAMSTKListView</span></code></a></p>
+<p>Display all the Requirement::Hardware matrix for the selected Revision.</p>
+<p>The attributes of the Requirement::Hardware Matrix View are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_module</strong> – the name of the module.</p></li>
+<li><p><strong>_lst_callbacks</strong> – the list of callback methods for the view’s
+toolbar buttons and pop-up menu.  The methods are listed in the order
+they appear on the toolbar and pop-up menu.</p></li>
+<li><p><strong>_lst_icons</strong> – the list of icons for the view’s toolbar buttons
+and pop-up menu.  The icons are listed in the order they appear on the
+toolbar and pop-up menu.</p></li>
+<li><p><strong>_lst_mnu_labels</strong> – the list of labels for the view’s pop-up
+menu.  The labels are listed in the order they appear in the menu.</p></li>
+<li><p><strong>_lst_tooltips</strong> – the list of tooltips for the view’s
+toolbar buttons and pop-up menu.  The tooltips are listed in the
+order they appear on the toolbar or pop-up menu.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.views.gtk3.requirement.moduleview">
+<span id="ramstk-views-gtk3-requirement-moduleview-module"></span><h2>ramstk.views.gtk3.requirement.moduleview module<a class="headerlink" href="#module-ramstk.views.gtk3.requirement.moduleview" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTK Requirement GTK3 module view.</p>
+<dl class="py class">
+<dt id="ramstk.views.gtk3.requirement.moduleview.ModuleView">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.requirement.moduleview.</code><code class="sig-name descname">ModuleView</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">configuration</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.configuration.RAMSTKUserConfiguration" title="ramstk.configuration.RAMSTKUserConfiguration">ramstk.configuration.RAMSTKUserConfiguration</a></span></em>, <em class="sig-param"><span class="n">logger</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.logger.RAMSTKLogManager" title="ramstk.logger.RAMSTKLogManager">ramstk.logger.RAMSTKLogManager</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/views/gtk3/requirement/moduleview.html#ModuleView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.requirement.moduleview.ModuleView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKModuleView" title="ramstk.views.gtk3.widgets.baseview.RAMSTKModuleView"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.widgets.baseview.RAMSTKModuleView</span></code></a></p>
+<p>Display Requirement attribute data in the RAMSTK Module Book.</p>
+<p>The Requirement Module View displays all the Requirements associated with
+the connected RAMSTK Program in a flat list.  The attributes of a
+Requirement Module View are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_module</strong> – the name of the module.</p></li>
+<li><p><strong>_lst_mnu_labels</strong> – the list of labels for the view’s pop-up
+menu.  The labels are listed in the order they appear in the menu.</p></li>
+<li><p><strong>_lst_tooltips</strong> – the list of tooltips for the view’s
+toolbar buttons and pop-up menu.  The tooltips are listed in the
+order they appear on the toolbar or pop-up menu.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ramstk.views.gtk3.requirement.moduleview.ModuleView.do_request_delete">
+<code class="sig-name descname">do_request_delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_ModuleView__button</span><span class="p">:</span> <span class="n">gi.overrides.Gtk.ToolButton</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/requirement/moduleview.html#ModuleView.do_request_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.requirement.moduleview.ModuleView.do_request_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request to delete selected record from the RAMSTKRequirement table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>__button</strong> – the Gtk.ToolButton() that called this method.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.requirement.moduleview.RequirementPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.requirement.moduleview.</code><code class="sig-name descname">RequirementPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/requirement/moduleview.html#RequirementPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.requirement.moduleview.RequirementPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel" title="ramstk.views.gtk3.widgets.panel.RAMSTKPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.widgets.panel.RAMSTKPanel</span></code></a></p>
+<p>Panel to display hierarchy of requirements.</p>
+<dl class="py method">
+<dt id="ramstk.views.gtk3.requirement.moduleview.RequirementPanel.do_set_callbacks">
+<code class="sig-name descname">do_set_callbacks</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/requirement/moduleview.html#RequirementPanel.do_set_callbacks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.requirement.moduleview.RequirementPanel.do_set_callbacks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set callbacks for the requirement module view.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.views.gtk3.requirement.workview">
+<span id="ramstk-views-gtk3-requirement-workview-module"></span><h2>ramstk.views.gtk3.requirement.workview module<a class="headerlink" href="#module-ramstk.views.gtk3.requirement.workview" title="Permalink to this headline">¶</a></h2>
+<p>The RAMSTK GTK3 Requirement Work View.</p>
+<dl class="py class">
+<dt id="ramstk.views.gtk3.requirement.workview.AnalysisPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.requirement.workview.</code><code class="sig-name descname">AnalysisPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/requirement/workview.html#AnalysisPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.requirement.workview.AnalysisPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel" title="ramstk.views.gtk3.widgets.panel.RAMSTKPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.widgets.panel.RAMSTKPanel</span></code></a></p>
+<p>Meta-Class for requirement analysis panels.</p>
+<dl class="py method">
+<dt id="ramstk.views.gtk3.requirement.workview.AnalysisPanel.do_set_callbacks">
+<code class="sig-name descname">do_set_callbacks</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/requirement/workview.html#AnalysisPanel.do_set_callbacks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.requirement.workview.AnalysisPanel.do_set_callbacks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the callback methods and functions for the panel widgets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.views.gtk3.requirement.workview.AnalysisPanel.do_set_properties">
+<code class="sig-name descname">do_set_properties</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span>Any<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/requirement/workview.html#AnalysisPanel.do_set_properties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.requirement.workview.AnalysisPanel.do_set_properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the properties of the panel widgets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.requirement.workview.ClarityPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.requirement.workview.</code><code class="sig-name descname">ClarityPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/requirement/workview.html#ClarityPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.requirement.workview.ClarityPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.requirement.workview.AnalysisPanel" title="ramstk.views.gtk3.requirement.workview.AnalysisPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.requirement.workview.AnalysisPanel</span></code></a></p>
+<p>Panel to display clarity questions about the selected Requirement.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.requirement.workview.CompletenessPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.requirement.workview.</code><code class="sig-name descname">CompletenessPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/requirement/workview.html#CompletenessPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.requirement.workview.CompletenessPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.requirement.workview.AnalysisPanel" title="ramstk.views.gtk3.requirement.workview.AnalysisPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.requirement.workview.AnalysisPanel</span></code></a></p>
+<p>Panel to display completeness questions about selected Requirement.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.requirement.workview.ConsistencyPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.requirement.workview.</code><code class="sig-name descname">ConsistencyPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/requirement/workview.html#ConsistencyPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.requirement.workview.ConsistencyPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.requirement.workview.AnalysisPanel" title="ramstk.views.gtk3.requirement.workview.AnalysisPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.requirement.workview.AnalysisPanel</span></code></a></p>
+<p>Panel to display consistency questions about selected Requirement.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.requirement.workview.GeneralData">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.requirement.workview.</code><code class="sig-name descname">GeneralData</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">configuration</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.configuration.RAMSTKUserConfiguration" title="ramstk.configuration.RAMSTKUserConfiguration">ramstk.configuration.RAMSTKUserConfiguration</a></span></em>, <em class="sig-param"><span class="n">logger</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.logger.RAMSTKLogManager" title="ramstk.logger.RAMSTKLogManager">ramstk.logger.RAMSTKLogManager</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/views/gtk3/requirement/workview.html#GeneralData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.requirement.workview.GeneralData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKWorkView" title="ramstk.views.gtk3.widgets.baseview.RAMSTKWorkView"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.widgets.baseview.RAMSTKWorkView</span></code></a></p>
+<p>Display general Requirement attribute data in the RAMSTK Work Book.</p>
+<p>The Requirement Work View displays all the general data attributes for the
+selected Requirement.  The attributes of a requirement Work View are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_module</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – the name of the module.</p></li>
+<li><p><strong>_tablabel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – the text to display on the tab’s label.</p></li>
+<li><p><strong>_tabtooltip</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – the text to display as the tab’s tooltip.</p></li>
+<li><p><strong>_lst_callbacks</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the list of callback methods for the view’s
+toolbar buttons and pop-up menu.  The methods are listed in the order
+they appear on the toolbar and pop-up menu.</p></li>
+<li><p><strong>_lst_icons</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the list of icons for the view’s toolbar buttons
+and pop-up menu.  The icons are listed in the order they appear on the
+toolbar and pop-up menu.</p></li>
+<li><p><strong>_lst_mnu_labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the list of labels for the view’s pop-up
+menu.  The labels are listed in the order they appear in the menu.</p></li>
+<li><p><strong>_lst_tooltips</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the list of tooltips for the view’s
+toolbar buttons and pop-up menu.  The tooltips are listed in the
+order they appear on the toolbar or pop-up menu.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.requirement.workview.GeneralDataPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.requirement.workview.</code><code class="sig-name descname">GeneralDataPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/requirement/workview.html#GeneralDataPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.requirement.workview.GeneralDataPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel" title="ramstk.views.gtk3.widgets.panel.RAMSTKPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.widgets.panel.RAMSTKPanel</span></code></a></p>
+<p>Panel to display general data about the selected Requirement.</p>
+<dl class="py method">
+<dt id="ramstk.views.gtk3.requirement.workview.GeneralDataPanel.do_load_priorities">
+<code class="sig-name descname">do_load_priorities</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/requirement/workview.html#GeneralDataPanel.do_load_priorities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.requirement.workview.GeneralDataPanel.do_load_priorities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the priority RAMSTKComboBox().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.views.gtk3.requirement.workview.GeneralDataPanel.do_load_requirement_types">
+<code class="sig-name descname">do_load_requirement_types</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">requirement_types</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a><span class="p">, </span>Tuple<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/requirement/workview.html#GeneralDataPanel.do_load_requirement_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.requirement.workview.GeneralDataPanel.do_load_requirement_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the requirement types RAMSTKComboBox().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>requirement_types</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.views.gtk3.requirement.workview.GeneralDataPanel.do_load_workgroups">
+<code class="sig-name descname">do_load_workgroups</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">workgroups</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a><span class="p">, </span>Tuple<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/requirement/workview.html#GeneralDataPanel.do_load_workgroups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.requirement.workview.GeneralDataPanel.do_load_workgroups" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the workgroups RAMSTKComboBox().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>workgroups</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.requirement.workview.RequirementAnalysis">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.requirement.workview.</code><code class="sig-name descname">RequirementAnalysis</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">configuration</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.configuration.RAMSTKUserConfiguration" title="ramstk.configuration.RAMSTKUserConfiguration">ramstk.configuration.RAMSTKUserConfiguration</a></span></em>, <em class="sig-param"><span class="n">logger</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.logger.RAMSTKLogManager" title="ramstk.logger.RAMSTKLogManager">ramstk.logger.RAMSTKLogManager</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/views/gtk3/requirement/workview.html#RequirementAnalysis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.requirement.workview.RequirementAnalysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKWorkView" title="ramstk.views.gtk3.widgets.baseview.RAMSTKWorkView"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.widgets.baseview.RAMSTKWorkView</span></code></a></p>
+<p>Display Requirement attribute data in the RAMSTK Work Book.</p>
+<p>The Requirement Analysis Work View displays all the analysis questions and
+answers for the selected Requirement. The attributes of a Requirement
+Analysis Work View are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_module</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – the name of the module.</p></li>
+<li><p><strong>_tablabel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – the text to display on the tab’s label.</p></li>
+<li><p><strong>_tabtooltip</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – the text to display as the tab’s tooltip.</p></li>
+<li><p><strong>_lst_callbacks</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the list of callback methods for the view’s
+toolbar buttons and pop-up menu.  The methods are listed in the order
+they appear on the toolbar and pop-up menu.</p></li>
+<li><p><strong>_lst_icons</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the list of icons for the view’s toolbar buttons
+and pop-up menu.  The icons are listed in the order they appear on the
+toolbar and pop-up menu.</p></li>
+<li><p><strong>_lst_mnu_labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the list of labels for the view’s pop-up
+menu.  The labels are listed in the order they appear in the menu.</p></li>
+<li><p><strong>_lst_tooltips</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the list of tooltips for the view’s
+toolbar buttons and pop-up menu.  The tooltips are listed in the
+order they appear on the toolbar or pop-up menu.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.requirement.workview.VerifiabilityPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.requirement.workview.</code><code class="sig-name descname">VerifiabilityPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/requirement/workview.html#VerifiabilityPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.requirement.workview.VerifiabilityPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ramstk.views.gtk3.requirement.workview.AnalysisPanel" title="ramstk.views.gtk3.requirement.workview.AnalysisPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.requirement.workview.AnalysisPanel</span></code></a></p>
+<p>Panel to display verifiability questions about selected Requirement.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.views.gtk3.requirement">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ramstk.views.gtk3.requirement" title="Permalink to this headline">¶</a></h2>
+<p>The RAMSTK GTK3 revision package.</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">ramstk.views.gtk3.requirement package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.requirement.listview">ramstk.views.gtk3.requirement.listview module</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.requirement.moduleview">ramstk.views.gtk3.requirement.moduleview module</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.requirement.workview">ramstk.views.gtk3.requirement.workview module</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.requirement">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ramstk.views.gtk3.pof.html"
+                        title="previous chapter">ramstk.views.gtk3.pof package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ramstk.views.gtk3.revision.html"
+                        title="next chapter">ramstk.views.gtk3.revision package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/ramstk.views.gtk3.requirement.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ramstk.views.gtk3.revision.html" title="ramstk.views.gtk3.revision package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ramstk.views.gtk3.pof.html" title="ramstk.views.gtk3.pof package"
+             accesskey="P">previous</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

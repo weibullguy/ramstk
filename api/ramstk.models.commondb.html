@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.models.commondb package &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ramstk.models.programdb package" href="ramstk.models.programdb.html" />
+    <link rel="prev" title="ramstk.models package" href="ramstk.models.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../contributing.html" >Contributing</a> &#187;</li>
+          <li><a href="modules.html" >ramstk</a> &#187;</li>
+          <li><a href="ramstk.html" >ramstk package</a> &#187;</li>
+          <li><a href="ramstk.models.html" accesskey="U">ramstk.models package</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="ramstk-models-commondb-package">
+<h1>ramstk.models.commondb package<a class="headerlink" href="#ramstk-models-commondb-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-ramstk.models.commondb.ramstkcategory">
+<span id="ramstk-models-commondb-ramstkcategory-module"></span><h2>ramstk.models.commondb.ramstkcategory module<a class="headerlink" href="#module-ramstk.models.commondb.ramstkcategory" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTKCategory Table Module.</p>
+<dl class="py class">
+<dt id="ramstk.models.commondb.ramstkcategory.RAMSTKCategory">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.models.commondb.ramstkcategory.</code><code class="sig-name descname">RAMSTKCategory</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkcategory.html#RAMSTKCategory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkcategory.RAMSTKCategory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code>, <a class="reference internal" href="ramstk.models.html#ramstk.models.tables.RAMSTKBaseTable" title="ramstk.models.tables.RAMSTKBaseTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.models.tables.RAMSTKBaseTable</span></code></a></p>
+<p>Class to represent table ramstk_category in the RAMSTK Common database.</p>
+<p>Types of category are:     # 1. Hardware     # 2. Risk     # 3.
+Software     # 4. Incident     # 5. Action</p>
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkcategory.RAMSTKCategory.category_id">
+<code class="sig-name descname">category_id</code><a class="headerlink" href="#ramstk.models.commondb.ramstkcategory.RAMSTKCategory.category_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkcategory.RAMSTKCategory.category_type">
+<code class="sig-name descname">category_type</code><a class="headerlink" href="#ramstk.models.commondb.ramstkcategory.RAMSTKCategory.category_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkcategory.RAMSTKCategory.description">
+<code class="sig-name descname">description</code><a class="headerlink" href="#ramstk.models.commondb.ramstkcategory.RAMSTKCategory.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.models.commondb.ramstkcategory.RAMSTKCategory.get_attributes">
+<code class="sig-name descname">get_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkcategory.html#RAMSTKCategory.get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkcategory.RAMSTKCategory.get_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve current values of the RAMSTKCategory data model attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>{category_id, name, description, category_type, value,
+harsh_ir_limit, mild_ir_limit, harsh_pr_limit,
+mild_pr_limit, harsh_vr_limit, mild_vr_limit,
+harsh_deltat_limit, mild_deltat_limit, harsh_maxt_limit,
+mild_maxt_limit} pairs</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkcategory.RAMSTKCategory.harsh_deltat_limit">
+<code class="sig-name descname">harsh_deltat_limit</code><a class="headerlink" href="#ramstk.models.commondb.ramstkcategory.RAMSTKCategory.harsh_deltat_limit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkcategory.RAMSTKCategory.harsh_ir_limit">
+<code class="sig-name descname">harsh_ir_limit</code><a class="headerlink" href="#ramstk.models.commondb.ramstkcategory.RAMSTKCategory.harsh_ir_limit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkcategory.RAMSTKCategory.harsh_maxt_limit">
+<code class="sig-name descname">harsh_maxt_limit</code><a class="headerlink" href="#ramstk.models.commondb.ramstkcategory.RAMSTKCategory.harsh_maxt_limit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkcategory.RAMSTKCategory.harsh_pr_limit">
+<code class="sig-name descname">harsh_pr_limit</code><a class="headerlink" href="#ramstk.models.commondb.ramstkcategory.RAMSTKCategory.harsh_pr_limit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkcategory.RAMSTKCategory.harsh_vr_limit">
+<code class="sig-name descname">harsh_vr_limit</code><a class="headerlink" href="#ramstk.models.commondb.ramstkcategory.RAMSTKCategory.harsh_vr_limit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkcategory.RAMSTKCategory.mild_deltat_limit">
+<code class="sig-name descname">mild_deltat_limit</code><a class="headerlink" href="#ramstk.models.commondb.ramstkcategory.RAMSTKCategory.mild_deltat_limit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkcategory.RAMSTKCategory.mild_ir_limit">
+<code class="sig-name descname">mild_ir_limit</code><a class="headerlink" href="#ramstk.models.commondb.ramstkcategory.RAMSTKCategory.mild_ir_limit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkcategory.RAMSTKCategory.mild_maxt_limit">
+<code class="sig-name descname">mild_maxt_limit</code><a class="headerlink" href="#ramstk.models.commondb.ramstkcategory.RAMSTKCategory.mild_maxt_limit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkcategory.RAMSTKCategory.mild_pr_limit">
+<code class="sig-name descname">mild_pr_limit</code><a class="headerlink" href="#ramstk.models.commondb.ramstkcategory.RAMSTKCategory.mild_pr_limit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkcategory.RAMSTKCategory.mild_vr_limit">
+<code class="sig-name descname">mild_vr_limit</code><a class="headerlink" href="#ramstk.models.commondb.ramstkcategory.RAMSTKCategory.mild_vr_limit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkcategory.RAMSTKCategory.mode">
+<code class="sig-name descname">mode</code><a class="headerlink" href="#ramstk.models.commondb.ramstkcategory.RAMSTKCategory.mode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkcategory.RAMSTKCategory.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#ramstk.models.commondb.ramstkcategory.RAMSTKCategory.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkcategory.RAMSTKCategory.subcategory">
+<code class="sig-name descname">subcategory</code><a class="headerlink" href="#ramstk.models.commondb.ramstkcategory.RAMSTKCategory.subcategory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkcategory.RAMSTKCategory.value">
+<code class="sig-name descname">value</code><a class="headerlink" href="#ramstk.models.commondb.ramstkcategory.RAMSTKCategory.value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.models.commondb.ramstkcondition">
+<span id="ramstk-models-commondb-ramstkcondition-module"></span><h2>ramstk.models.commondb.ramstkcondition module<a class="headerlink" href="#module-ramstk.models.commondb.ramstkcondition" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTKCondition Table Module.</p>
+<dl class="py class">
+<dt id="ramstk.models.commondb.ramstkcondition.RAMSTKCondition">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.models.commondb.ramstkcondition.</code><code class="sig-name descname">RAMSTKCondition</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkcondition.html#RAMSTKCondition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkcondition.RAMSTKCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code>, <a class="reference internal" href="ramstk.models.html#ramstk.models.tables.RAMSTKBaseTable" title="ramstk.models.tables.RAMSTKBaseTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.models.tables.RAMSTKBaseTable</span></code></a></p>
+<p>Class to represent ramstk_condition in RAMSTK Common database.</p>
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkcondition.RAMSTKCondition.condition_id">
+<code class="sig-name descname">condition_id</code><a class="headerlink" href="#ramstk.models.commondb.ramstkcondition.RAMSTKCondition.condition_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkcondition.RAMSTKCondition.condition_type">
+<code class="sig-name descname">condition_type</code><a class="headerlink" href="#ramstk.models.commondb.ramstkcondition.RAMSTKCondition.condition_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkcondition.RAMSTKCondition.description">
+<code class="sig-name descname">description</code><a class="headerlink" href="#ramstk.models.commondb.ramstkcondition.RAMSTKCondition.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.models.commondb.ramstkcondition.RAMSTKCondition.get_attributes">
+<code class="sig-name descname">get_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkcondition.html#RAMSTKCondition.get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkcondition.RAMSTKCondition.get_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve current values of RAMSTKCondition data model attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>{condition_id, description, condition_type} pairs</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.models.commondb.ramstkfailuremode">
+<span id="ramstk-models-commondb-ramstkfailuremode-module"></span><h2>ramstk.models.commondb.ramstkfailuremode module<a class="headerlink" href="#module-ramstk.models.commondb.ramstkfailuremode" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTKFailureMode Table Module.</p>
+<dl class="py class">
+<dt id="ramstk.models.commondb.ramstkfailuremode.RAMSTKFailureMode">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.models.commondb.ramstkfailuremode.</code><code class="sig-name descname">RAMSTKFailureMode</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkfailuremode.html#RAMSTKFailureMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkfailuremode.RAMSTKFailureMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code>, <a class="reference internal" href="ramstk.models.html#ramstk.models.tables.RAMSTKBaseTable" title="ramstk.models.tables.RAMSTKBaseTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.models.tables.RAMSTKBaseTable</span></code></a></p>
+<p>Class to represent ramstk_failuremode in the RAMSTK Common database.</p>
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkfailuremode.RAMSTKFailureMode.category">
+<code class="sig-name descname">category</code><a class="headerlink" href="#ramstk.models.commondb.ramstkfailuremode.RAMSTKFailureMode.category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkfailuremode.RAMSTKFailureMode.category_id">
+<code class="sig-name descname">category_id</code><a class="headerlink" href="#ramstk.models.commondb.ramstkfailuremode.RAMSTKFailureMode.category_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkfailuremode.RAMSTKFailureMode.description">
+<code class="sig-name descname">description</code><a class="headerlink" href="#ramstk.models.commondb.ramstkfailuremode.RAMSTKFailureMode.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.models.commondb.ramstkfailuremode.RAMSTKFailureMode.get_attributes">
+<code class="sig-name descname">get_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkfailuremode.html#RAMSTKFailureMode.get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkfailuremode.RAMSTKFailureMode.get_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve current values of RAMSTKFailureMode data model attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>{failuremode_id, description, type} pairs</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkfailuremode.RAMSTKFailureMode.mode_id">
+<code class="sig-name descname">mode_id</code><a class="headerlink" href="#ramstk.models.commondb.ramstkfailuremode.RAMSTKFailureMode.mode_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkfailuremode.RAMSTKFailureMode.mode_ratio">
+<code class="sig-name descname">mode_ratio</code><a class="headerlink" href="#ramstk.models.commondb.ramstkfailuremode.RAMSTKFailureMode.mode_ratio" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkfailuremode.RAMSTKFailureMode.source">
+<code class="sig-name descname">source</code><a class="headerlink" href="#ramstk.models.commondb.ramstkfailuremode.RAMSTKFailureMode.source" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkfailuremode.RAMSTKFailureMode.subcategory">
+<code class="sig-name descname">subcategory</code><a class="headerlink" href="#ramstk.models.commondb.ramstkfailuremode.RAMSTKFailureMode.subcategory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkfailuremode.RAMSTKFailureMode.subcategory_id">
+<code class="sig-name descname">subcategory_id</code><a class="headerlink" href="#ramstk.models.commondb.ramstkfailuremode.RAMSTKFailureMode.subcategory_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.models.commondb.ramstkgroup">
+<span id="ramstk-models-commondb-ramstkgroup-module"></span><h2>ramstk.models.commondb.ramstkgroup module<a class="headerlink" href="#module-ramstk.models.commondb.ramstkgroup" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTKGroup Table Module.</p>
+<dl class="py class">
+<dt id="ramstk.models.commondb.ramstkgroup.RAMSTKGroup">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.models.commondb.ramstkgroup.</code><code class="sig-name descname">RAMSTKGroup</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkgroup.html#RAMSTKGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkgroup.RAMSTKGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code>, <a class="reference internal" href="ramstk.models.html#ramstk.models.tables.RAMSTKBaseTable" title="ramstk.models.tables.RAMSTKBaseTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.models.tables.RAMSTKBaseTable</span></code></a></p>
+<p>Class to represent the table ramstk_group in the RAMSTK Common database.</p>
+<p>This table shares a Many-to-One relationship with ramstk_user.</p>
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkgroup.RAMSTKGroup.description">
+<code class="sig-name descname">description</code><a class="headerlink" href="#ramstk.models.commondb.ramstkgroup.RAMSTKGroup.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.models.commondb.ramstkgroup.RAMSTKGroup.get_attributes">
+<code class="sig-name descname">get_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkgroup.html#RAMSTKGroup.get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkgroup.RAMSTKGroup.get_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve current values of the RAMSTKGroup data model attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>{workgroup_id, description, group_type} pairs</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkgroup.RAMSTKGroup.group_id">
+<code class="sig-name descname">group_id</code><a class="headerlink" href="#ramstk.models.commondb.ramstkgroup.RAMSTKGroup.group_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkgroup.RAMSTKGroup.group_type">
+<code class="sig-name descname">group_type</code><a class="headerlink" href="#ramstk.models.commondb.ramstkgroup.RAMSTKGroup.group_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.models.commondb.ramstkhazards">
+<span id="ramstk-models-commondb-ramstkhazards-module"></span><h2>ramstk.models.commondb.ramstkhazards module<a class="headerlink" href="#module-ramstk.models.commondb.ramstkhazards" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTKHazard Table Module.</p>
+<dl class="py class">
+<dt id="ramstk.models.commondb.ramstkhazards.RAMSTKHazards">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.models.commondb.ramstkhazards.</code><code class="sig-name descname">RAMSTKHazards</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkhazards.html#RAMSTKHazards"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkhazards.RAMSTKHazards" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code>, <a class="reference internal" href="ramstk.models.html#ramstk.models.tables.RAMSTKBaseTable" title="ramstk.models.tables.RAMSTKBaseTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.models.tables.RAMSTKBaseTable</span></code></a></p>
+<p>Class to represent ramstk_hazard in the RAMSTK Common database.</p>
+<dl class="py method">
+<dt id="ramstk.models.commondb.ramstkhazards.RAMSTKHazards.get_attributes">
+<code class="sig-name descname">get_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkhazards.html#RAMSTKHazards.get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkhazards.RAMSTKHazards.get_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve current values of the RAMSTKHazard data model attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>{hazard_id, category, subcategory} pairs</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkhazards.RAMSTKHazards.hazard_category">
+<code class="sig-name descname">hazard_category</code><a class="headerlink" href="#ramstk.models.commondb.ramstkhazards.RAMSTKHazards.hazard_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkhazards.RAMSTKHazards.hazard_id">
+<code class="sig-name descname">hazard_id</code><a class="headerlink" href="#ramstk.models.commondb.ramstkhazards.RAMSTKHazards.hazard_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkhazards.RAMSTKHazards.hazard_subcategory">
+<code class="sig-name descname">hazard_subcategory</code><a class="headerlink" href="#ramstk.models.commondb.ramstkhazards.RAMSTKHazards.hazard_subcategory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.models.commondb.ramstkloadhistory">
+<span id="ramstk-models-commondb-ramstkloadhistory-module"></span><h2>ramstk.models.commondb.ramstkloadhistory module<a class="headerlink" href="#module-ramstk.models.commondb.ramstkloadhistory" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTKLoadHistory Table.</p>
+<dl class="py class">
+<dt id="ramstk.models.commondb.ramstkloadhistory.RAMSTKLoadHistory">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.models.commondb.ramstkloadhistory.</code><code class="sig-name descname">RAMSTKLoadHistory</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkloadhistory.html#RAMSTKLoadHistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkloadhistory.RAMSTKLoadHistory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code>, <a class="reference internal" href="ramstk.models.html#ramstk.models.tables.RAMSTKBaseTable" title="ramstk.models.tables.RAMSTKBaseTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.models.tables.RAMSTKBaseTable</span></code></a></p>
+<p>Class to represent the table ramstk_load_history.</p>
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkloadhistory.RAMSTKLoadHistory.description">
+<code class="sig-name descname">description</code><a class="headerlink" href="#ramstk.models.commondb.ramstkloadhistory.RAMSTKLoadHistory.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.models.commondb.ramstkloadhistory.RAMSTKLoadHistory.get_attributes">
+<code class="sig-name descname">get_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkloadhistory.html#RAMSTKLoadHistory.get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkloadhistory.RAMSTKLoadHistory.get_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve current values of RAMSTKLoadHistory data model attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>{load_history_id, description} pairs</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkloadhistory.RAMSTKLoadHistory.history_id">
+<code class="sig-name descname">history_id</code><a class="headerlink" href="#ramstk.models.commondb.ramstkloadhistory.RAMSTKLoadHistory.history_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.models.commondb.ramstkmanufacturer">
+<span id="ramstk-models-commondb-ramstkmanufacturer-module"></span><h2>ramstk.models.commondb.ramstkmanufacturer module<a class="headerlink" href="#module-ramstk.models.commondb.ramstkmanufacturer" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTKManufacturer Table Module.</p>
+<dl class="py class">
+<dt id="ramstk.models.commondb.ramstkmanufacturer.RAMSTKManufacturer">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.models.commondb.ramstkmanufacturer.</code><code class="sig-name descname">RAMSTKManufacturer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkmanufacturer.html#RAMSTKManufacturer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkmanufacturer.RAMSTKManufacturer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code>, <a class="reference internal" href="ramstk.models.html#ramstk.models.tables.RAMSTKBaseTable" title="ramstk.models.tables.RAMSTKBaseTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.models.tables.RAMSTKBaseTable</span></code></a></p>
+<p>Class to represent ramstk_manufacturer in the RAMSTK Common database.</p>
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkmanufacturer.RAMSTKManufacturer.cage_code">
+<code class="sig-name descname">cage_code</code><a class="headerlink" href="#ramstk.models.commondb.ramstkmanufacturer.RAMSTKManufacturer.cage_code" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkmanufacturer.RAMSTKManufacturer.description">
+<code class="sig-name descname">description</code><a class="headerlink" href="#ramstk.models.commondb.ramstkmanufacturer.RAMSTKManufacturer.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.models.commondb.ramstkmanufacturer.RAMSTKManufacturer.get_attributes">
+<code class="sig-name descname">get_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkmanufacturer.html#RAMSTKManufacturer.get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkmanufacturer.RAMSTKManufacturer.get_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve current values of RAMSTKManufacturer data model attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>{manufacturer_id, description, location, cage_code} pairs</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkmanufacturer.RAMSTKManufacturer.location">
+<code class="sig-name descname">location</code><a class="headerlink" href="#ramstk.models.commondb.ramstkmanufacturer.RAMSTKManufacturer.location" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkmanufacturer.RAMSTKManufacturer.manufacturer_id">
+<code class="sig-name descname">manufacturer_id</code><a class="headerlink" href="#ramstk.models.commondb.ramstkmanufacturer.RAMSTKManufacturer.manufacturer_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.models.commondb.ramstkmeasurement">
+<span id="ramstk-models-commondb-ramstkmeasurement-module"></span><h2>ramstk.models.commondb.ramstkmeasurement module<a class="headerlink" href="#module-ramstk.models.commondb.ramstkmeasurement" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTKMeasurement Table Module.</p>
+<dl class="py class">
+<dt id="ramstk.models.commondb.ramstkmeasurement.RAMSTKMeasurement">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.models.commondb.ramstkmeasurement.</code><code class="sig-name descname">RAMSTKMeasurement</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkmeasurement.html#RAMSTKMeasurement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkmeasurement.RAMSTKMeasurement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code>, <a class="reference internal" href="ramstk.models.html#ramstk.models.tables.RAMSTKBaseTable" title="ramstk.models.tables.RAMSTKBaseTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.models.tables.RAMSTKBaseTable</span></code></a></p>
+<p>Class to represent ramstk_measurement in the RAMSTK Common database.</p>
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkmeasurement.RAMSTKMeasurement.code">
+<code class="sig-name descname">code</code><a class="headerlink" href="#ramstk.models.commondb.ramstkmeasurement.RAMSTKMeasurement.code" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkmeasurement.RAMSTKMeasurement.description">
+<code class="sig-name descname">description</code><a class="headerlink" href="#ramstk.models.commondb.ramstkmeasurement.RAMSTKMeasurement.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.models.commondb.ramstkmeasurement.RAMSTKMeasurement.get_attributes">
+<code class="sig-name descname">get_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkmeasurement.html#RAMSTKMeasurement.get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkmeasurement.RAMSTKMeasurement.get_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve current values of RAMSTKMeasurement data model attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>{measurement_id, description} pairs.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkmeasurement.RAMSTKMeasurement.measurement_id">
+<code class="sig-name descname">measurement_id</code><a class="headerlink" href="#ramstk.models.commondb.ramstkmeasurement.RAMSTKMeasurement.measurement_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkmeasurement.RAMSTKMeasurement.measurement_type">
+<code class="sig-name descname">measurement_type</code><a class="headerlink" href="#ramstk.models.commondb.ramstkmeasurement.RAMSTKMeasurement.measurement_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.models.commondb.ramstkmethod">
+<span id="ramstk-models-commondb-ramstkmethod-module"></span><h2>ramstk.models.commondb.ramstkmethod module<a class="headerlink" href="#module-ramstk.models.commondb.ramstkmethod" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTKMethod Table Module.</p>
+<dl class="py class">
+<dt id="ramstk.models.commondb.ramstkmethod.RAMSTKMethod">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.models.commondb.ramstkmethod.</code><code class="sig-name descname">RAMSTKMethod</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkmethod.html#RAMSTKMethod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkmethod.RAMSTKMethod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code>, <a class="reference internal" href="ramstk.models.html#ramstk.models.tables.RAMSTKBaseTable" title="ramstk.models.tables.RAMSTKBaseTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.models.tables.RAMSTKBaseTable</span></code></a></p>
+<p>Class to representramstk_method in the RAMSTK Common database.</p>
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkmethod.RAMSTKMethod.description">
+<code class="sig-name descname">description</code><a class="headerlink" href="#ramstk.models.commondb.ramstkmethod.RAMSTKMethod.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.models.commondb.ramstkmethod.RAMSTKMethod.get_attributes">
+<code class="sig-name descname">get_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkmethod.html#RAMSTKMethod.get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkmethod.RAMSTKMethod.get_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve current values of the RAMSTKMethod data model attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>{method_id, name, description, method_type} pairs.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkmethod.RAMSTKMethod.method_id">
+<code class="sig-name descname">method_id</code><a class="headerlink" href="#ramstk.models.commondb.ramstkmethod.RAMSTKMethod.method_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkmethod.RAMSTKMethod.method_type">
+<code class="sig-name descname">method_type</code><a class="headerlink" href="#ramstk.models.commondb.ramstkmethod.RAMSTKMethod.method_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkmethod.RAMSTKMethod.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#ramstk.models.commondb.ramstkmethod.RAMSTKMethod.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.models.commondb.ramstkmodel">
+<span id="ramstk-models-commondb-ramstkmodel-module"></span><h2>ramstk.models.commondb.ramstkmodel module<a class="headerlink" href="#module-ramstk.models.commondb.ramstkmodel" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTKModel Table Module.</p>
+<dl class="py class">
+<dt id="ramstk.models.commondb.ramstkmodel.RAMSTKModel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.models.commondb.ramstkmodel.</code><code class="sig-name descname">RAMSTKModel</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkmodel.html#RAMSTKModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkmodel.RAMSTKModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code>, <a class="reference internal" href="ramstk.models.html#ramstk.models.tables.RAMSTKBaseTable" title="ramstk.models.tables.RAMSTKBaseTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.models.tables.RAMSTKBaseTable</span></code></a></p>
+<p>Class to represent ramstk_model in the RAMSTK Common database.</p>
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkmodel.RAMSTKModel.description">
+<code class="sig-name descname">description</code><a class="headerlink" href="#ramstk.models.commondb.ramstkmodel.RAMSTKModel.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.models.commondb.ramstkmodel.RAMSTKModel.get_attributes">
+<code class="sig-name descname">get_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a><span class="p">]</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkmodel.html#RAMSTKModel.get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkmodel.RAMSTKModel.get_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve current values of the RAMSTKModel data model attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>{model_id, description, model_type} pairs.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkmodel.RAMSTKModel.model_id">
+<code class="sig-name descname">model_id</code><a class="headerlink" href="#ramstk.models.commondb.ramstkmodel.RAMSTKModel.model_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkmodel.RAMSTKModel.model_type">
+<code class="sig-name descname">model_type</code><a class="headerlink" href="#ramstk.models.commondb.ramstkmodel.RAMSTKModel.model_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.models.commondb.ramstkrpn">
+<span id="ramstk-models-commondb-ramstkrpn-module"></span><h2>ramstk.models.commondb.ramstkrpn module<a class="headerlink" href="#module-ramstk.models.commondb.ramstkrpn" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTKRPN Table Module.</p>
+<dl class="py class">
+<dt id="ramstk.models.commondb.ramstkrpn.RAMSTKRPN">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.models.commondb.ramstkrpn.</code><code class="sig-name descname">RAMSTKRPN</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkrpn.html#RAMSTKRPN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkrpn.RAMSTKRPN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code>, <a class="reference internal" href="ramstk.models.html#ramstk.models.tables.RAMSTKBaseTable" title="ramstk.models.tables.RAMSTKBaseTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.models.tables.RAMSTKBaseTable</span></code></a></p>
+<p>Class to represent table ramstk_rpn in the RAMSTK Common database.</p>
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkrpn.RAMSTKRPN.description">
+<code class="sig-name descname">description</code><a class="headerlink" href="#ramstk.models.commondb.ramstkrpn.RAMSTKRPN.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.models.commondb.ramstkrpn.RAMSTKRPN.get_attributes">
+<code class="sig-name descname">get_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkrpn.html#RAMSTKRPN.get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkrpn.RAMSTKRPN.get_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the current values of the RAMSTKRPN data model attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>{}rpn_id, name, description, rpn_type, value} key:value pairs</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkrpn.RAMSTKRPN.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#ramstk.models.commondb.ramstkrpn.RAMSTKRPN.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkrpn.RAMSTKRPN.rpn_id">
+<code class="sig-name descname">rpn_id</code><a class="headerlink" href="#ramstk.models.commondb.ramstkrpn.RAMSTKRPN.rpn_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkrpn.RAMSTKRPN.rpn_type">
+<code class="sig-name descname">rpn_type</code><a class="headerlink" href="#ramstk.models.commondb.ramstkrpn.RAMSTKRPN.rpn_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkrpn.RAMSTKRPN.value">
+<code class="sig-name descname">value</code><a class="headerlink" href="#ramstk.models.commondb.ramstkrpn.RAMSTKRPN.value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.models.commondb.ramstksiteinfo">
+<span id="ramstk-models-commondb-ramstksiteinfo-module"></span><h2>ramstk.models.commondb.ramstksiteinfo module<a class="headerlink" href="#module-ramstk.models.commondb.ramstksiteinfo" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTKSiteInfo Table Module.</p>
+<dl class="py class">
+<dt id="ramstk.models.commondb.ramstksiteinfo.RAMSTKSiteInfo">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.models.commondb.ramstksiteinfo.</code><code class="sig-name descname">RAMSTKSiteInfo</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstksiteinfo.html#RAMSTKSiteInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstksiteinfo.RAMSTKSiteInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code>, <a class="reference internal" href="ramstk.models.html#ramstk.models.tables.RAMSTKBaseTable" title="ramstk.models.tables.RAMSTKBaseTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.models.tables.RAMSTKBaseTable</span></code></a></p>
+<p>Class to represent ramstk_site_info in the RAMSTK Common database.</p>
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstksiteinfo.RAMSTKSiteInfo.expire_on">
+<code class="sig-name descname">expire_on</code><a class="headerlink" href="#ramstk.models.commondb.ramstksiteinfo.RAMSTKSiteInfo.expire_on" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstksiteinfo.RAMSTKSiteInfo.fmea_enabled">
+<code class="sig-name descname">fmea_enabled</code><a class="headerlink" href="#ramstk.models.commondb.ramstksiteinfo.RAMSTKSiteInfo.fmea_enabled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstksiteinfo.RAMSTKSiteInfo.function_enabled">
+<code class="sig-name descname">function_enabled</code><a class="headerlink" href="#ramstk.models.commondb.ramstksiteinfo.RAMSTKSiteInfo.function_enabled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.models.commondb.ramstksiteinfo.RAMSTKSiteInfo.get_attributes">
+<code class="sig-name descname">get_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstksiteinfo.html#RAMSTKSiteInfo.get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstksiteinfo.RAMSTKSiteInfo.get_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve current values of the RAMSTKSiteInfo data model attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>{site_id, product_key, expire_on, function_enabled,
+requirement_enabled, vandv_enabled, fmea_enabled} pairs.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstksiteinfo.RAMSTKSiteInfo.hardware_enabled">
+<code class="sig-name descname">hardware_enabled</code><a class="headerlink" href="#ramstk.models.commondb.ramstksiteinfo.RAMSTKSiteInfo.hardware_enabled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstksiteinfo.RAMSTKSiteInfo.product_key">
+<code class="sig-name descname">product_key</code><a class="headerlink" href="#ramstk.models.commondb.ramstksiteinfo.RAMSTKSiteInfo.product_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstksiteinfo.RAMSTKSiteInfo.requirement_enabled">
+<code class="sig-name descname">requirement_enabled</code><a class="headerlink" href="#ramstk.models.commondb.ramstksiteinfo.RAMSTKSiteInfo.requirement_enabled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstksiteinfo.RAMSTKSiteInfo.site_id">
+<code class="sig-name descname">site_id</code><a class="headerlink" href="#ramstk.models.commondb.ramstksiteinfo.RAMSTKSiteInfo.site_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstksiteinfo.RAMSTKSiteInfo.vandv_enabled">
+<code class="sig-name descname">vandv_enabled</code><a class="headerlink" href="#ramstk.models.commondb.ramstksiteinfo.RAMSTKSiteInfo.vandv_enabled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.models.commondb.ramstkstakeholders">
+<span id="ramstk-models-commondb-ramstkstakeholders-module"></span><h2>ramstk.models.commondb.ramstkstakeholders module<a class="headerlink" href="#module-ramstk.models.commondb.ramstkstakeholders" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTKStakeholders Table Module.</p>
+<dl class="py class">
+<dt id="ramstk.models.commondb.ramstkstakeholders.RAMSTKStakeholders">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.models.commondb.ramstkstakeholders.</code><code class="sig-name descname">RAMSTKStakeholders</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkstakeholders.html#RAMSTKStakeholders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkstakeholders.RAMSTKStakeholders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code>, <a class="reference internal" href="ramstk.models.html#ramstk.models.tables.RAMSTKBaseTable" title="ramstk.models.tables.RAMSTKBaseTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.models.tables.RAMSTKBaseTable</span></code></a></p>
+<p>Class to represent ramstk_stakeholders in the RAMSTK Common database.</p>
+<dl class="py method">
+<dt id="ramstk.models.commondb.ramstkstakeholders.RAMSTKStakeholders.get_attributes">
+<code class="sig-name descname">get_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkstakeholders.html#RAMSTKStakeholders.get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkstakeholders.RAMSTKStakeholders.get_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve current values of RAMSTKStakeholders data model attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>{stakeholders_id, stakeholder} pairs.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkstakeholders.RAMSTKStakeholders.stakeholder">
+<code class="sig-name descname">stakeholder</code><a class="headerlink" href="#ramstk.models.commondb.ramstkstakeholders.RAMSTKStakeholders.stakeholder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkstakeholders.RAMSTKStakeholders.stakeholders_id">
+<code class="sig-name descname">stakeholders_id</code><a class="headerlink" href="#ramstk.models.commondb.ramstkstakeholders.RAMSTKStakeholders.stakeholders_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.models.commondb.ramstkstatus">
+<span id="ramstk-models-commondb-ramstkstatus-module"></span><h2>ramstk.models.commondb.ramstkstatus module<a class="headerlink" href="#module-ramstk.models.commondb.ramstkstatus" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTKStatus Table Module.</p>
+<dl class="py class">
+<dt id="ramstk.models.commondb.ramstkstatus.RAMSTKStatus">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.models.commondb.ramstkstatus.</code><code class="sig-name descname">RAMSTKStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkstatus.html#RAMSTKStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkstatus.RAMSTKStatus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code>, <a class="reference internal" href="ramstk.models.html#ramstk.models.tables.RAMSTKBaseTable" title="ramstk.models.tables.RAMSTKBaseTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.models.tables.RAMSTKBaseTable</span></code></a></p>
+<p>Class to represent ramstk_status in the RAMSTK Common database.</p>
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkstatus.RAMSTKStatus.description">
+<code class="sig-name descname">description</code><a class="headerlink" href="#ramstk.models.commondb.ramstkstatus.RAMSTKStatus.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.models.commondb.ramstkstatus.RAMSTKStatus.get_attributes">
+<code class="sig-name descname">get_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkstatus.html#RAMSTKStatus.get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkstatus.RAMSTKStatus.get_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve current values of the RAMSTKStatus data model attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>{status_id, name, description, status_type} pairs.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkstatus.RAMSTKStatus.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#ramstk.models.commondb.ramstkstatus.RAMSTKStatus.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkstatus.RAMSTKStatus.status_id">
+<code class="sig-name descname">status_id</code><a class="headerlink" href="#ramstk.models.commondb.ramstkstatus.RAMSTKStatus.status_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkstatus.RAMSTKStatus.status_type">
+<code class="sig-name descname">status_type</code><a class="headerlink" href="#ramstk.models.commondb.ramstkstatus.RAMSTKStatus.status_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.models.commondb.ramstksubcategory">
+<span id="ramstk-models-commondb-ramstksubcategory-module"></span><h2>ramstk.models.commondb.ramstksubcategory module<a class="headerlink" href="#module-ramstk.models.commondb.ramstksubcategory" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTKSubCategory Table Module.</p>
+<dl class="py class">
+<dt id="ramstk.models.commondb.ramstksubcategory.RAMSTKSubCategory">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.models.commondb.ramstksubcategory.</code><code class="sig-name descname">RAMSTKSubCategory</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstksubcategory.html#RAMSTKSubCategory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstksubcategory.RAMSTKSubCategory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code>, <a class="reference internal" href="ramstk.models.html#ramstk.models.tables.RAMSTKBaseTable" title="ramstk.models.tables.RAMSTKBaseTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.models.tables.RAMSTKBaseTable</span></code></a></p>
+<p>Class to represent ramstk_subcategory in the RAMSTK Common database.</p>
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstksubcategory.RAMSTKSubCategory.category">
+<code class="sig-name descname">category</code><a class="headerlink" href="#ramstk.models.commondb.ramstksubcategory.RAMSTKSubCategory.category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstksubcategory.RAMSTKSubCategory.category_id">
+<code class="sig-name descname">category_id</code><a class="headerlink" href="#ramstk.models.commondb.ramstksubcategory.RAMSTKSubCategory.category_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstksubcategory.RAMSTKSubCategory.description">
+<code class="sig-name descname">description</code><a class="headerlink" href="#ramstk.models.commondb.ramstksubcategory.RAMSTKSubCategory.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.models.commondb.ramstksubcategory.RAMSTKSubCategory.get_attributes">
+<code class="sig-name descname">get_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstksubcategory.html#RAMSTKSubCategory.get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstksubcategory.RAMSTKSubCategory.get_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve current values of RAMSTKSubCategory data model attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>{category_id, subcategory, description} pairs.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstksubcategory.RAMSTKSubCategory.mode">
+<code class="sig-name descname">mode</code><a class="headerlink" href="#ramstk.models.commondb.ramstksubcategory.RAMSTKSubCategory.mode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstksubcategory.RAMSTKSubCategory.subcategory_id">
+<code class="sig-name descname">subcategory_id</code><a class="headerlink" href="#ramstk.models.commondb.ramstksubcategory.RAMSTKSubCategory.subcategory_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.models.commondb.ramstktype">
+<span id="ramstk-models-commondb-ramstktype-module"></span><h2>ramstk.models.commondb.ramstktype module<a class="headerlink" href="#module-ramstk.models.commondb.ramstktype" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTKType Table Module.</p>
+<dl class="py class">
+<dt id="ramstk.models.commondb.ramstktype.RAMSTKType">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.models.commondb.ramstktype.</code><code class="sig-name descname">RAMSTKType</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstktype.html#RAMSTKType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstktype.RAMSTKType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code>, <a class="reference internal" href="ramstk.models.html#ramstk.models.tables.RAMSTKBaseTable" title="ramstk.models.tables.RAMSTKBaseTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.models.tables.RAMSTKBaseTable</span></code></a></p>
+<p>Class to represent tramstk_type in the RAMSTK Common database.</p>
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstktype.RAMSTKType.code">
+<code class="sig-name descname">code</code><a class="headerlink" href="#ramstk.models.commondb.ramstktype.RAMSTKType.code" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstktype.RAMSTKType.description">
+<code class="sig-name descname">description</code><a class="headerlink" href="#ramstk.models.commondb.ramstktype.RAMSTKType.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.models.commondb.ramstktype.RAMSTKType.get_attributes">
+<code class="sig-name descname">get_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstktype.html#RAMSTKType.get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstktype.RAMSTKType.get_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the current values of the RAMSTKType data model attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>{type_id, description, type_type} pairs.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstktype.RAMSTKType.type_id">
+<code class="sig-name descname">type_id</code><a class="headerlink" href="#ramstk.models.commondb.ramstktype.RAMSTKType.type_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstktype.RAMSTKType.type_type">
+<code class="sig-name descname">type_type</code><a class="headerlink" href="#ramstk.models.commondb.ramstktype.RAMSTKType.type_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.models.commondb.ramstkuser">
+<span id="ramstk-models-commondb-ramstkuser-module"></span><h2>ramstk.models.commondb.ramstkuser module<a class="headerlink" href="#module-ramstk.models.commondb.ramstkuser" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTKUser Table Module.</p>
+<dl class="py class">
+<dt id="ramstk.models.commondb.ramstkuser.RAMSTKUser">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.models.commondb.ramstkuser.</code><code class="sig-name descname">RAMSTKUser</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkuser.html#RAMSTKUser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkuser.RAMSTKUser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code>, <a class="reference internal" href="ramstk.models.html#ramstk.models.tables.RAMSTKBaseTable" title="ramstk.models.tables.RAMSTKBaseTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.models.tables.RAMSTKBaseTable</span></code></a></p>
+<p>Class to represent the table ramstk_user in the RAMSTK Common database.</p>
+<p>This table shares a One-to-Many relationship with ramstk_workgroup.</p>
+<dl class="py method">
+<dt id="ramstk.models.commondb.ramstkuser.RAMSTKUser.get_attributes">
+<code class="sig-name descname">get_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/models/commondb/ramstkuser.html#RAMSTKUser.get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.models.commondb.ramstkuser.RAMSTKUser.get_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the current values of the RAMSTKUser data model attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>{user_id, user_lname, user_fname, user_email, user_phone,
+user_group_id} pairs.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkuser.RAMSTKUser.user_email">
+<code class="sig-name descname">user_email</code><a class="headerlink" href="#ramstk.models.commondb.ramstkuser.RAMSTKUser.user_email" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkuser.RAMSTKUser.user_fname">
+<code class="sig-name descname">user_fname</code><a class="headerlink" href="#ramstk.models.commondb.ramstkuser.RAMSTKUser.user_fname" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkuser.RAMSTKUser.user_group_id">
+<code class="sig-name descname">user_group_id</code><a class="headerlink" href="#ramstk.models.commondb.ramstkuser.RAMSTKUser.user_group_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkuser.RAMSTKUser.user_id">
+<code class="sig-name descname">user_id</code><a class="headerlink" href="#ramstk.models.commondb.ramstkuser.RAMSTKUser.user_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkuser.RAMSTKUser.user_lname">
+<code class="sig-name descname">user_lname</code><a class="headerlink" href="#ramstk.models.commondb.ramstkuser.RAMSTKUser.user_lname" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="ramstk.models.commondb.ramstkuser.RAMSTKUser.user_phone">
+<code class="sig-name descname">user_phone</code><a class="headerlink" href="#ramstk.models.commondb.ramstkuser.RAMSTKUser.user_phone" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.models.commondb">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ramstk.models.commondb" title="Permalink to this headline">¶</a></h2>
+<p>The RAMSTK common database models package.</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">ramstk.models.commondb package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-ramstk.models.commondb.ramstkcategory">ramstk.models.commondb.ramstkcategory module</a></li>
+<li><a class="reference internal" href="#module-ramstk.models.commondb.ramstkcondition">ramstk.models.commondb.ramstkcondition module</a></li>
+<li><a class="reference internal" href="#module-ramstk.models.commondb.ramstkfailuremode">ramstk.models.commondb.ramstkfailuremode module</a></li>
+<li><a class="reference internal" href="#module-ramstk.models.commondb.ramstkgroup">ramstk.models.commondb.ramstkgroup module</a></li>
+<li><a class="reference internal" href="#module-ramstk.models.commondb.ramstkhazards">ramstk.models.commondb.ramstkhazards module</a></li>
+<li><a class="reference internal" href="#module-ramstk.models.commondb.ramstkloadhistory">ramstk.models.commondb.ramstkloadhistory module</a></li>
+<li><a class="reference internal" href="#module-ramstk.models.commondb.ramstkmanufacturer">ramstk.models.commondb.ramstkmanufacturer module</a></li>
+<li><a class="reference internal" href="#module-ramstk.models.commondb.ramstkmeasurement">ramstk.models.commondb.ramstkmeasurement module</a></li>
+<li><a class="reference internal" href="#module-ramstk.models.commondb.ramstkmethod">ramstk.models.commondb.ramstkmethod module</a></li>
+<li><a class="reference internal" href="#module-ramstk.models.commondb.ramstkmodel">ramstk.models.commondb.ramstkmodel module</a></li>
+<li><a class="reference internal" href="#module-ramstk.models.commondb.ramstkrpn">ramstk.models.commondb.ramstkrpn module</a></li>
+<li><a class="reference internal" href="#module-ramstk.models.commondb.ramstksiteinfo">ramstk.models.commondb.ramstksiteinfo module</a></li>
+<li><a class="reference internal" href="#module-ramstk.models.commondb.ramstkstakeholders">ramstk.models.commondb.ramstkstakeholders module</a></li>
+<li><a class="reference internal" href="#module-ramstk.models.commondb.ramstkstatus">ramstk.models.commondb.ramstkstatus module</a></li>
+<li><a class="reference internal" href="#module-ramstk.models.commondb.ramstksubcategory">ramstk.models.commondb.ramstksubcategory module</a></li>
+<li><a class="reference internal" href="#module-ramstk.models.commondb.ramstktype">ramstk.models.commondb.ramstktype module</a></li>
+<li><a class="reference internal" href="#module-ramstk.models.commondb.ramstkuser">ramstk.models.commondb.ramstkuser module</a></li>
+<li><a class="reference internal" href="#module-ramstk.models.commondb">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ramstk.models.html"
+                        title="previous chapter">ramstk.models package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ramstk.models.programdb.html"
+                        title="next chapter">ramstk.models.programdb package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/ramstk.models.commondb.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ramstk.models.programdb.html" title="ramstk.models.programdb package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ramstk.models.html" title="ramstk.models package"
+             accesskey="P">previous</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

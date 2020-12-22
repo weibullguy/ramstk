@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.requirement.listview &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.requirement.listview</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.views.gtk3.requirement.listview.py is part of the RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2020 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;The RAMSTK Requirement List View Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.configuration</span> <span class="kn">import</span> <span class="n">RAMSTKUserConfiguration</span>
+<span class="kn">from</span> <span class="nn">ramstk.logger</span> <span class="kn">import</span> <span class="n">RAMSTKLogManager</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3</span> <span class="kn">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.widgets</span> <span class="kn">import</span> <span class="n">RAMSTKListView</span>
+
+
+<div class="viewcode-block" id="RequirementHardware"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.requirement.html#ramstk.views.gtk3.requirement.listview.RequirementHardware">[docs]</a><span class="k">class</span> <span class="nc">RequirementHardware</span><span class="p">(</span><span class="n">RAMSTKListView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Display all the Requirement::Hardware matrix for the selected Revision.</span>
+
+<span class="sd">    The attributes of the Requirement::Hardware Matrix View are:</span>
+
+<span class="sd">    :cvar _module: the name of the module.</span>
+
+<span class="sd">    :ivar _lst_callbacks: the list of callback methods for the view&#39;s</span>
+<span class="sd">        toolbar buttons and pop-up menu.  The methods are listed in the order</span>
+<span class="sd">        they appear on the toolbar and pop-up menu.</span>
+<span class="sd">    :ivar _lst_icons: the list of icons for the view&#39;s toolbar buttons</span>
+<span class="sd">        and pop-up menu.  The icons are listed in the order they appear on the</span>
+<span class="sd">        toolbar and pop-up menu.</span>
+<span class="sd">    :ivar _lst_mnu_labels: the list of labels for the view&#39;s pop-up</span>
+<span class="sd">        menu.  The labels are listed in the order they appear in the menu.</span>
+<span class="sd">    :ivar _lst_tooltips: the list of tooltips for the view&#39;s</span>
+<span class="sd">        toolbar buttons and pop-up menu.  The tooltips are listed in the</span>
+<span class="sd">        order they appear on the toolbar or pop-up menu.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Define private scalar class attributes.</span>
+    <span class="n">_module</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;rqrmnt_hrdwr&#39;</span>
+    <span class="n">_tablabel</span> <span class="o">=</span> <span class="s2">&quot;&lt;span weight=&#39;bold&#39;&gt;&quot;</span> <span class="o">+</span> <span class="n">_</span><span class="p">(</span>
+        <span class="s2">&quot;Requirement::Hardware</span><span class="se">\n</span><span class="s2">Matrix&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&lt;/span&gt;&quot;</span>
+    <span class="n">_tabtooltip</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Displays the Requirement::Hardware matrix &quot;</span>
+                    <span class="s2">&quot;for the selected revision.&quot;</span><span class="p">)</span>
+    <span class="n">_view_type</span> <span class="o">=</span> <span class="s1">&#39;matrix&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="n">RAMSTKUserConfiguration</span><span class="p">,</span>
+                 <span class="n">logger</span><span class="p">:</span> <span class="n">RAMSTKLogManager</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the List View for the Requirement package.</span>
+
+<span class="sd">        :param configuration: the RAMSTK Configuration class instance.</span>
+<span class="sd">        :param logger: the RAMSTKLogManager class instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_callbacks</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">do_request_update</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_icons</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;save&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_mnu_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Save Matrix&quot;</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Save changes to the Requirement::Hardware matrix.&quot;</span><span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">make_ui</span><span class="p">()</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+
+    <span class="k">def</span> <span class="nf">_do_request_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__button</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Button</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Send message to request updating the Requirement::Hardware matrix.</span>
+
+<span class="sd">        :param __button: the Gtk.Button() that call this method.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cursor_busy</span><span class="p">()</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;do_request_update_matrix&#39;</span><span class="p">,</span>
+                        <span class="n">matrix_type</span><span class="o">=</span><span class="s1">&#39;rqrmnt_hrdwr&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_request_update_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__button</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Button</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Send message to request updating the Requirement::Hardware matrix.</span>
+
+<span class="sd">        :param __button: the Gtk.Button() that call this method.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cursor_busy</span><span class="p">()</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;do_request_update_matrix&#39;</span><span class="p">,</span>
+                        <span class="n">matrix_type</span><span class="o">=</span><span class="s1">&#39;rqrmnt_hrdwr&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

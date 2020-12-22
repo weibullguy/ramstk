@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.analyses.milhdbk217f.milhdbk217f &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.analyses.milhdbk217f.milhdbk217f</h1><div class="highlight"><pre>
+<span></span><span class="c1"># type: ignore</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.analyses.milhdbk217f.py is part of the RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2019 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;milhdbk217f Calculations Class.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+
+<span class="c1"># RAMSTK Local Imports</span>
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">capacitor</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">crystal</span><span class="p">,</span> <span class="n">efilter</span><span class="p">,</span> <span class="n">fuse</span><span class="p">,</span> <span class="n">inductor</span><span class="p">,</span>
+    <span class="n">integratedcircuit</span><span class="p">,</span> <span class="n">lamp</span><span class="p">,</span> <span class="n">meter</span><span class="p">,</span> <span class="n">relay</span><span class="p">,</span> <span class="n">resistor</span><span class="p">,</span> <span class="n">semiconductor</span><span class="p">,</span> <span class="n">switch</span>
+<span class="p">)</span>
+
+
+<span class="c1"># noinspection PyTypeChecker</span>
+<span class="k">def</span> <span class="nf">_do_calculate_part_count</span><span class="p">(</span><span class="o">**</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the MIL-HDBK-217F parts count active hazard rate.</span>
+
+<span class="sd">    :param attributes: the attributes dict for the component being</span>
+<span class="sd">        calculated.</span>
+<span class="sd">    :return: attributes; the attributes dict with updated values.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    :raise: IndexError if there is no entry for the active environment ID.</span>
+<span class="sd">    :raise: KeyError if there is no entry for category ID or subcategory ID.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_part_count</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="n">integratedcircuit</span><span class="o">.</span><span class="n">calculate_part_count</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="n">semiconductor</span><span class="o">.</span><span class="n">calculate_part_count</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="n">resistor</span><span class="o">.</span><span class="n">calculate_part_count</span><span class="p">,</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="n">capacitor</span><span class="o">.</span><span class="n">calculate_part_count</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="n">inductor</span><span class="o">.</span><span class="n">calculate_part_count</span><span class="p">,</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="n">relay</span><span class="o">.</span><span class="n">calculate_part_count</span><span class="p">,</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="n">switch</span><span class="o">.</span><span class="n">calculate_part_count</span><span class="p">,</span>
+        <span class="mi">8</span><span class="p">:</span> <span class="n">connection</span><span class="o">.</span><span class="n">calculate_part_count</span><span class="p">,</span>
+        <span class="mi">9</span><span class="p">:</span> <span class="n">meter</span><span class="o">.</span><span class="n">calculate_part_count</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="n">crystal</span><span class="o">.</span><span class="n">calculate_part_count</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="n">efilter</span><span class="o">.</span><span class="n">calculate_part_count</span><span class="p">,</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="n">fuse</span><span class="o">.</span><span class="n">calculate_part_count</span><span class="p">,</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="n">lamp</span><span class="o">.</span><span class="n">calculate_part_count</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">_part_count</span><span class="p">[</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">]](</span><span class="o">**</span><span class="n">attributes</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;lambda_b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_part_count</span><span class="p">[</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">]][</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">]](</span><span class="o">**</span><span class="n">attributes</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;lambda_b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_part_count</span><span class="p">[</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">]](</span>
+            <span class="o">**</span><span class="n">attributes</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piQ&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_part_count_quality_factor</span><span class="p">(</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">],</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">],</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;quality_id&#39;</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="n">semiconductor</span><span class="o">.</span><span class="n">get_part_count_quality_factor</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;lambda_b&#39;</span><span class="p">]</span>
+                                        <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piQ&#39;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">attributes</span>
+
+
+<span class="c1"># noinspection PyTypeChecker</span>
+<span class="k">def</span> <span class="nf">_do_calculate_part_stress</span><span class="p">(</span><span class="o">**</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the MIL-HDBK-217F parts stress active hazard rate.</span>
+
+<span class="sd">    :param attributes: the attributes dict for the component being</span>
+<span class="sd">        calculated.</span>
+<span class="sd">    :return: attributes; the attributes dict with updated values.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    :raise: IndexError if there is no entry for the active environment ID.</span>
+<span class="sd">    :raise: KeyError if there is no entry for category ID or subcategory ID.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_functions</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="n">integratedcircuit</span><span class="o">.</span><span class="n">calculate_part_stress</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="n">semiconductor</span><span class="o">.</span><span class="n">calculate_part_stress</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="n">resistor</span><span class="o">.</span><span class="n">calculate_part_stress</span><span class="p">,</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="n">capacitor</span><span class="o">.</span><span class="n">calculate_part_stress</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="n">inductor</span><span class="o">.</span><span class="n">calculate_part_stress</span><span class="p">,</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="n">relay</span><span class="o">.</span><span class="n">calculate_part_stress</span><span class="p">,</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="n">switch</span><span class="o">.</span><span class="n">calculate_part_stress</span><span class="p">,</span>
+        <span class="mi">8</span><span class="p">:</span> <span class="n">connection</span><span class="o">.</span><span class="n">calculate_part_stress</span><span class="p">,</span>
+        <span class="mi">9</span><span class="p">:</span> <span class="n">meter</span><span class="o">.</span><span class="n">calculate_part_stress</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="n">crystal</span><span class="o">.</span><span class="n">calculate_part_stress</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="n">efilter</span><span class="o">.</span><span class="n">calculate_part_stress</span><span class="p">,</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="n">fuse</span><span class="o">.</span><span class="n">calculate_part_stress</span><span class="p">,</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="n">lamp</span><span class="o">.</span><span class="n">calculate_part_stress</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">6</span><span class="p">:</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_environment_factor</span><span class="p">(</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">],</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;environment_active_id&#39;</span><span class="p">],</span>
+            <span class="n">subcategory_id</span><span class="o">=</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">],</span>
+            <span class="n">quality_id</span><span class="o">=</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;quality_id&#39;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">]:</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piQ&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_part_stress_quality_factor</span><span class="p">(</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">],</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">],</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;quality_id&#39;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="n">_part_stress</span> <span class="o">=</span> <span class="n">_functions</span><span class="p">[</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">]][</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">]]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_part_stress</span> <span class="o">=</span> <span class="n">_functions</span><span class="p">[</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">]]</span>
+
+    <span class="k">return</span> <span class="n">_part_stress</span><span class="p">(</span><span class="o">**</span><span class="n">attributes</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_environment_factor</span><span class="p">(</span><span class="n">category_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                            <span class="n">environment_active_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                            <span class="n">subcategory_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                            <span class="n">quality_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Retrieve the MIL-HDBK-217F environment factor (piE) for the component.</span>
+
+<span class="sd">    Most component types have a single list of piE factors, but some require</span>
+<span class="sd">    additional indices to select the correct list of factors.</span>
+
+<span class="sd">    :param category_id: the category ID of the component.</span>
+<span class="sd">    :param environment_active_id: the active environment ID for the</span>
+<span class="sd">        component.</span>
+<span class="sd">    :keyword int subcategory_id: the subcategory ID of the component.</span>
+<span class="sd">    :keyword int quality_id: the quality level ID of the component.</span>
+<span class="sd">    :return: _pi_e; the selected piE value.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: IndexError if there is no list entry for the passed active</span>
+<span class="sd">        environment ID.</span>
+<span class="sd">    :raise: KeyError if there is no piE list for the passed category ID (or</span>
+<span class="sd">        subcategory ID, quality ID when appllicable).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_pi_e_lists</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="n">integratedcircuit</span><span class="o">.</span><span class="n">PI_E</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="n">semiconductor</span><span class="o">.</span><span class="n">PI_E</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="n">resistor</span><span class="o">.</span><span class="n">PI_E</span><span class="p">,</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="n">capacitor</span><span class="o">.</span><span class="n">PI_E</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="n">inductor</span><span class="o">.</span><span class="n">PI_E</span><span class="p">,</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="n">switch</span><span class="o">.</span><span class="n">PI_E</span><span class="p">,</span>
+        <span class="mi">8</span><span class="p">:</span> <span class="n">connection</span><span class="o">.</span><span class="n">PI_E</span><span class="p">,</span>
+        <span class="mi">9</span><span class="p">:</span> <span class="n">meter</span><span class="o">.</span><span class="n">PI_E</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="n">crystal</span><span class="o">.</span><span class="n">PI_E</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="n">efilter</span><span class="o">.</span><span class="n">PI_E</span><span class="p">,</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="n">fuse</span><span class="o">.</span><span class="n">PI_E</span><span class="p">,</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="n">lamp</span><span class="o">.</span><span class="n">PI_E</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">category_id</span> <span class="o">==</span> <span class="mi">8</span> <span class="ow">and</span> <span class="n">subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+        <span class="n">_pi_e</span> <span class="o">=</span> <span class="n">_pi_e_lists</span><span class="p">[</span><span class="n">category_id</span><span class="p">][</span><span class="n">subcategory_id</span><span class="p">][</span><span class="n">quality_id</span><span class="p">][</span>
+            <span class="n">environment_active_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">category_id</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span>
+    <span class="p">]</span> <span class="ow">or</span> <span class="p">(</span><span class="n">category_id</span> <span class="o">==</span> <span class="mi">8</span> <span class="ow">and</span> <span class="n">subcategory_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]):</span>
+        <span class="n">_pi_e</span> <span class="o">=</span> <span class="n">_pi_e_lists</span><span class="p">[</span><span class="n">category_id</span><span class="p">][</span><span class="n">subcategory_id</span><span class="p">][</span><span class="n">environment_active_id</span>
+                                                         <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_pi_e</span> <span class="o">=</span> <span class="n">_pi_e_lists</span><span class="p">[</span><span class="n">category_id</span><span class="p">][</span><span class="n">environment_active_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">_pi_e</span>
+
+
+<span class="k">def</span> <span class="nf">_get_part_count_quality_factor</span><span class="p">(</span><span class="n">category_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">subcategory_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                   <span class="n">quality_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Retrieve the MIL-HDBK-217F parts count quality factor (piQ).</span>
+
+<span class="sd">    .. note:: Fuses and Lamps have no piQ input.</span>
+
+<span class="sd">    .. note:: Semiconductors have a more complicated piQ listing and the</span>
+<span class="sd">        function to select the correct value is included in the semiconductor</span>
+<span class="sd">        model file.</span>
+
+<span class="sd">    :param category_id: the category ID of the component.</span>
+<span class="sd">    :param subcategory_id: the subcategory ID of the component.</span>
+<span class="sd">    :param quality_id: the quality level ID for the component.</span>
+<span class="sd">    :return: _pi_q; the selected piQ value.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: IndexError if there is no list entry for the passed active</span>
+<span class="sd">        environment ID.</span>
+<span class="sd">    :raise: KeyError if there is no piQ list for the passed category ID.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_pi_q_lists</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="n">integratedcircuit</span><span class="o">.</span><span class="n">PI_Q</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="n">resistor</span><span class="o">.</span><span class="n">PART_COUNT_PI_Q</span><span class="p">,</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="n">capacitor</span><span class="o">.</span><span class="n">PART_COUNT_PI_Q</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="n">inductor</span><span class="o">.</span><span class="n">PART_COUNT_PI_Q</span><span class="p">,</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="n">relay</span><span class="o">.</span><span class="n">PART_COUNT_PI_Q</span><span class="p">,</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="n">switch</span><span class="o">.</span><span class="n">PART_COUNT_PI_Q</span><span class="p">,</span>
+        <span class="mi">8</span><span class="p">:</span> <span class="n">connection</span><span class="o">.</span><span class="n">PART_COUNT_PI_Q</span><span class="p">,</span>
+        <span class="mi">9</span><span class="p">:</span> <span class="n">meter</span><span class="o">.</span><span class="n">PART_COUNT_PI_Q</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="n">crystal</span><span class="o">.</span><span class="n">PART_COUNT_PI_Q</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="n">efilter</span><span class="o">.</span><span class="n">PI_Q</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">category_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">]:</span>
+        <span class="n">_pi_q</span> <span class="o">=</span> <span class="n">_pi_q_lists</span><span class="p">[</span><span class="n">category_id</span><span class="p">][</span><span class="n">subcategory_id</span><span class="p">][</span><span class="n">quality_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">category_id</span> <span class="o">==</span> <span class="mi">10</span> <span class="ow">and</span> <span class="n">subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+        <span class="n">_pi_q</span> <span class="o">=</span> <span class="n">_pi_q_lists</span><span class="p">[</span><span class="n">category_id</span><span class="p">][</span><span class="n">subcategory_id</span><span class="p">][</span><span class="n">quality_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">category_id</span> <span class="o">==</span> <span class="mi">10</span> <span class="ow">and</span> <span class="n">subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]:</span>
+        <span class="n">_pi_q</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_pi_q</span> <span class="o">=</span> <span class="n">_pi_q_lists</span><span class="p">[</span><span class="n">category_id</span><span class="p">][</span><span class="n">quality_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">_pi_q</span>
+
+
+<span class="k">def</span> <span class="nf">_get_part_stress_quality_factor</span><span class="p">(</span><span class="n">category_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">subcategory_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                    <span class="n">quality_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Retrieve the MIL-HDBK-217F part stress quality factor (piQ).</span>
+
+<span class="sd">    .. note:: Fuses and Lamps have no piQ input.</span>
+
+<span class="sd">    :param category_id: the category ID of the component.</span>
+<span class="sd">    :param subcategory_id: the subcategory ID of the component.</span>
+<span class="sd">    :param quality_id: the quality level ID for the component.</span>
+<span class="sd">    :return: _pi_q; the selected piQ value.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: IndexError if there is no list entry for the passed quality ID.</span>
+<span class="sd">    :raise: KeyError if there is no piQ list for the passed category ID.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_pi_q_lists</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="n">integratedcircuit</span><span class="o">.</span><span class="n">PI_Q</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="n">resistor</span><span class="o">.</span><span class="n">PART_STRESS_PI_Q</span><span class="p">,</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="n">capacitor</span><span class="o">.</span><span class="n">PART_STRESS_PI_Q</span><span class="p">,</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="n">relay</span><span class="o">.</span><span class="n">PART_STRESS_PI_Q</span><span class="p">,</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="n">switch</span><span class="o">.</span><span class="n">PART_STRESS_PI_Q</span><span class="p">,</span>
+        <span class="mi">8</span><span class="p">:</span> <span class="n">connection</span><span class="o">.</span><span class="n">PART_STRESS_PI_Q</span><span class="p">,</span>
+        <span class="mi">9</span><span class="p">:</span> <span class="n">meter</span><span class="o">.</span><span class="n">PART_STRESS_PI_Q</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="n">crystal</span><span class="o">.</span><span class="n">PART_STRESS_PI_Q</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="n">efilter</span><span class="o">.</span><span class="n">PI_Q</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">category_id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">_pi_q</span> <span class="o">=</span> <span class="n">_pi_q_lists</span><span class="p">[</span><span class="n">category_id</span><span class="p">][</span><span class="n">quality_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">category_id</span> <span class="o">==</span> <span class="mi">8</span>
+          <span class="ow">and</span> <span class="n">subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">category_id</span> <span class="o">==</span> <span class="mi">7</span>
+                                            <span class="ow">and</span> <span class="n">subcategory_id</span> <span class="o">==</span> <span class="mi">5</span><span class="p">):</span>
+        <span class="n">_pi_q</span> <span class="o">=</span> <span class="n">_pi_q_lists</span><span class="p">[</span><span class="n">category_id</span><span class="p">][</span><span class="n">subcategory_id</span><span class="p">][</span><span class="n">quality_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">category_id</span> <span class="o">==</span> <span class="mi">7</span> <span class="ow">and</span> <span class="n">subcategory_id</span> <span class="o">!=</span> <span class="mi">5</span><span class="p">:</span>
+        <span class="n">_pi_q</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">elif</span> <span class="n">category_id</span> <span class="o">==</span> <span class="mi">8</span> <span class="ow">and</span> <span class="n">subcategory_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]:</span>
+        <span class="n">_pi_q</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">elif</span> <span class="n">category_id</span> <span class="o">==</span> <span class="mi">9</span> <span class="ow">and</span> <span class="n">subcategory_id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">_pi_q</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">elif</span> <span class="n">category_id</span> <span class="o">==</span> <span class="mi">10</span> <span class="ow">and</span> <span class="n">subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]:</span>
+        <span class="n">_pi_q</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_pi_q</span> <span class="o">=</span> <span class="n">_pi_q_lists</span><span class="p">[</span><span class="n">category_id</span><span class="p">][</span><span class="n">subcategory_id</span><span class="p">][</span><span class="n">quality_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">_pi_q</span>
+
+
+<span class="c1"># noinspection PyTypeChecker</span>
+<div class="viewcode-block" id="do_predict_active_hazard_rate"><a class="viewcode-back" href="../../../../api/ramstk.analyses.milhdbk217f.html#ramstk.analyses.milhdbk217f.milhdbk217f.do_predict_active_hazard_rate">[docs]</a><span class="k">def</span> <span class="nf">do_predict_active_hazard_rate</span><span class="p">(</span><span class="o">**</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the active hazard rate for a hardware item.</span>
+
+<span class="sd">    .. attention:: The programmer is responsible for ensuring appropriate</span>
+<span class="sd">        stress analyses (e.g., voltage ratios) are performed and results</span>
+<span class="sd">        assigned to the attributes dict prior to calling the MIL-HDBK-217F</span>
+<span class="sd">        methods.</span>
+
+<span class="sd">    .. important:: The calling object is responsible for handling any</span>
+<span class="sd">        exceptions raised by or passed through this method.</span>
+
+<span class="sd">    :return: None</span>
+<span class="sd">    :rtype: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_method_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">attributes</span> <span class="o">=</span> <span class="n">_do_calculate_part_count</span><span class="p">(</span><span class="o">**</span><span class="n">attributes</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_method_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">attributes</span> <span class="o">=</span> <span class="n">_do_calculate_part_stress</span><span class="p">(</span><span class="o">**</span><span class="n">attributes</span><span class="p">)</span>
+
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;add_adj_factor&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;duty_cycle&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mf">100.0</span><span class="p">)</span>
+                <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;mult_adj_factor&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">])</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_predict_reliability&#39;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;fail_predict_reliability&#39;</span><span class="p">,</span>
+                        <span class="n">error_message</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Failed to predict MIL-HDBK-217F &quot;</span>
+                                       <span class="s2">&quot;hazard rate for hardware ID </span><span class="si">{0:d}</span><span class="s2">; &quot;</span>
+                                       <span class="s2">&quot;one or more inputs has a negative or &quot;</span>
+                                       <span class="s2">&quot;missing value. Hardware item category &quot;</span>
+                                       <span class="s2">&quot;ID=</span><span class="si">{1:d}</span><span class="s2">, subcategory ID=</span><span class="si">{2:d}</span><span class="s2">, rated &quot;</span>
+                                       <span class="s2">&quot;power=</span><span class="si">{3:f}</span><span class="s2">, number of &quot;</span>
+                                       <span class="s2">&quot;elements=</span><span class="si">{4:d}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                           <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hardware_id&#39;</span><span class="p">],</span>
+                                           <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">],</span>
+                                           <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">],</span>
+                                           <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;power_rated&#39;</span><span class="p">],</span>
+                                           <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;n_elements&#39;</span><span class="p">]))</span>
+    <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;fail_predict_reliability&#39;</span><span class="p">,</span>
+                        <span class="n">error_message</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Failed to predict MIL-HDBK-217F &quot;</span>
+                                       <span class="s2">&quot;hazard rate for hardware ID </span><span class="si">{0:d}</span><span class="s2">; &quot;</span>
+                                       <span class="s2">&quot;one or more inputs has a value of &quot;</span>
+                                       <span class="s2">&quot;0.0.  Hardware item category &quot;</span>
+                                       <span class="s2">&quot;ID=</span><span class="si">{1:d}</span><span class="s2">, subcategory ID=</span><span class="si">{2:d}</span><span class="s2">, &quot;</span>
+                                       <span class="s2">&quot;operating ac voltage=</span><span class="si">{3:f}</span><span class="s2">, operating &quot;</span>
+                                       <span class="s2">&quot;DC voltage=</span><span class="si">{4:f}</span><span class="s2">, operating &quot;</span>
+                                       <span class="s2">&quot;temperature=</span><span class="si">{5:f}</span><span class="s2">, temperature &quot;</span>
+                                       <span class="s2">&quot;rise=</span><span class="si">{10:f}</span><span class="s2">, rated maximum &quot;</span>
+                                       <span class="s2">&quot;temperature=</span><span class="si">{6:f}</span><span class="s2">, &quot;</span>
+                                       <span class="s2">&quot;feature size=</span><span class="si">{7:f}</span><span class="s2">, &quot;</span>
+                                       <span class="s2">&quot;surface area=</span><span class="si">{8:f}</span><span class="s2">, and item &quot;</span>
+                                       <span class="s2">&quot;weight=</span><span class="si">{9:f}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                           <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hardware_id&#39;</span><span class="p">],</span>
+                                           <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">],</span>
+                                           <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">],</span>
+                                           <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;voltage_ac_operating&#39;</span><span class="p">],</span>
+                                           <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;voltage_dc_operating&#39;</span><span class="p">],</span>
+                                           <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;temperature_active&#39;</span><span class="p">],</span>
+                                           <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;temperature_rated_max&#39;</span><span class="p">],</span>
+                                           <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;feature_size&#39;</span><span class="p">],</span>
+                                           <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;area&#39;</span><span class="p">],</span>
+                                           <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">],</span>
+                                           <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;temperature_rise&#39;</span><span class="p">]))</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

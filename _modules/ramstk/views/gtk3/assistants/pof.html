@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.assistants.pof &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.assistants.pof</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.views.gtk3.assistants.fmea.py is part of The RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2020 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;The RAMSTK (D)FME(C)A Assistants Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3</span> <span class="kn">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.widgets</span> <span class="kn">import</span> <span class="n">RAMSTKDialog</span><span class="p">,</span> <span class="n">RAMSTKLabel</span>
+
+
+<div class="viewcode-block" id="AddStressTestMethod"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.assistants.html#ramstk.views.gtk3.assistants.pof.AddStressTestMethod">[docs]</a><span class="k">class</span> <span class="nc">AddStressTestMethod</span><span class="p">(</span><span class="n">RAMSTKDialog</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Assistant to walk user through process of adding stress or test.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize on instance of the Add Stress or Method Assistant.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;RAMSTK Physics of Failure Analysis Operating &quot;</span>
+                           <span class="s2">&quot;Stress and Test Method Addition Assistant&quot;</span><span class="p">),</span>
+                         <span class="n">dlgparent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rdoOpStress</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">RadioButton</span><span class="o">.</span><span class="n">new_with_label_from_widget</span><span class="p">(</span>
+            <span class="kc">None</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Add stress&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rdoTestMethod</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">RadioButton</span><span class="o">.</span><span class="n">new_from_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rdoOpStress</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rdoTestMethod</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Add test method&quot;</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__make_ui</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__make_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Build the user interface.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_fixed</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Fixed</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vbox</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">_fixed</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">_label</span> <span class="o">=</span> <span class="n">RAMSTKLabel</span><span class="p">(</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;This is the RAMSTK Operating Stress and Test Method &quot;</span>
+              <span class="s2">&quot;Addition Assistant.  Enter the information &quot;</span>
+              <span class="s2">&quot;requested below and then press &#39;OK&#39; to add &quot;</span>
+              <span class="s2">&quot;a new design control or action to the RAMSTK &quot;</span>
+              <span class="s2">&quot;Program database.&quot;</span><span class="p">))</span>
+        <span class="n">_label</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">height</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">_label</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+        <span class="n">_y_pos</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">_label</span><span class="o">.</span><span class="n">get_preferred_size</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">height</span> <span class="o">+</span> <span class="mi">50</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">rdoOpStress</span><span class="o">.</span><span class="n">set_tooltip_text</span><span class="p">(</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Select to add an operating stress to the selected operating &quot;</span>
+              <span class="s2">&quot;load.&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rdoTestMethod</span><span class="o">.</span><span class="n">set_tooltip_text</span><span class="p">(</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Select to add a test method to the selected operating load.&quot;</span><span class="p">))</span>
+
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rdoOpStress</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rdoTestMethod</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">_y_pos</span> <span class="o">+</span> <span class="mi">35</span><span class="p">)</span>
+
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_default_size</span><span class="p">(</span><span class="mi">250</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__button</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Destroy the assistant when the &#39;Cancel&#39; button is pressed.</span>
+
+<span class="sd">        :param __button: the Gtk.Button() that called this method.</span>
+<span class="sd">        :type __button: :class:`Gtk.Button`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

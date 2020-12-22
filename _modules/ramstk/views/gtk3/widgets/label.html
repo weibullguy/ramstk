@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.widgets.label &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.widgets.label</h1><div class="highlight"><pre>
+<span></span><span class="c1"># pylint: disable=non-parent-init-called</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.gui.gtk.ramstk.Label.py is part of the RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2017 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;RAMSTK Label Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3</span> <span class="kn">import</span> <span class="n">Gtk</span>
+
+<span class="c1"># RAMSTK Local Imports</span>
+<span class="kn">from</span> <span class="nn">.widget</span> <span class="kn">import</span> <span class="n">RAMSTKWidget</span>
+
+
+<div class="viewcode-block" id="RAMSTKLabel"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.label.RAMSTKLabel">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKLabel</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Label</span><span class="p">,</span> <span class="n">RAMSTKWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The RAMSTK Label class.&quot;&quot;&quot;</span>
+
+    <span class="c1"># Define private class scalar attributes.</span>
+    <span class="n">_default_height</span> <span class="o">=</span> <span class="mi">25</span>
+    <span class="n">_default_width</span> <span class="o">=</span> <span class="mi">190</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create RAMSTKLabel widget.</span>
+
+<span class="sd">        :param text: the text to display in the label.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">RAMSTKWidget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_markup</span><span class="p">(</span><span class="s2">&quot;&lt;span&gt;&quot;</span> <span class="o">+</span> <span class="n">text</span> <span class="o">+</span> <span class="s2">&quot;&lt;/span&gt;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+
+<div class="viewcode-block" id="RAMSTKLabel.get_attribute"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.label.RAMSTKLabel.get_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">get_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get the value of the requested attribute.</span>
+
+<span class="sd">        :param attribute: the name of the attribute to retrieve.</span>
+<span class="sd">        :return: the value of the requested attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># The natural size = default size and the requested size = minimum size</span>
+        <span class="n">_attributes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_preferred_height</span><span class="p">()[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_preferred_width</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">_attributes</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="RAMSTKLabel.do_set_properties"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.label.RAMSTKLabel.do_set_properties">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the RAMSTKFrame properties.</span>
+
+<span class="sd">        :Keyword Arguments:</span>
+<span class="sd">            * *width* (int) -- width of the Gtk.Label() widget.  Default is</span>
+<span class="sd">                190.</span>
+<span class="sd">            * *height* (int) -- height of the Gtk.Label() widget.  Default is</span>
+<span class="sd">                25.</span>
+<span class="sd">            * *bold* (bool) -- boolean indicating whether text should be bold.</span>
+<span class="sd">                Default is True.</span>
+<span class="sd">            * *wrap* (bool) -- boolean indicating whether the label text should</span>
+<span class="sd">                wrap or not.  Default is False.</span>
+<span class="sd">            * *justify* (str) -- the justification type when the label wraps</span>
+<span class="sd">                and contains more than one line.  Default is JUSTIFY_LEFT.</span>
+<span class="sd">            * *tooltip* (str) -- the tooltip, if any, for the label.</span>
+<span class="sd">                Default is an empty string.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">_bold</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;bold&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">_justify</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;justify&#39;</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Justification</span><span class="o">.</span><span class="n">LEFT</span><span class="p">)</span>
+        <span class="n">_wrap</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;wrap&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;wrap&#39;</span><span class="p">,</span> <span class="n">_wrap</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;justify&#39;</span><span class="p">,</span> <span class="n">_justify</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_justify</span> <span class="o">==</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Justification</span><span class="o">.</span><span class="n">CENTER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_xalign</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_yalign</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">_justify</span> <span class="o">==</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Justification</span><span class="o">.</span><span class="n">LEFT</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_xalign</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_yalign</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_xalign</span><span class="p">(</span><span class="mf">0.99</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_yalign</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">_bold</span><span class="p">:</span>
+            <span class="n">_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_property</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">)</span>
+            <span class="n">_text</span> <span class="o">=</span> <span class="s1">&#39;&lt;b&gt;&#39;</span> <span class="o">+</span> <span class="n">_text</span> <span class="o">+</span> <span class="s1">&#39;&lt;/b&gt;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_markup</span><span class="p">(</span><span class="n">_text</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="do_make_label_group"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.label.do_make_label_group">[docs]</a><span class="k">def</span> <span class="nf">do_make_label_group</span><span class="p">(</span>
+        <span class="n">text</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span>
+                                        <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">RAMSTKLabel</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;Make and place a group of labels.</span>
+
+<span class="sd">    The width of each label is set using a natural request.  This ensures the</span>
+<span class="sd">    label doesn&#39;t cut off letters.  The maximum size of the labels is</span>
+<span class="sd">    determined and used to set the left position of widget displaying the data</span>
+<span class="sd">    described by the label.  This ensures everything lines up.  It also returns</span>
+<span class="sd">    a list of y-coordinates indicating the placement of each label that is used</span>
+<span class="sd">    to place the corresponding widget.</span>
+
+<span class="sd">    :param list text: a list containing the text for each label.</span>
+<span class="sd">    :return: (_max_x, _lst_labels)</span>
+<span class="sd">        the width of the label with the longest text and a list of the</span>
+<span class="sd">        RAMSTKLabel() instances.</span>
+<span class="sd">    :rtype: tuple of (integer, list of RAMSTKLabel())</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_bold</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;bold&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">_justify</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;justify&#39;</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Justification</span><span class="o">.</span><span class="n">RIGHT</span><span class="p">)</span>
+    <span class="n">_wrap</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;wrap&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">_lst_labels</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">_max_x</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">_char_width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">_label_text</span><span class="p">)</span> <span class="k">for</span> <span class="n">_label_text</span> <span class="ow">in</span> <span class="n">text</span><span class="p">])</span>
+
+    <span class="c1"># pylint: disable=unused-variable</span>
+    <span class="k">for</span> <span class="n">__</span><span class="p">,</span> <span class="n">_label_text</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+        <span class="n">_label</span> <span class="o">=</span> <span class="n">RAMSTKLabel</span><span class="p">(</span><span class="n">_label_text</span><span class="p">)</span>
+        <span class="n">_label</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">bold</span><span class="o">=</span><span class="n">_bold</span><span class="p">,</span>
+                                 <span class="n">height</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                                 <span class="n">justify</span><span class="o">=</span><span class="n">_justify</span><span class="p">,</span>
+                                 <span class="n">width</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                                 <span class="n">wrap</span><span class="o">=</span><span class="n">_wrap</span><span class="p">)</span>
+        <span class="n">_label</span><span class="o">.</span><span class="n">set_width_chars</span><span class="p">(</span><span class="n">_char_width</span><span class="p">)</span>
+        <span class="n">_max_x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">_max_x</span><span class="p">,</span> <span class="n">_label</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s1">&#39;width&#39;</span><span class="p">))</span>
+        <span class="n">_lst_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_label</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_max_x</span><span class="p">,</span> <span class="n">_lst_labels</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

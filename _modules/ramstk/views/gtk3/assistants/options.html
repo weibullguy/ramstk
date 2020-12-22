@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.assistants.options &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.assistants.options</h1><div class="highlight"><pre>
+<span></span><span class="c1"># pylint: disable=non-parent-init-called</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.views.gtk3.assistants.options.py is part of The RAMSTK</span>
+<span class="c1">#       Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2020 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;RAMSTK Configuration Options Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+<span class="kn">from</span> <span class="nn">treelib</span> <span class="kn">import</span> <span class="n">Tree</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk</span> <span class="kn">import</span> <span class="n">integer_to_boolean</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3</span> <span class="kn">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.widgets</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RAMSTKCheckButton</span><span class="p">,</span> <span class="n">RAMSTKDialog</span><span class="p">,</span> <span class="n">RAMSTKLabel</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="EditOptions"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.assistants.html#ramstk.views.gtk3.assistants.options.EditOptions">[docs]</a><span class="k">class</span> <span class="nc">EditOptions</span><span class="p">(</span><span class="n">RAMSTKDialog</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Provide a GUI to set various RAMSTK configuration options.</span>
+
+<span class="sd">    RAMSTK options are stored in the RAMSTK Common database and the RAMSTK</span>
+<span class="sd">    Program database.  RAMSTK options are site-specific or program-specific and</span>
+<span class="sd">    apply to all users.  Options should not be confused with user-specific</span>
+<span class="sd">    configurations preferences which are stored in RAMSTK.conf in each user&#39;s</span>
+<span class="sd">    $HOME/.config/RAMSTK directory and are applicable only to that specific</span>
+<span class="sd">    user.  Configuration preferences are edited with the Preferences assistant.</span>
+
+<span class="sd">    Attributes of the EditOptions are:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Define private dict class attributes.</span>
+    <span class="n">_dic_keys</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;function_active&#39;</span><span class="p">,</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;requirement_active&#39;</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;hardware_active&#39;</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;vandv_active&#39;</span><span class="p">,</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;fmea_active&#39;</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;pof_active&#39;</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the Options assistant.</span>
+
+<span class="sd">        :param parent: the parent window for this assistant.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;RAMSTK Program Options Assistant&quot;</span><span class="p">),</span>
+                         <span class="n">dlgparent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkFunctions</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Function Module Active&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkRequirements</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Requirements Module Active&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkHardware</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Hardware Module Active&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkValidation</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Validation Module Active&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkFMEA</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;(D)FME(C)A Module Active&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkPoF</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Physics of Failure (PoF) Module Active&quot;</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lst_widgets</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkFunctions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chkRequirements</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chkHardware</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkValidation</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chkFMEA</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chkPoF</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__make_ui</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_callbacks</span><span class="p">()</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_load_page</span><span class="p">,</span> <span class="s1">&#39;succeed_get_options_tree&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__make_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Build the user interface.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_default_size</span><span class="p">(</span><span class="mi">250</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">_fixed</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Fixed</span><span class="p">()</span>
+
+        <span class="n">_label</span> <span class="o">=</span> <span class="n">RAMSTKLabel</span><span class="p">(</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;This is the RAMSTK Program options editor.  This assistant &quot;</span>
+              <span class="s2">&quot;will allow you to select the work stream modules to use in &quot;</span>
+              <span class="s2">&quot;the open RAMSTK Program.  Keep in mind that the active work &quot;</span>
+              <span class="s2">&quot;stream modules are Revision dependent.&quot;</span><span class="p">))</span>
+        <span class="n">_label</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">height</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">_label</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+        <span class="n">_y_pos</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">_label</span><span class="o">.</span><span class="n">get_preferred_size</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">height</span> <span class="o">+</span> <span class="mi">50</span>
+
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chkFunctions</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chkRequirements</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">_y_pos</span> <span class="o">+</span> <span class="mi">35</span><span class="p">)</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chkHardware</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">_y_pos</span> <span class="o">+</span> <span class="mi">65</span><span class="p">)</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chkValidation</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">_y_pos</span> <span class="o">+</span> <span class="mi">95</span><span class="p">)</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chkFMEA</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">_y_pos</span> <span class="o">+</span> <span class="mi">125</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vbox</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">_fixed</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__set_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set EditOption widgets callback methods.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkFunctions</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;toggled&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chkFunctions</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_toggled</span><span class="p">,</span>
+                                                   <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkRequirements</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;toggled&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chkRequirements</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;toggled&#39;</span><span class="p">,</span>
+                                                      <span class="bp">self</span><span class="o">.</span><span class="n">_on_toggled</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkHardware</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;toggled&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chkHardware</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_toggled</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkValidation</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;toggled&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chkValidation</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;toggled&#39;</span><span class="p">,</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">_on_toggled</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkFMEA</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;toggled&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chkFMEA</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_toggled</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkPoF</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;toggled&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chkPoF</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_toggled</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__button</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Button</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Destroy the assistant when the &#39;Cancel&#39; button is pressed.</span>
+
+<span class="sd">        :param __button: the Gtk.Button() that called this method.</span>
+<span class="sd">        :type __button: :class:`Gtk.Button`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_destroy</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_do_load_page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the current options.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_program_options</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span>
+                <span class="s1">&#39;programinfo&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;programinfo&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">_program_options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">function_active</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                    <span class="n">requirement_active</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                    <span class="n">hardware_active</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                    <span class="n">vandv_active</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                    <span class="n">fmea_active</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                    <span class="n">pof_active</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkFunctions</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span>
+            <span class="n">integer_to_boolean</span><span class="p">(</span><span class="n">_program_options</span><span class="p">[</span><span class="s1">&#39;function_active&#39;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkRequirements</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span>
+            <span class="n">integer_to_boolean</span><span class="p">(</span><span class="n">_program_options</span><span class="p">[</span><span class="s1">&#39;requirement_active&#39;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkHardware</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span>
+            <span class="n">integer_to_boolean</span><span class="p">(</span><span class="n">_program_options</span><span class="p">[</span><span class="s1">&#39;hardware_active&#39;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkValidation</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span>
+            <span class="n">integer_to_boolean</span><span class="p">(</span><span class="n">_program_options</span><span class="p">[</span><span class="s1">&#39;vandv_active&#39;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkFMEA</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span>
+            <span class="n">integer_to_boolean</span><span class="p">(</span><span class="n">_program_options</span><span class="p">[</span><span class="s1">&#39;fmea_active&#39;</span><span class="p">]))</span>
+
+    <span class="k">def</span> <span class="nf">_on_toggled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checkbutton</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Handle RAMSTKCheckButton() &#39;toggle&#39; signals.</span>
+
+<span class="sd">        :param checkbutton: the RAMSTKCheckButton() that called this method.</span>
+<span class="sd">        :type: :class:`gui.gtk.ramstk.Button.RAMSTKToggleButton`</span>
+<span class="sd">        :param index: the index of the Gtk.CheckButton() in the list</span>
+<span class="sd">            handler list.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#// TODO: Add code to record user creating program database.</span>
+        <span class="c1">#//</span>
+        <span class="c1">#// There should be code to record in the RAMSTKProgramInfo table</span>
+        <span class="c1">#// the logged in user who creates the database.  This will require</span>
+        <span class="c1">#// a function/method to identify the logged in user as well as a</span>
+        <span class="c1">#// function/method to write this to the new database.</span>
+        <span class="c1"># //</span>
+        <span class="c1"># // labels: status:globalbacklog, severity:normal, type:enhancement</span>
+
+        <span class="c1">#// TODO: Add code to record user updating program database.</span>
+        <span class="c1">#//</span>
+        <span class="c1">#// There should be code to record in the RAMSTKProgramInfo table</span>
+        <span class="c1">#// the logged in user who is updating the database.  This will</span>
+        <span class="c1">#// require a function/method to identify the logged in user as well</span>
+        <span class="c1">#// as a function/method to write this to the database everytime a</span>
+        <span class="c1">#// datamanager successfully updates a database table.</span>
+        <span class="c1">#//</span>
+        <span class="c1">#// labels: status:globalbacklog, severity:normal, type:enhancement</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_keys</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">_error</span><span class="p">:</span>
+            <span class="n">_key</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOGGER</span><span class="o">.</span><span class="n">do_log_exception</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">_error</span><span class="p">)</span>
+
+        <span class="n">_new_text</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">checkbutton</span><span class="o">.</span><span class="n">get_active</span><span class="p">())</span>
+
+        <span class="n">checkbutton</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="n">_new_text</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;toggled&#39;</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_set_option_attributes&#39;</span><span class="p">,</span>
+                        <span class="n">node_id</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;programinfo&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="n">package</span><span class="o">=</span><span class="p">{</span><span class="n">_key</span><span class="p">:</span> <span class="n">_new_text</span><span class="p">})</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

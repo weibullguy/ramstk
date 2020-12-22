@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.controllers.managers &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    
+    <script src="../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.controllers.managers</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.controllers.manager.py is part of The RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2020 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;Hardware Controller Package analysis manager.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="c1"># noinspection PyPackageRequirements</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">treelib</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.configuration</span> <span class="kn">import</span> <span class="n">RAMSTKUserConfiguration</span>
+<span class="kn">from</span> <span class="nn">ramstk.db.base</span> <span class="kn">import</span> <span class="n">BaseDatabase</span>
+<span class="kn">from</span> <span class="nn">ramstk.models.programdb</span> <span class="kn">import</span> <span class="n">RAMSTKMatrix</span>
+
+
+<div class="viewcode-block" id="RAMSTKAnalysisManager"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKAnalysisManager">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKAnalysisManager</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Contain the attributes and methods of an analysis manager.</span>
+
+<span class="sd">    This class manages the analyses for RAMSTK modules.  Attributes of the</span>
+<span class="sd">    analysis manager are:</span>
+
+<span class="sd">    :ivar dict _attributes: the dict used to hold the aggregate attributes for</span>
+<span class="sd">        the hardware item being analyzed.</span>
+<span class="sd">    :ivar tree: the treelib Tree() used to hold a copy of the data manager&#39;s</span>
+<span class="sd">        tree.  This do not remain in-sync automatically.</span>
+<span class="sd">    :type tree: :class:`treelib.Tree`</span>
+<span class="sd">    :ivar RAMSTK_USER_CONFIGURATION: the instance of the</span>
+<span class="sd">        RAMSTKUserConfiguration class associated with this analysis manager.</span>
+<span class="sd">    :type RAMSTK_USER_CONFIGURATION: :class:`ramstk.RAMSTKUserConfiguration`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">RAMSTK_USER_CONFIGURATION</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="c1"># noinspection PyUnusedLocal</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="n">RAMSTKUserConfiguration</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the hardware analysis manager.</span>
+
+<span class="sd">        :param configuration: the RAMSTKUserConfiguration instance associated</span>
+<span class="sd">            with the current instance of the RAMSTK application.</span>
+<span class="sd">        :type configuration: :class:`ramstk.RAMSTKUserConfiguration`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Initialize private dictionary attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span> <span class="o">=</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span><span class="p">()</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span> <span class="o">=</span> <span class="n">configuration</span>
+
+<div class="viewcode-block" id="RAMSTKAnalysisManager.on_get_all_attributes"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKAnalysisManager.on_get_all_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">on_get_all_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set all the attributes for the analysis manager.</span>
+
+<span class="sd">        :param attributes: the data manager&#39;s attributes dict.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span> <span class="o">=</span> <span class="n">attributes</span></div>
+
+<div class="viewcode-block" id="RAMSTKAnalysisManager.on_get_tree"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKAnalysisManager.on_get_tree">[docs]</a>    <span class="k">def</span> <span class="nf">on_get_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the analysis manager&#39;s treelib Tree().</span>
+
+<span class="sd">        :param tree: the data manager&#39;s treelib Tree().</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span> <span class="o">=</span> <span class="n">tree</span></div></div>
+
+
+<div class="viewcode-block" id="RAMSTKDataManager"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKDataManager">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKDataManager</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;The meta-class for all RAMSTK Data Managers.</span>
+
+<span class="sd">    :ivar tree: the treelib Tree()that will contain the structure of the RAMSTK</span>
+<span class="sd">        module being modeled.</span>
+<span class="sd">    :type tree: :class:`treelib.Tree`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Define private dictionary class attributes.</span>
+
+    <span class="c1"># Define private list class attributes.</span>
+
+    <span class="c1"># Define private scalar class attributes.</span>
+    <span class="n">_root</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">_tag</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="c1"># Define public dictionary class attributes.</span>
+
+    <span class="c1"># Define public list class attributes.</span>
+
+    <span class="c1"># Define public scalar class attributes.</span>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="c1"># noinspection PyUnusedLocal</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an RAMSTK data model instance.&quot;&quot;&quot;</span>
+        <span class="c1"># Initialize private dictionary attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pkey</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parent_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_revision_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="p">:</span> <span class="n">BaseDatabase</span> <span class="o">=</span> <span class="n">BaseDatabase</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span> <span class="o">=</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span><span class="p">()</span>
+
+        <span class="c1"># Add the root to the Tree().  This is necessary to allow multiple</span>
+        <span class="c1"># entries at the top level as there can only be one root in a treelib</span>
+        <span class="c1"># Tree().  Manipulation and viewing of a RAMSTK module tree needs to</span>
+        <span class="c1"># ignore the root of the tree.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tag</span><span class="p">,</span> <span class="n">identifier</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="p">)</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_select_matrix</span><span class="p">,</span> <span class="s1">&#39;request_select_matrix&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_update_matrix</span><span class="p">,</span> <span class="s1">&#39;request_update_matrix&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_connect</span><span class="p">,</span> <span class="s1">&#39;succeed_connect_program_database&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_update_all</span><span class="p">,</span> <span class="s1">&#39;request_save_project&#39;</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_select_revision</span><span class="p">,</span> <span class="s1">&#39;selected_revision&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mtx_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tag</span>
+        <span class="k">for</span> <span class="n">_letter</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tag</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">_letter</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="s1">&#39;u&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_mtx_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtx_prefix</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">_letter</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mtx_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtx_prefix</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span>
+
+<div class="viewcode-block" id="RAMSTKDataManager.do_connect"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKDataManager.do_connect">[docs]</a>    <span class="k">def</span> <span class="nf">do_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dao</span><span class="p">:</span> <span class="n">BaseDatabase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Connect data manager to a database.</span>
+
+<span class="sd">        :param dao: the BaseDatabase() instance (data access object)</span>
+<span class="sd">            representing the connected RAMSTK Program database.</span>
+<span class="sd">        :type dao: :class:`ramstk.db.base.BaseDatabase`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dao</span> <span class="o">=</span> <span class="n">dao</span></div>
+
+<div class="viewcode-block" id="RAMSTKDataManager.do_create_all_codes"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKDataManager.do_create_all_codes">[docs]</a>    <span class="k">def</span> <span class="nf">do_create_all_codes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create codes for all MODULE data table records.</span>
+
+<span class="sd">        :param prefix: the string to use as a prefix for each code.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">all_nodes</span><span class="p">():</span>
+            <span class="c1"># noinspection PyUnresolvedReferences</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">do_create_code</span><span class="p">(</span><span class="n">_node</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>  <span class="c1"># type: ignore</span></div>
+
+<div class="viewcode-block" id="RAMSTKDataManager.do_delete"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKDataManager.do_delete">[docs]</a>    <span class="k">def</span> <span class="nf">do_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Remove a RAMSTK data table record.</span>
+
+<span class="sd">        :param node_id: the node ID to be removed from the RAMSTK Program</span>
+<span class="sd">            database.</span>
+<span class="sd">        :param table: the key in the module&#39;s treelib Tree() data package</span>
+<span class="sd">            for the RAMSTK data table to remove the record from.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">do_delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_select</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="n">table</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="RAMSTKDataManager.do_get_attributes"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKDataManager.do_get_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">do_get_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve the RAMSTK data table attributes for node ID.</span>
+
+<span class="sd">        :param node_id: the node ID in the treelib Tree to get the</span>
+<span class="sd">            attributes for.</span>
+<span class="sd">        :param table: the RAMSTK data table to retrieve the attributes from.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;succeed_get_</span><span class="si">{0}</span><span class="s1">_attributes&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">table</span><span class="p">),</span>
+                <span class="n">attributes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">do_select</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span>
+                                          <span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">)</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(),</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">_method_name</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
+            <span class="n">_error_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">: No attributes found for record ID </span><span class="si">{1}</span><span class="s1"> in &#39;</span>
+                          <span class="s1">&#39;</span><span class="si">{2}</span><span class="s1"> table.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_method_name</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">table</span><span class="p">))</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;do_log_debug&#39;</span><span class="p">,</span>
+                <span class="n">logger_name</span><span class="o">=</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">,</span>
+                <span class="n">message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;fail_get_</span><span class="si">{0}</span><span class="s1">_attributes&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">table</span><span class="p">),</span>
+                <span class="n">error_message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKDataManager.do_select"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKDataManager.do_select">[docs]</a>    <span class="k">def</span> <span class="nf">do_select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve the RAMSTK data table record for the Node ID passed.</span>
+
+<span class="sd">        :param node_id: the Node ID of the data package to retrieve.</span>
+<span class="sd">        :param table: the name of the RAMSTK data table to retrieve the</span>
+<span class="sd">            attributes from.</span>
+<span class="sd">        :return: the instance of the RAMSTK&lt;MODULE&gt; data table that was</span>
+<span class="sd">            requested or None if the requested Node ID does not exist.</span>
+<span class="sd">        :raise: KeyError if passed the name of a table that isn&#39;t managed by</span>
+<span class="sd">            this manager.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">table</span><span class="p">]</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">treelib</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">NodeIDAbsentError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+            <span class="n">_method_name</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
+            <span class="n">_error_msg</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;</span><span class="si">{2}</span><span class="s1">: No data package for node ID </span><span class="si">{0}</span><span class="s1"> in module </span><span class="si">{1}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">node_id</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">_method_name</span><span class="p">))</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;do_log_debug&#39;</span><span class="p">,</span>
+                <span class="n">logger_name</span><span class="o">=</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">,</span>
+                <span class="n">message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">_entity</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">_entity</span></div>
+
+<div class="viewcode-block" id="RAMSTKDataManager.do_select_matrix"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKDataManager.do_select_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">do_select_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve all the values for the matrix.</span>
+
+<span class="sd">        :param matrix_type: the type of the Matrix to select from.  This</span>
+<span class="sd">            selects the correct matrix from the dict of matrices managed by</span>
+<span class="sd">            this matrix manager.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_method_name</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
+        <span class="n">_lst_matrix</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Retrieve the matrix values for the desired Matrix ID.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">_matrix</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">do_select_all</span><span class="p">(</span>
+                    <span class="n">RAMSTKMatrix</span><span class="p">,</span>
+                    <span class="n">key</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;revision_id&#39;</span><span class="p">,</span> <span class="s1">&#39;matrix_type&#39;</span><span class="p">],</span>
+                    <span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_revision_id</span><span class="p">,</span> <span class="n">matrix_type</span><span class="p">],</span>
+                    <span class="n">order</span><span class="o">=</span><span class="n">RAMSTKMatrix</span><span class="o">.</span><span class="n">row_id</span><span class="p">):</span>
+                <span class="n">_lst_matrix</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">_matrix</span><span class="o">.</span><span class="n">column_item_id</span><span class="p">,</span>
+                                    <span class="n">_matrix</span><span class="o">.</span><span class="n">row_item_id</span><span class="p">,</span> <span class="n">_matrix</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mtx_prefix</span> <span class="ow">in</span> <span class="n">matrix_type</span><span class="p">:</span>
+                <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                    <span class="s1">&#39;succeed_retrieve_matrix&#39;</span><span class="p">,</span>
+                    <span class="n">matrix_type</span><span class="o">=</span><span class="n">matrix_type</span><span class="p">,</span>
+                    <span class="n">matrix</span><span class="o">=</span><span class="n">_lst_matrix</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">_error_msg</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">{1}</span><span class="s1">: No matrix returned for </span><span class="si">{0}</span><span class="s1"> &#39;</span>
+                               <span class="s1">&#39;matrix.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">matrix_type</span><span class="p">),</span>
+                                                <span class="n">_method_name</span><span class="p">))</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;do_log_debug&#39;</span><span class="p">,</span>
+                <span class="n">logger_name</span><span class="o">=</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">,</span>
+                <span class="n">message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;fail_retrieve_matrix&#39;</span><span class="p">,</span>
+                <span class="n">error_message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKDataManager.do_set_attributes"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKDataManager.do_set_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">package</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span>
+                                                             <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the attributes of the record associated with node ID.</span>
+
+<span class="sd">        :param node_id: the ID of the record in the RAMSTK Program database</span>
+<span class="sd">            table whose attributes are to be set.</span>
+<span class="sd">        :param package: the key:value pair of the attribute to set.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_method_name</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
+        <span class="p">[[</span><span class="n">_key</span><span class="p">,</span> <span class="n">_value</span><span class="p">]]</span> <span class="o">=</span> <span class="n">package</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">_table</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pkey</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">_attributes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_select</span><span class="p">(</span><span class="n">node_id</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                             <span class="n">table</span><span class="o">=</span><span class="n">_table</span><span class="p">)</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">()</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
+                <span class="n">_error_msg</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s1">&#39;</span><span class="si">{2}</span><span class="s1">: No data package for node ID </span><span class="si">{0}</span><span class="s1"> in module {&#39;</span>
+                    <span class="s1">&#39;1}.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node_id</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">_table</span><span class="p">,</span> <span class="n">_method_name</span><span class="p">))</span>
+                <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                    <span class="s1">&#39;do_log_debug&#39;</span><span class="p">,</span>
+                    <span class="n">logger_name</span><span class="o">=</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">,</span>
+                    <span class="n">message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">_attributes</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="k">for</span> <span class="n">_field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pkey</span><span class="p">[</span><span class="n">_table</span><span class="p">]:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">_attributes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">_field</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+            <span class="k">if</span> <span class="n">_key</span> <span class="ow">in</span> <span class="n">_attributes</span><span class="p">:</span>
+                <span class="n">_attributes</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_value</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">do_select</span><span class="p">(</span><span class="n">node_id</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                               <span class="n">table</span><span class="o">=</span><span class="n">_table</span><span class="p">)</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">_attributes</span><span class="p">)</span>
+
+        <span class="c1"># noinspection PyUnresolvedReferences</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_get_tree</span><span class="p">()</span>  <span class="c1"># type: ignore</span></div>
+
+<div class="viewcode-block" id="RAMSTKDataManager.do_set_tree"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKDataManager.do_set_tree">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_tree</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the MODULE treelib Tree().</span>
+
+<span class="sd">        This method is generally used to respond to events such as successful</span>
+<span class="sd">        calculations of the entire system.</span>
+
+<span class="sd">        :param module_tree: the treelib Tree() to assign to the tree attribute.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="n">module_tree</span></div>
+
+    <span class="c1"># noinspection PyUnresolvedReferences</span>
+<div class="viewcode-block" id="RAMSTKDataManager.do_update_all"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKDataManager.do_update_all">[docs]</a>    <span class="k">def</span> <span class="nf">do_update_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Update all MODULE data table records in the RAMSTK Program database.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">all_nodes</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="n">_node</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_update_all&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKDataManager.do_update_matrix"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKDataManager.do_update_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">do_update_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">matrix</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Update the matrix values in the RAMSTK Program database.</span>
+
+<span class="sd">        :param matrix_type: the type (name) of the matrix to update.</span>
+<span class="sd">        :param matrix: the actual matrix whose values are being updated in the</span>
+<span class="sd">            database.</span>
+<span class="sd">        :type matrix: :class:`pandas.DataFrame`</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_row_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">matrix</span><span class="o">.</span><span class="n">index</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">_column_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">matrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])[</span><span class="mi">2</span><span class="p">:]</span>
+
+        <span class="n">_next_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">get_last_id</span><span class="p">(</span><span class="s1">&#39;ramstk_matrix&#39;</span><span class="p">,</span> <span class="s1">&#39;matrix_id&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">_row_id</span> <span class="ow">in</span> <span class="n">_row_ids</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">_col_id</span> <span class="ow">in</span> <span class="n">_column_ids</span><span class="p">:</span>
+                <span class="n">_entity</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">do_select_all</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+                    <span class="n">table</span><span class="o">=</span><span class="n">RAMSTKMatrix</span><span class="p">,</span>
+                    <span class="n">key</span><span class="o">=</span><span class="p">[</span>
+                        <span class="s1">&#39;revision_id&#39;</span><span class="p">,</span> <span class="s1">&#39;matrix_type&#39;</span><span class="p">,</span> <span class="s1">&#39;column_item_id&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;row_item_id&#39;</span>
+                    <span class="p">],</span>
+                    <span class="n">value</span><span class="o">=</span><span class="p">[</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_revision_id</span><span class="p">,</span> <span class="n">matrix_type</span><span class="p">,</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">_col_id</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">_row_id</span><span class="p">)</span>
+                    <span class="p">],</span>
+                    <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">_all</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+                <span class="c1"># If there is no corresponding record in RAMSTKMatrix, then</span>
+                <span class="c1"># create a new RAMSTKMatrix record and add it.</span>
+                <span class="k">if</span> <span class="n">_entity</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">_entity</span> <span class="o">=</span> <span class="n">RAMSTKMatrix</span><span class="p">()</span>
+                    <span class="n">_entity</span><span class="o">.</span><span class="n">revision_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_revision_id</span>
+                    <span class="n">_entity</span><span class="o">.</span><span class="n">matrix_id</span> <span class="o">=</span> <span class="n">_next_id</span>
+                    <span class="n">_entity</span><span class="o">.</span><span class="n">matrix_type</span> <span class="o">=</span> <span class="n">matrix_type</span>
+                    <span class="n">_entity</span><span class="o">.</span><span class="n">column_item_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_col_id</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span>
+                    <span class="n">_entity</span><span class="o">.</span><span class="n">row_item_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_row_id</span><span class="p">)</span>
+                <span class="n">_entity</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">matrix</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">_row_id</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+                                                <span class="n">_col_id</span> <span class="o">+</span> <span class="mi">2</span><span class="p">])</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">dao</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="n">_entity</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_update_matrix&#39;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_on_select_revision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the revision ID for the data manager.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_revision_id</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;revision_id&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="RAMSTKMatrixManager"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKMatrixManager">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKMatrixManager</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;The meta-class for all RAMSTK Matrix Managers.</span>
+
+<span class="sd">    The Matrix data model is an aggregate model of N x M cell data models.  The</span>
+<span class="sd">    attributes of a Matrix are:</span>
+
+<span class="sd">    :ivar object _row_table: the RAMSTK Program database table to use for the</span>
+<span class="sd">        matrix rows.  This is an SQLAlchemy object.</span>
+<span class="sd">    :ivar column_tables: a list of RAMSTK data table objects that</span>
+<span class="sd">        comprise the columns.  One table per matrix managed by an instance of</span>
+<span class="sd">        the matrix manager.</span>
+<span class="sd">    :ivar dic_matrices: the dictionary containing all the matrices managed</span>
+<span class="sd">        by an instance of the matrix manager.</span>
+<span class="sd">    :ivar n_row: the number of rows in the Matrix.</span>
+<span class="sd">    :ivar n_col: the number of columns in the Matrix.</span>
+
+<span class="sd">    There are currently 10 matrices as defined by their matrix type.  These</span>
+<span class="sd">    are:</span>
+
+<span class="sd">        +-----------+-------------+--------------+--------------+</span>
+<span class="sd">        | Matrix ID |  Row Table  | Column Table |  Matrix Type |</span>
+<span class="sd">        +-----------+-------------+--------------+--------------+</span>
+<span class="sd">        |     1     | Function    | Hardware     | fnctn_hrdwr  |</span>
+<span class="sd">        +-----------+-------------+--------------+--------------+</span>
+<span class="sd">        |     2     | Function    | Validation   | fnctn_vldtn  |</span>
+<span class="sd">        +-----------+-------------+--------------+--------------+</span>
+<span class="sd">        |     3     | Requirement | Hardware     | rqrmnt_hrdwr |</span>
+<span class="sd">        +-----------+-------------+--------------+--------------+</span>
+<span class="sd">        |     4     | Requirement | Validation   | rqrmnt_vldtn |</span>
+<span class="sd">        +-----------+-------------+--------------+--------------+</span>
+<span class="sd">        |     5     | Hardware    | Requirement  | hrdwr_rqrmnt |</span>
+<span class="sd">        +-----------+-------------+--------------+--------------+</span>
+<span class="sd">        |     6     | Hardware    | Validation   | hrdwr_vldtn  |</span>
+<span class="sd">        +-----------+-------------+--------------+--------------+</span>
+<span class="sd">        |     7     | Validation  | Requirement  | vldtn_rqrmnt |</span>
+<span class="sd">        +-----------+-------------+--------------+--------------+</span>
+<span class="sd">        |     8     | Validation  | Hardware     | vldtn_hrdwr  |</span>
+<span class="sd">        +-----------+-------------+--------------+--------------+</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_tag</span> <span class="o">=</span> <span class="s1">&#39;matrix&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column_tables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span>
+                 <span class="n">row_table</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize a Matrix data model instance.</span>
+
+<span class="sd">        :param column_tables: a dict of RAMSTK data table objects that</span>
+<span class="sd">            comprise the columns.</span>
+<span class="sd">        :param row_table: the RAMSTK data table object that comprises the rows</span>
+<span class="sd">            of the matrix(ces) managed by this manager.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Initialize private dictionary attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_col_tree</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_column_tables</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="n">column_tables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_columns</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_matrix</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_revision_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_row_table</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">row_table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_row_tree</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span> <span class="o">=</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span><span class="p">()</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_row</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_col</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_load</span><span class="p">,</span> <span class="s1">&#39;succeed_retrieve_matrix&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_request_update</span><span class="p">,</span> <span class="s1">&#39;do_request_update_matrix&#39;</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_select_revision</span><span class="p">,</span> <span class="s1">&#39;selected_revision&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RAMSTKMatrixManager.do_create_columns"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKMatrixManager.do_create_columns">[docs]</a>    <span class="k">def</span> <span class="nf">do_create_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create the matrix columns.</span>
+
+<span class="sd">        This will effectively create the requested matrix since the row</span>
+<span class="sd">        headings column was already created.  All values in the resulting</span>
+<span class="sd">        matrix will be zero.  Call do_load() to load the actual values into</span>
+<span class="sd">        the matrix.</span>
+
+<span class="sd">        :param matrix_type: the type (name) of the matrix to create the</span>
+<span class="sd">            columns for.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_matrix</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_matrix</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;display_name&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_matrix</span><span class="p">[</span><span class="s1">&#39;display_name&#39;</span><span class="p">]</span>
+        <span class="p">}</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_lst_columns</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_col_tree</span><span class="p">[</span><span class="n">matrix_type</span><span class="p">]</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">_node</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span>
+                <span class="k">for</span> <span class="n">_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_col_tree</span><span class="p">[</span><span class="n">matrix_type</span><span class="p">]</span><span class="o">.</span><span class="n">nodes</span>
+            <span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">_lst_columns</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">_idx</span><span class="p">,</span> <span class="n">_column</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">_lst_columns</span><span class="p">):</span>
+            <span class="n">_values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_row</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">_values</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">_idx</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dic_matrix</span><span class="p">[</span><span class="n">_column</span><span class="p">]</span> <span class="o">=</span> <span class="n">_values</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">[</span><span class="n">matrix_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dic_matrix</span><span class="p">)</span>
+        <span class="c1"># pylint: disable=unused-variable</span>
+        <span class="p">(</span><span class="n">__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_col</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">[</span><span class="n">matrix_type</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span></div>
+
+<div class="viewcode-block" id="RAMSTKMatrixManager.do_create_rows"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKMatrixManager.do_create_rows">[docs]</a>    <span class="k">def</span> <span class="nf">do_create_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create the matrix rows.</span>
+
+<span class="sd">        All matrices for a given workflow module will have the same row</span>
+<span class="sd">        headings.  This method will create a matrix with only one column</span>
+<span class="sd">        containing the row headings.</span>
+
+<span class="sd">        :param tree: the treelib Tree() containing the workflow module&#39;s data.</span>
+<span class="sd">        :type tree: :class:`treelib.Tree`</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_row_tree</span> <span class="o">=</span> <span class="n">tree</span>
+
+        <span class="c1"># Build a dict containing the record ID&#39;s of the row module items</span>
+        <span class="c1"># and the name to display in the RAMSTKMatrixView() for the rows.</span>
+        <span class="c1"># We do not want the ID/tag of the root node in the tree as this is</span>
+        <span class="c1"># simply the name of the work flow module.</span>
+        <span class="n">_row_ids</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_row_tree</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">_node</span><span class="p">)</span><span class="o">.</span><span class="n">identifier</span>
+            <span class="k">for</span> <span class="n">_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_row_tree</span><span class="o">.</span><span class="n">nodes</span>
+        <span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">_row_ids</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">_display_names</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_row_tree</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">_node</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span>
+            <span class="k">for</span> <span class="n">_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_row_tree</span><span class="o">.</span><span class="n">nodes</span>
+        <span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">_display_names</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;column_id&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_matrix</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">_row_ids</span><span class="p">,</span> <span class="s1">&#39;display_name&#39;</span><span class="p">:</span> <span class="n">_display_names</span><span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">_matrix_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_column_tables</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">[</span><span class="n">_matrix_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dic_matrix</span><span class="p">)</span>
+            <span class="c1"># pylint: disable=unused-variable</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_row</span><span class="p">,</span> <span class="n">__</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">[</span><span class="n">_matrix_type</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+
+            <span class="c1"># If the column tree has already been loaded, we can build the</span>
+            <span class="c1"># matrix.  Otherwise the matrix will be built when the column</span>
+            <span class="c1"># tree is loaded.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_col_tree</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">do_create_columns</span><span class="p">(</span><span class="n">_matrix_type</span><span class="p">)</span>
+                <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_select_matrix&#39;</span><span class="p">,</span>
+                                <span class="n">matrix_type</span><span class="o">=</span><span class="n">_matrix_type</span><span class="p">,)</span></div>
+
+<div class="viewcode-block" id="RAMSTKMatrixManager.do_delete_column"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKMatrixManager.do_delete_column">[docs]</a>    <span class="k">def</span> <span class="nf">do_delete_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">matrix_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Delete a column from the requested matrix.</span>
+
+<span class="sd">        :param node_id: the MODULE treelib Node ID that was deleted.</span>
+<span class="sd">            Note that node ID = MODULE ID = matrix row ID.</span>
+<span class="sd">        :param matrix_type: the type of the Matrix to delete the column.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        :raise: KeyError if passed a node ID or matrix type that doesn&#39;t exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">[</span><span class="n">matrix_type</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">[</span><span class="n">matrix_type</span><span class="p">]</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">node_id</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKMatrixManager.do_delete_row"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKMatrixManager.do_delete_row">[docs]</a>    <span class="k">def</span> <span class="nf">do_delete_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Delete a row from all the matrices.</span>
+
+<span class="sd">        :param node_id: the MODULE treelib Node ID that was deleted.</span>
+<span class="sd">            Note that node ID = MODULE ID = matrix row ID.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        :raise: KeyError if passed a node ID that doesn&#39;t exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_matrix</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">[</span><span class="n">_matrix</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">[</span><span class="n">_matrix</span><span class="p">]</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">node_id</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="RAMSTKMatrixManager.do_insert_column"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKMatrixManager.do_insert_column">[docs]</a>    <span class="k">def</span> <span class="nf">do_insert_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">matrix_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Insert a column into the requested matrix.</span>
+
+<span class="sd">        :param node_id: the MODULE treelib Node ID that was inserted.</span>
+<span class="sd">            Note that node ID = MODULE ID = matrix row ID.</span>
+<span class="sd">        :param matrix_type: the type of the Matrix to select from.  This</span>
+<span class="sd">            selects the correct matrix from the dict of matrices managed by</span>
+<span class="sd">            this matrix manager.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        :raise: KeyError if passed a node ID or matrix type that doesn&#39;t exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_lst_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_row</span>
+        <span class="n">_lst_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">[</span><span class="n">matrix_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">[</span><span class="n">matrix_type</span><span class="p">],</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="n">node_id</span><span class="p">:</span> <span class="n">_lst_values</span><span class="p">})</span>
+        <span class="p">],</span>
+                                                   <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKMatrixManager.do_insert_row"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKMatrixManager.do_insert_row">[docs]</a>    <span class="k">def</span> <span class="nf">do_insert_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Insert a row into each matrix managed by this matrix manager.</span>
+
+<span class="sd">        :param node_id: the MODULE treelib Node ID that was inserted.</span>
+<span class="sd">            Note that node ID = MODULE ID = matrix row ID.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_matrix</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">:</span>
+            <span class="c1"># pylint: disable=unused-variable</span>
+            <span class="p">(</span><span class="n">__</span><span class="p">,</span> <span class="n">_n_col</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">[</span><span class="n">_matrix</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+            <span class="n">_lst_values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">_n_col</span>
+
+            <span class="n">_new_row</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">_lst_values</span><span class="p">],</span>
+                                    <span class="n">columns</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">[</span><span class="n">_matrix</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span>
+                                    <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="n">node_id</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">[</span><span class="n">_matrix</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">[</span><span class="n">_matrix</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">_new_row</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKMatrixManager.do_load"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKMatrixManager.do_load">[docs]</a>    <span class="k">def</span> <span class="nf">do_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">matrix</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the matrix values.</span>
+
+<span class="sd">        :param matrix_type: the type of the Matrix to select from.  This</span>
+<span class="sd">            selects the correct matrix from the dict of matrices managed by</span>
+<span class="sd">            this matrix manager.</span>
+<span class="sd">        :param matrix: a list of tuples (column ID, row ID, value) for the</span>
+<span class="sd">            selected matrix.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If the matrix type exists in the dict of matrices, then build it.</span>
+        <span class="c1"># Otherwise just keep going.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_n_columns</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">[</span><span class="n">matrix_type</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">_n_columns</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">_col</span> <span class="ow">in</span> <span class="n">matrix</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">[</span><span class="n">matrix_type</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span>
+                        <span class="n">_col</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># type: ignore</span>
+                        <span class="n">_col</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">_col</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+                <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_load_matrix&#39;</span><span class="p">,</span>
+                                <span class="n">matrix_type</span><span class="o">=</span><span class="n">matrix_type</span><span class="p">,</span>
+                                <span class="n">matrix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">[</span><span class="n">matrix_type</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="RAMSTKMatrixManager.do_request_update"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKMatrixManager.do_request_update">[docs]</a>    <span class="k">def</span> <span class="nf">do_request_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Update the requested matrix in the RAMSTK program database.</span>
+
+<span class="sd">        :param matrix_type: the type of the Matrix to select from.  This</span>
+<span class="sd">            selects the correct matrix from the dict of matrices managed by</span>
+<span class="sd">            this matrix manager.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">matrix_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">:</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_update_matrix&#39;</span><span class="p">,</span>
+                            <span class="n">matrix_type</span><span class="o">=</span><span class="n">matrix_type</span><span class="p">,</span>
+                            <span class="n">matrix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">[</span><span class="n">matrix_type</span><span class="p">],)</span></div>
+
+<div class="viewcode-block" id="RAMSTKMatrixManager.do_select"><a class="viewcode-back" href="../../../api/ramstk.controllers.html#ramstk.controllers.managers.RAMSTKMatrixManager.do_select">[docs]</a>    <span class="k">def</span> <span class="nf">do_select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">col</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Select the value from the cell identified by col and row.</span>
+
+<span class="sd">        :param matrix_type: the type of the Matrix to select from.  This</span>
+<span class="sd">            selects the correct matrix from the dict of matrices managed by</span>
+<span class="sd">            this matrix manager.</span>
+<span class="sd">        :param row: the row of the cell.  This is the second index of the</span>
+<span class="sd">            Pandas DataFrame.</span>
+<span class="sd">        :param col: the column of the cell.  This is the first index of the</span>
+<span class="sd">            Pandas DataFrame.</span>
+<span class="sd">        :return: the value in the cell at (col, row).</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        :raise: KeyError if passed a matrix type, column, or row that doesn&#39;t</span>
+<span class="sd">            exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dic_matrices</span><span class="p">[</span><span class="n">matrix_type</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span></div>
+
+    <span class="k">def</span> <span class="nf">_on_select_revision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the revision ID for the matrix manager.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_revision_id</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;revision_id&#39;</span><span class="p">]</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

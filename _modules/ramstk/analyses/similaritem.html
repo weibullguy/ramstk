@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.analyses.similaritem &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    
+    <script src="../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.analyses.similaritem</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.analyses.SimilarItem.py is part of the RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2019 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;Reliability Similar Item Assessment Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="c1"># noinspection PyPackageRequirements</span>
+<span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">symbols</span><span class="p">,</span> <span class="n">sympify</span>  <span class="c1"># type: ignore</span>
+
+<span class="n">ENVIRONMENT_FROM_TO</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="mf">0.2</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span> <span class="mf">1.1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="mf">5.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="mf">1.4</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="mf">1.4</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span> <span class="mf">5.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="mf">3.3</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="mf">0.7</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span> <span class="mf">3.3</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="mf">3.3</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="mf">0.7</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span> <span class="mf">3.3</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="mf">10.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="mf">2.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="mf">3.3</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="mf">3.3</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span> <span class="mf">10.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="mf">0.9</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="mf">0.2</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span> <span class="mf">1.0</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">QUALITY_FROM_TO</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="mf">0.8</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="mf">0.2</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="mf">1.3</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="mf">0.6</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="mf">2.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="mf">1.7</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="mf">0.4</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="mf">5.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="mf">3.3</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span> <span class="mf">2.5</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="mf">1.0</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">TEMPERATURE_FROM_TO</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">):</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">):</span> <span class="mf">0.9</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">):</span> <span class="mf">0.8</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">40.0</span><span class="p">):</span> <span class="mf">0.8</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">):</span> <span class="mf">0.7</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">):</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">70.0</span><span class="p">):</span> <span class="mf">0.4</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">):</span> <span class="mf">1.1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">):</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">):</span> <span class="mf">0.9</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">40.0</span><span class="p">):</span> <span class="mf">0.8</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">):</span> <span class="mf">0.7</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">):</span> <span class="mf">0.6</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">70.0</span><span class="p">):</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">30.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">):</span> <span class="mf">1.2</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">30.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">):</span> <span class="mf">1.1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">30.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">):</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">30.0</span><span class="p">,</span> <span class="mf">40.0</span><span class="p">):</span> <span class="mf">0.9</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">30.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">):</span> <span class="mf">0.8</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">30.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">):</span> <span class="mf">0.6</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">30.0</span><span class="p">,</span> <span class="mf">70.0</span><span class="p">):</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">40.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">):</span> <span class="mf">1.3</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">40.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">):</span> <span class="mf">1.2</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">40.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">):</span> <span class="mf">1.1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">40.0</span><span class="p">,</span> <span class="mf">40.0</span><span class="p">):</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">40.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">):</span> <span class="mf">0.9</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">40.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">):</span> <span class="mf">0.7</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">40.0</span><span class="p">,</span> <span class="mf">70.0</span><span class="p">):</span> <span class="mf">0.6</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">):</span> <span class="mf">1.5</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">):</span> <span class="mf">1.4</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">):</span> <span class="mf">1.2</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">40.0</span><span class="p">):</span> <span class="mf">1.1</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">):</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">):</span> <span class="mf">0.8</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">70.0</span><span class="p">):</span> <span class="mf">0.7</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">60.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">):</span> <span class="mf">1.9</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">60.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">):</span> <span class="mf">1.7</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">60.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">):</span> <span class="mf">1.6</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">60.0</span><span class="p">,</span> <span class="mf">40.0</span><span class="p">):</span> <span class="mf">1.5</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">60.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">):</span> <span class="mf">1.2</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">60.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">):</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">60.0</span><span class="p">,</span> <span class="mf">70.0</span><span class="p">):</span> <span class="mf">0.8</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">70.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">):</span> <span class="mf">2.4</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">70.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">):</span> <span class="mf">2.2</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">70.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">):</span> <span class="mf">1.9</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">70.0</span><span class="p">,</span> <span class="mf">40.0</span><span class="p">):</span> <span class="mf">1.8</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">70.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">):</span> <span class="mf">1.5</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">70.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">):</span> <span class="mf">1.2</span><span class="p">,</span>
+    <span class="p">(</span><span class="mf">70.0</span><span class="p">,</span> <span class="mf">70.0</span><span class="p">):</span> <span class="mf">1.0</span>
+<span class="p">}</span>
+
+
+<span class="c1"># noinspection PyTypeChecker</span>
+<div class="viewcode-block" id="calculate_topic_633"><a class="viewcode-back" href="../../../api/ramstk.analyses.html#ramstk.analyses.similaritem.calculate_topic_633">[docs]</a><span class="k">def</span> <span class="nf">calculate_topic_633</span><span class="p">(</span>
+        <span class="n">environment</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">quality</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+        <span class="n">temperature</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+        <span class="n">hazard_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the Similar Item analysis using Topic 6.3.3 approach.</span>
+
+<span class="sd">    This method calculates the new hazard rate using the approach found</span>
+<span class="sd">    in The Reliability Toolkit: Commercial Practices Edition, Topic 6.3.3.</span>
+
+<span class="sd">    :param environment: the active environment ID for the from and to</span>
+<span class="sd">        environments.</span>
+<span class="sd">    :param quality: the quality level ID for the from and to quality.</span>
+<span class="sd">    :param temperature: the ambient operating temperature (in C) for the</span>
+<span class="sd">        from and to temperatures.</span>
+<span class="sd">    :param hazard_rate: the current hazard rate of the hardware item</span>
+<span class="sd">        being calculated.</span>
+<span class="sd">    :return: (_change_factor_1, _change_factor_2, _change_factor_3, _result_1);</span>
+<span class="sd">        the three change factors (quality, environment, and temperature) and</span>
+<span class="sd">        the assessment result.</span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    :raise: KeyError if passed an environment, quality, or temperature dict</span>
+<span class="sd">        that is missing the from, to, or both keys.</span>
+<span class="sd">    :raise: TypeError if passed a string value for either temperature.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Convert user-supplied temperatures to whole values used in Topic 633.</span>
+    <span class="n">temperature</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">temperature</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mf">10.0</span><span class="p">)</span> <span class="o">*</span> <span class="mf">10.0</span>
+    <span class="n">temperature</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">temperature</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mf">10.0</span><span class="p">)</span> <span class="o">*</span> <span class="mf">10.0</span>
+
+    <span class="n">_change_factor_1</span> <span class="o">=</span> <span class="n">QUALITY_FROM_TO</span><span class="p">[(</span><span class="n">quality</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">],</span> <span class="n">quality</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">])]</span>    <span class="c1"># type: ignore</span>
+    <span class="n">_change_factor_2</span> <span class="o">=</span> <span class="n">ENVIRONMENT_FROM_TO</span><span class="p">[(</span><span class="n">environment</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">],</span>    <span class="c1"># type: ignore</span>
+                                            <span class="n">environment</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">])]</span>
+    <span class="n">_change_factor_3</span> <span class="o">=</span> <span class="n">TEMPERATURE_FROM_TO</span><span class="p">[(</span><span class="n">temperature</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">],</span>
+                                            <span class="n">temperature</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">])]</span>
+
+    <span class="n">_result_1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">hazard_rate</span> <span class="o">/</span>
+                      <span class="p">(</span><span class="n">_change_factor_1</span> <span class="o">*</span> <span class="n">_change_factor_2</span> <span class="o">*</span> <span class="n">_change_factor_3</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">_change_factor_1</span><span class="p">,</span> <span class="n">_change_factor_2</span><span class="p">,</span> <span class="n">_change_factor_3</span><span class="p">,</span> <span class="n">_result_1</span></div>
+
+
+<span class="c1"># pylint: disable=too-many-locals</span>
+<div class="viewcode-block" id="calculate_user_defined"><a class="viewcode-back" href="../../../api/ramstk.analyses.html#ramstk.analyses.similaritem.calculate_user_defined">[docs]</a><span class="k">def</span> <span class="nf">calculate_user_defined</span><span class="p">(</span><span class="n">sia</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the user-defined similar item analysis.</span>
+
+<span class="sd">    :param sia: the user-defined similar item assessment dict.  The</span>
+<span class="sd">        calling method/function should create the sia dict as follows:</span>
+
+<span class="sd">        sia = OrderedDict({</span>
+<span class="sd">            _key: None</span>
+<span class="sd">            for _key in [</span>
+<span class="sd">                &#39;hr&#39;, &#39;pi1&#39;, &#39;pi2&#39;, &#39;pi3&#39;, &#39;pi3&#39;, &#39;pi4&#39;, &#39;pi5&#39;, &#39;pi6&#39;, &#39;pi7&#39;,</span>
+<span class="sd">                &#39;pi8&#39;, &#39;pi9&#39;, &#39;pi10&#39;, &#39;uf1&#39;, &#39;uf2&#39;, &#39;uf3&#39;, &#39;uf4&#39;, &#39;uf5&#39;, &#39;ui1&#39;,</span>
+<span class="sd">                &#39;ui2&#39;, &#39;ui3&#39;, &#39;ui4&#39;, &#39;ui5&#39;, &#39;equation1&#39;, &#39;equation2&#39;,</span>
+<span class="sd">                &#39;equation3&#39;, &#39;equation4&#39;, &#39;equation5&#39;, &#39;res1&#39;, &#39;res2&#39;, &#39;res3&#39;,</span>
+<span class="sd">                &#39;res4&#39;, &#39;res5&#39;</span>
+<span class="sd">                ]</span>
+<span class="sd">            })</span>
+
+<span class="sd">    :return: sia; the similar item assessment dict with updated results.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="p">(</span><span class="n">hr</span><span class="p">,</span> <span class="n">pi1</span><span class="p">,</span> <span class="n">pi2</span><span class="p">,</span> <span class="n">pi3</span><span class="p">,</span> <span class="n">pi4</span><span class="p">,</span> <span class="n">pi5</span><span class="p">,</span> <span class="n">pi6</span><span class="p">,</span> <span class="n">pi7</span><span class="p">,</span> <span class="n">pi8</span><span class="p">,</span> <span class="n">pi9</span><span class="p">,</span> <span class="n">pi10</span><span class="p">,</span> <span class="n">uf1</span><span class="p">,</span> <span class="n">uf2</span><span class="p">,</span> <span class="n">uf3</span><span class="p">,</span> <span class="n">uf4</span><span class="p">,</span>
+     <span class="n">uf5</span><span class="p">,</span> <span class="n">ui1</span><span class="p">,</span> <span class="n">ui2</span><span class="p">,</span> <span class="n">ui3</span><span class="p">,</span> <span class="n">ui4</span><span class="p">,</span> <span class="n">ui5</span><span class="p">,</span> <span class="n">res1</span><span class="p">,</span> <span class="n">res2</span><span class="p">,</span> <span class="n">res3</span><span class="p">,</span> <span class="n">res4</span><span class="p">,</span> <span class="n">res5</span><span class="p">)</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span>
+         <span class="s1">&#39;hr pi1 pi2 pi3 pi4 pi5 pi6 pi7 pi8 pi9 pi10 uf1 uf2 uf3 uf4 uf5 ui1 &#39;</span>
+         <span class="s1">&#39;ui2 ui3 ui4 ui5 res1 res2 res3 res4 res5&#39;</span><span class="p">)</span>
+
+    <span class="c1"># The subs argument needs to be passed as a dict of sia values just like</span>
+    <span class="c1"># it is below.  This will result in duplicate code warnings, but passing</span>
+    <span class="c1"># it like this is required to allow the use of the results in subsequent</span>
+    <span class="c1"># calculations.</span>
+    <span class="c1"># pylint: disable=eval-used</span>
+    <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sympify</span><span class="p">(</span><span class="n">sia</span><span class="p">[</span><span class="s1">&#39;equation1&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">evalf</span><span class="p">(</span>
+        <span class="n">subs</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">hr</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;hr&#39;</span><span class="p">],</span>
+            <span class="n">pi1</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi1&#39;</span><span class="p">],</span>
+            <span class="n">pi2</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi2&#39;</span><span class="p">],</span>
+            <span class="n">pi3</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi3&#39;</span><span class="p">],</span>
+            <span class="n">pi4</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi4&#39;</span><span class="p">],</span>
+            <span class="n">pi5</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi5&#39;</span><span class="p">],</span>
+            <span class="n">pi6</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi6&#39;</span><span class="p">],</span>
+            <span class="n">pi7</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi7&#39;</span><span class="p">],</span>
+            <span class="n">pi8</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi8&#39;</span><span class="p">],</span>
+            <span class="n">pi9</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi9&#39;</span><span class="p">],</span>
+            <span class="n">pi10</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi10&#39;</span><span class="p">],</span>
+            <span class="n">uf1</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf1&#39;</span><span class="p">],</span>
+            <span class="n">uf2</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf2&#39;</span><span class="p">],</span>
+            <span class="n">uf3</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf3&#39;</span><span class="p">],</span>
+            <span class="n">uf4</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf4&#39;</span><span class="p">],</span>
+            <span class="n">uf5</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf5&#39;</span><span class="p">],</span>
+            <span class="n">ui1</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui1&#39;</span><span class="p">],</span>
+            <span class="n">ui2</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui2&#39;</span><span class="p">],</span>
+            <span class="n">ui3</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui3&#39;</span><span class="p">],</span>
+            <span class="n">ui4</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui4&#39;</span><span class="p">],</span>
+            <span class="n">ui5</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui5&#39;</span><span class="p">],</span>
+            <span class="n">res1</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res1&#39;</span><span class="p">],</span>
+            <span class="n">res2</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res2&#39;</span><span class="p">],</span>
+            <span class="n">res3</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res3&#39;</span><span class="p">],</span>
+            <span class="n">res4</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res4&#39;</span><span class="p">],</span>
+            <span class="n">res5</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res5&#39;</span><span class="p">]</span>
+        <span class="p">})</span>
+    <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sympify</span><span class="p">(</span><span class="n">sia</span><span class="p">[</span><span class="s1">&#39;equation2&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">evalf</span><span class="p">(</span>
+        <span class="n">subs</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">hr</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;hr&#39;</span><span class="p">],</span>
+            <span class="n">pi1</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi1&#39;</span><span class="p">],</span>
+            <span class="n">pi2</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi2&#39;</span><span class="p">],</span>
+            <span class="n">pi3</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi3&#39;</span><span class="p">],</span>
+            <span class="n">pi4</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi4&#39;</span><span class="p">],</span>
+            <span class="n">pi5</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi5&#39;</span><span class="p">],</span>
+            <span class="n">pi6</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi6&#39;</span><span class="p">],</span>
+            <span class="n">pi7</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi7&#39;</span><span class="p">],</span>
+            <span class="n">pi8</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi8&#39;</span><span class="p">],</span>
+            <span class="n">pi9</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi9&#39;</span><span class="p">],</span>
+            <span class="n">pi10</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi10&#39;</span><span class="p">],</span>
+            <span class="n">uf1</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf1&#39;</span><span class="p">],</span>
+            <span class="n">uf2</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf2&#39;</span><span class="p">],</span>
+            <span class="n">uf3</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf3&#39;</span><span class="p">],</span>
+            <span class="n">uf4</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf4&#39;</span><span class="p">],</span>
+            <span class="n">uf5</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf5&#39;</span><span class="p">],</span>
+            <span class="n">ui1</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui1&#39;</span><span class="p">],</span>
+            <span class="n">ui2</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui2&#39;</span><span class="p">],</span>
+            <span class="n">ui3</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui3&#39;</span><span class="p">],</span>
+            <span class="n">ui4</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui4&#39;</span><span class="p">],</span>
+            <span class="n">ui5</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui5&#39;</span><span class="p">],</span>
+            <span class="n">res1</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res1&#39;</span><span class="p">],</span>
+            <span class="n">res2</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res2&#39;</span><span class="p">],</span>
+            <span class="n">res3</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res3&#39;</span><span class="p">],</span>
+            <span class="n">res4</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res4&#39;</span><span class="p">],</span>
+            <span class="n">res5</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res5&#39;</span><span class="p">]</span>
+        <span class="p">})</span>
+    <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sympify</span><span class="p">(</span><span class="n">sia</span><span class="p">[</span><span class="s1">&#39;equation3&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">evalf</span><span class="p">(</span>
+        <span class="n">subs</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">hr</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;hr&#39;</span><span class="p">],</span>
+            <span class="n">pi1</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi1&#39;</span><span class="p">],</span>
+            <span class="n">pi2</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi2&#39;</span><span class="p">],</span>
+            <span class="n">pi3</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi3&#39;</span><span class="p">],</span>
+            <span class="n">pi4</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi4&#39;</span><span class="p">],</span>
+            <span class="n">pi5</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi5&#39;</span><span class="p">],</span>
+            <span class="n">pi6</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi6&#39;</span><span class="p">],</span>
+            <span class="n">pi7</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi7&#39;</span><span class="p">],</span>
+            <span class="n">pi8</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi8&#39;</span><span class="p">],</span>
+            <span class="n">pi9</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi9&#39;</span><span class="p">],</span>
+            <span class="n">pi10</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi10&#39;</span><span class="p">],</span>
+            <span class="n">uf1</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf1&#39;</span><span class="p">],</span>
+            <span class="n">uf2</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf2&#39;</span><span class="p">],</span>
+            <span class="n">uf3</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf3&#39;</span><span class="p">],</span>
+            <span class="n">uf4</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf4&#39;</span><span class="p">],</span>
+            <span class="n">uf5</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf5&#39;</span><span class="p">],</span>
+            <span class="n">ui1</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui1&#39;</span><span class="p">],</span>
+            <span class="n">ui2</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui2&#39;</span><span class="p">],</span>
+            <span class="n">ui3</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui3&#39;</span><span class="p">],</span>
+            <span class="n">ui4</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui4&#39;</span><span class="p">],</span>
+            <span class="n">ui5</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui5&#39;</span><span class="p">],</span>
+            <span class="n">res1</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res1&#39;</span><span class="p">],</span>
+            <span class="n">res2</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res2&#39;</span><span class="p">],</span>
+            <span class="n">res3</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res3&#39;</span><span class="p">],</span>
+            <span class="n">res4</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res4&#39;</span><span class="p">],</span>
+            <span class="n">res5</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res5&#39;</span><span class="p">]</span>
+        <span class="p">})</span>
+    <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res4&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sympify</span><span class="p">(</span><span class="n">sia</span><span class="p">[</span><span class="s1">&#39;equation4&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">evalf</span><span class="p">(</span>
+        <span class="n">subs</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">hr</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;hr&#39;</span><span class="p">],</span>
+            <span class="n">pi1</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi1&#39;</span><span class="p">],</span>
+            <span class="n">pi2</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi2&#39;</span><span class="p">],</span>
+            <span class="n">pi3</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi3&#39;</span><span class="p">],</span>
+            <span class="n">pi4</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi4&#39;</span><span class="p">],</span>
+            <span class="n">pi5</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi5&#39;</span><span class="p">],</span>
+            <span class="n">pi6</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi6&#39;</span><span class="p">],</span>
+            <span class="n">pi7</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi7&#39;</span><span class="p">],</span>
+            <span class="n">pi8</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi8&#39;</span><span class="p">],</span>
+            <span class="n">pi9</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi9&#39;</span><span class="p">],</span>
+            <span class="n">pi10</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi10&#39;</span><span class="p">],</span>
+            <span class="n">uf1</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf1&#39;</span><span class="p">],</span>
+            <span class="n">uf2</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf2&#39;</span><span class="p">],</span>
+            <span class="n">uf3</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf3&#39;</span><span class="p">],</span>
+            <span class="n">uf4</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf4&#39;</span><span class="p">],</span>
+            <span class="n">uf5</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf5&#39;</span><span class="p">],</span>
+            <span class="n">ui1</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui1&#39;</span><span class="p">],</span>
+            <span class="n">ui2</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui2&#39;</span><span class="p">],</span>
+            <span class="n">ui3</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui3&#39;</span><span class="p">],</span>
+            <span class="n">ui4</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui4&#39;</span><span class="p">],</span>
+            <span class="n">ui5</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui5&#39;</span><span class="p">],</span>
+            <span class="n">res1</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res1&#39;</span><span class="p">],</span>
+            <span class="n">res2</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res2&#39;</span><span class="p">],</span>
+            <span class="n">res3</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res3&#39;</span><span class="p">],</span>
+            <span class="n">res4</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res4&#39;</span><span class="p">],</span>
+            <span class="n">res5</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res5&#39;</span><span class="p">]</span>
+        <span class="p">})</span>
+    <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res5&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sympify</span><span class="p">(</span><span class="n">sia</span><span class="p">[</span><span class="s1">&#39;equation5&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">evalf</span><span class="p">(</span>
+        <span class="n">subs</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">hr</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;hr&#39;</span><span class="p">],</span>
+            <span class="n">pi1</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi1&#39;</span><span class="p">],</span>
+            <span class="n">pi2</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi2&#39;</span><span class="p">],</span>
+            <span class="n">pi3</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi3&#39;</span><span class="p">],</span>
+            <span class="n">pi4</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi4&#39;</span><span class="p">],</span>
+            <span class="n">pi5</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi5&#39;</span><span class="p">],</span>
+            <span class="n">pi6</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi6&#39;</span><span class="p">],</span>
+            <span class="n">pi7</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi7&#39;</span><span class="p">],</span>
+            <span class="n">pi8</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi8&#39;</span><span class="p">],</span>
+            <span class="n">pi9</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi9&#39;</span><span class="p">],</span>
+            <span class="n">pi10</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;pi10&#39;</span><span class="p">],</span>
+            <span class="n">uf1</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf1&#39;</span><span class="p">],</span>
+            <span class="n">uf2</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf2&#39;</span><span class="p">],</span>
+            <span class="n">uf3</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf3&#39;</span><span class="p">],</span>
+            <span class="n">uf4</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf4&#39;</span><span class="p">],</span>
+            <span class="n">uf5</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;uf5&#39;</span><span class="p">],</span>
+            <span class="n">ui1</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui1&#39;</span><span class="p">],</span>
+            <span class="n">ui2</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui2&#39;</span><span class="p">],</span>
+            <span class="n">ui3</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui3&#39;</span><span class="p">],</span>
+            <span class="n">ui4</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui4&#39;</span><span class="p">],</span>
+            <span class="n">ui5</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;ui5&#39;</span><span class="p">],</span>
+            <span class="n">res1</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res1&#39;</span><span class="p">],</span>
+            <span class="n">res2</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res2&#39;</span><span class="p">],</span>
+            <span class="n">res3</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res3&#39;</span><span class="p">],</span>
+            <span class="n">res4</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res4&#39;</span><span class="p">],</span>
+            <span class="n">res5</span><span class="p">:</span> <span class="n">sia</span><span class="p">[</span><span class="s1">&#39;res5&#39;</span><span class="p">]</span>
+        <span class="p">})</span>
+
+    <span class="k">return</span> <span class="n">sia</span></div>
+
+
+<div class="viewcode-block" id="set_user_defined_change_factors"><a class="viewcode-back" href="../../../api/ramstk.analyses.html#ramstk.analyses.similaritem.set_user_defined_change_factors">[docs]</a><span class="k">def</span> <span class="nf">set_user_defined_change_factors</span><span class="p">(</span><span class="n">sia</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+                                    <span class="n">factors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Set the change factors for the user-defined calculations.</span>
+
+<span class="sd">    :param sia: the similar item assessment dict.</span>
+<span class="sd">    :param list factors: the list of change factors; the list items are float</span>
+<span class="sd">        or int.</span>
+<span class="sd">    :return: sia; the similar item assessment dict with updated factor values.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get the change factor values.</span>
+    <span class="k">for</span> <span class="n">_idx</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">]:</span>
+        <span class="n">_key</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sia</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">_idx</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sia</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">factors</span><span class="p">[</span><span class="n">_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">sia</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="k">return</span> <span class="n">sia</span></div>
+
+
+<div class="viewcode-block" id="set_user_defined_floats"><a class="viewcode-back" href="../../../api/ramstk.analyses.html#ramstk.analyses.similaritem.set_user_defined_floats">[docs]</a><span class="k">def</span> <span class="nf">set_user_defined_floats</span><span class="p">(</span><span class="n">sia</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+                            <span class="n">floats</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Set the user-defined float values for the user-defined calculations.</span>
+
+<span class="sd">    :param sia: the similar item assessment dict.</span>
+<span class="sd">    :param list floats: the list of float values.</span>
+<span class="sd">    :return: sia; the similar item assessment dict with updated float values.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">_idx</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">]:</span>
+        <span class="n">_key</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sia</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">_idx</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sia</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">floats</span><span class="p">[</span><span class="n">_idx</span> <span class="o">-</span> <span class="mi">11</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">sia</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="k">return</span> <span class="n">sia</span></div>
+
+
+<div class="viewcode-block" id="set_user_defined_ints"><a class="viewcode-back" href="../../../api/ramstk.analyses.html#ramstk.analyses.similaritem.set_user_defined_ints">[docs]</a><span class="k">def</span> <span class="nf">set_user_defined_ints</span><span class="p">(</span><span class="n">sia</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+                          <span class="n">ints</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Set the user-defined integer values for the user-defined calculations.</span>
+
+<span class="sd">    :param sia: the similar item assessment dict.</span>
+<span class="sd">    :param list ints: the list of integer values.</span>
+<span class="sd">    :return: sia; the similar item assessment dict with updated integer values.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">_idx</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">20</span><span class="p">]:</span>
+        <span class="n">_key</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sia</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">_idx</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sia</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ints</span><span class="p">[</span><span class="n">_idx</span> <span class="o">-</span> <span class="mi">16</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">sia</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="n">sia</span></div>
+
+
+<div class="viewcode-block" id="set_user_defined_functions"><a class="viewcode-back" href="../../../api/ramstk.analyses.html#ramstk.analyses.similaritem.set_user_defined_functions">[docs]</a><span class="k">def</span> <span class="nf">set_user_defined_functions</span><span class="p">(</span><span class="n">sia</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+                               <span class="n">functions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Set the user-defined functions for the user-defined calculations.</span>
+
+<span class="sd">    :param sia: the similar item assessment dict.</span>
+<span class="sd">    :param list functions: the list of functions; list items are str.</span>
+<span class="sd">    :return: sia; the similar item assessment dict with updated functions.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">_idx</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">21</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">25</span><span class="p">]:</span>
+        <span class="n">_key</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sia</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">_idx</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sia</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">functions</span><span class="p">[</span><span class="n">_idx</span> <span class="o">-</span> <span class="mi">21</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">sia</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="k">return</span> <span class="n">sia</span></div>
+
+
+<div class="viewcode-block" id="set_user_defined_results"><a class="viewcode-back" href="../../../api/ramstk.analyses.html#ramstk.analyses.similaritem.set_user_defined_results">[docs]</a><span class="k">def</span> <span class="nf">set_user_defined_results</span><span class="p">(</span><span class="n">sia</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+                             <span class="n">results</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Set the user-defined results for the user-defined calculations.</span>
+
+<span class="sd">    This allows the use of the results fields to be manually set to float</span>
+<span class="sd">    values by the user essentially creating five more user-defined float</span>
+<span class="sd">    values.</span>
+
+<span class="sd">    :param sia: the similar item assessment dict.</span>
+<span class="sd">    :param list results: the list of results.</span>
+<span class="sd">    :return: sia; the similar item assessment dict with updated results.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">_idx</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">26</span><span class="p">,</span> <span class="mi">27</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">30</span><span class="p">]:</span>
+        <span class="n">_key</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sia</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">_idx</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sia</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">_idx</span> <span class="o">-</span> <span class="mi">26</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">sia</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="k">return</span> <span class="n">sia</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.controllers package &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ramstk.controllers.failure_definition package" href="ramstk.controllers.failure_definition.html" />
+    <link rel="prev" title="ramstk.analyses.statistics package" href="ramstk.analyses.statistics.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../contributing.html" >Contributing</a> &#187;</li>
+          <li><a href="modules.html" >ramstk</a> &#187;</li>
+          <li><a href="ramstk.html" accesskey="U">ramstk package</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="ramstk-controllers-package">
+<h1>ramstk.controllers package<a class="headerlink" href="#ramstk-controllers-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ramstk.controllers.failure_definition.html">ramstk.controllers.failure_definition package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.failure_definition.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.failure_definition.html#module-ramstk.controllers.failure_definition.datamanager">ramstk.controllers.failure_definition.datamanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.failure_definition.html#module-ramstk.controllers.failure_definition">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ramstk.controllers.fmea.html">ramstk.controllers.fmea package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.fmea.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.fmea.html#module-ramstk.controllers.fmea.analysismanager">ramstk.controllers.fmea.analysismanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.fmea.html#module-ramstk.controllers.fmea.datamanager">ramstk.controllers.fmea.datamanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.fmea.html#module-ramstk.controllers.fmea">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ramstk.controllers.function.html">ramstk.controllers.function package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.function.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.function.html#module-ramstk.controllers.function.datamanager">ramstk.controllers.function.datamanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.function.html#module-ramstk.controllers.function.matrixmanager">ramstk.controllers.function.matrixmanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.function.html#module-ramstk.controllers.function">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ramstk.controllers.hardware.html">ramstk.controllers.hardware package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.hardware.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.hardware.html#module-ramstk.controllers.hardware.analysismanager">ramstk.controllers.hardware.analysismanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.hardware.html#module-ramstk.controllers.hardware.datamanager">ramstk.controllers.hardware.datamanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.hardware.html#module-ramstk.controllers.hardware.matrixmanager">ramstk.controllers.hardware.matrixmanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.hardware.html#module-ramstk.controllers.hardware">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ramstk.controllers.hazards.html">ramstk.controllers.hazards package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.hazards.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.hazards.html#module-ramstk.controllers.hazards.analysismanager">ramstk.controllers.hazards.analysismanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.hazards.html#module-ramstk.controllers.hazards.datamanager">ramstk.controllers.hazards.datamanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.hazards.html#module-ramstk.controllers.hazards">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ramstk.controllers.options.html">ramstk.controllers.options package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.options.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.options.html#module-ramstk.controllers.options.datamanager">ramstk.controllers.options.datamanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.options.html#module-ramstk.controllers.options">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ramstk.controllers.pof.html">ramstk.controllers.pof package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.pof.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.pof.html#module-ramstk.controllers.pof.datamanager">ramstk.controllers.pof.datamanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.pof.html#module-ramstk.controllers.pof">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ramstk.controllers.requirement.html">ramstk.controllers.requirement package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.requirement.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.requirement.html#module-ramstk.controllers.requirement.datamanager">ramstk.controllers.requirement.datamanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.requirement.html#module-ramstk.controllers.requirement.matrixmanager">ramstk.controllers.requirement.matrixmanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.requirement.html#module-ramstk.controllers.requirement">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ramstk.controllers.revision.html">ramstk.controllers.revision package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.revision.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.revision.html#module-ramstk.controllers.revision.datamanager">ramstk.controllers.revision.datamanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.revision.html#module-ramstk.controllers.revision">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ramstk.controllers.stakeholder.html">ramstk.controllers.stakeholder package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.stakeholder.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.stakeholder.html#module-ramstk.controllers.stakeholder.analysismanager">ramstk.controllers.stakeholder.analysismanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.stakeholder.html#module-ramstk.controllers.stakeholder.datamanager">ramstk.controllers.stakeholder.datamanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.stakeholder.html#module-ramstk.controllers.stakeholder">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ramstk.controllers.usage_profile.html">ramstk.controllers.usage_profile package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.usage_profile.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.usage_profile.html#module-ramstk.controllers.usage_profile.datamanager">ramstk.controllers.usage_profile.datamanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.usage_profile.html#module-ramstk.controllers.usage_profile">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ramstk.controllers.validation.html">ramstk.controllers.validation package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.validation.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.validation.html#module-ramstk.controllers.validation.analysismanager">ramstk.controllers.validation.analysismanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.validation.html#module-ramstk.controllers.validation.datamanager">ramstk.controllers.validation.datamanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.validation.html#module-ramstk.controllers.validation.matrixmanager">ramstk.controllers.validation.matrixmanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ramstk.controllers.validation.html#module-ramstk.controllers.validation">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-ramstk.controllers.managers">
+<span id="ramstk-controllers-managers-module"></span><h2>ramstk.controllers.managers module<a class="headerlink" href="#module-ramstk.controllers.managers" title="Permalink to this headline">¶</a></h2>
+<p>Hardware Controller Package analysis manager.</p>
+<dl class="py class">
+<dt id="ramstk.controllers.managers.RAMSTKAnalysisManager">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.controllers.managers.</code><code class="sig-name descname">RAMSTKAnalysisManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">configuration</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.configuration.RAMSTKUserConfiguration" title="ramstk.configuration.RAMSTKUserConfiguration">ramstk.configuration.RAMSTKUserConfiguration</a></span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span>Any<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKAnalysisManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKAnalysisManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Contain the attributes and methods of an analysis manager.</p>
+<p>This class manages the analyses for RAMSTK modules.  Attributes of the
+analysis manager are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_attributes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – the dict used to hold the aggregate attributes for
+the hardware item being analyzed.</p></li>
+<li><p><strong>tree</strong> – the treelib Tree() used to hold a copy of the data manager’s
+tree.  This do not remain in-sync automatically.</p></li>
+<li><p><a class="reference internal" href="#ramstk.controllers.managers.RAMSTKAnalysisManager.RAMSTK_USER_CONFIGURATION" title="ramstk.controllers.managers.RAMSTKAnalysisManager.RAMSTK_USER_CONFIGURATION"><strong>RAMSTK_USER_CONFIGURATION</strong></a> – the instance of the
+RAMSTKUserConfiguration class associated with this analysis manager.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="ramstk.controllers.managers.RAMSTKAnalysisManager.RAMSTK_USER_CONFIGURATION">
+<code class="sig-name descname">RAMSTK_USER_CONFIGURATION</code><em class="property"> = None</em><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKAnalysisManager.RAMSTK_USER_CONFIGURATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.controllers.managers.RAMSTKAnalysisManager.on_get_all_attributes">
+<code class="sig-name descname">on_get_all_attributes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span>Any<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKAnalysisManager.on_get_all_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKAnalysisManager.on_get_all_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set all the attributes for the analysis manager.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>attributes</strong> – the data manager’s attributes dict.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.controllers.managers.RAMSTKAnalysisManager.on_get_tree">
+<code class="sig-name descname">on_get_tree</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tree</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://treelib.readthedocs.io/en/latest/treelib.html#treelib.tree.Tree" title="(in treelib v1.5.5)">treelib.tree.Tree</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKAnalysisManager.on_get_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKAnalysisManager.on_get_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the analysis manager’s treelib Tree().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tree</strong> – the data manager’s treelib Tree().</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.controllers.managers.RAMSTKDataManager">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.controllers.managers.</code><code class="sig-name descname">RAMSTKDataManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span>Any<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKDataManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKDataManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>The meta-class for all RAMSTK Data Managers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><p><strong>tree</strong> – the treelib Tree()that will contain the structure of the RAMSTK
+module being modeled.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ramstk.controllers.managers.RAMSTKDataManager.do_connect">
+<code class="sig-name descname">do_connect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dao</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.db.html#ramstk.db.base.BaseDatabase" title="ramstk.db.base.BaseDatabase">ramstk.db.base.BaseDatabase</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKDataManager.do_connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKDataManager.do_connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect data manager to a database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dao</strong> (<a class="reference internal" href="ramstk.db.html#ramstk.db.base.BaseDatabase" title="ramstk.db.base.BaseDatabase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.db.base.BaseDatabase</span></code></a>) – the BaseDatabase() instance (data access object)
+representing the connected RAMSTK Program database.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.controllers.managers.RAMSTKDataManager.do_create_all_codes">
+<code class="sig-name descname">do_create_all_codes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prefix</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKDataManager.do_create_all_codes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKDataManager.do_create_all_codes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create codes for all MODULE data table records.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>prefix</strong> – the string to use as a prefix for each code.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.controllers.managers.RAMSTKDataManager.do_delete">
+<code class="sig-name descname">do_delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_id</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em>, <em class="sig-param"><span class="n">table</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKDataManager.do_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKDataManager.do_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a RAMSTK data table record.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_id</strong> – the node ID to be removed from the RAMSTK Program
+database.</p></li>
+<li><p><strong>table</strong> – the key in the module’s treelib Tree() data package
+for the RAMSTK data table to remove the record from.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.controllers.managers.RAMSTKDataManager.do_get_attributes">
+<code class="sig-name descname">do_get_attributes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_id</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em>, <em class="sig-param"><span class="n">table</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKDataManager.do_get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKDataManager.do_get_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the RAMSTK data table attributes for node ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_id</strong> – the node ID in the treelib Tree to get the
+attributes for.</p></li>
+<li><p><strong>table</strong> – the RAMSTK data table to retrieve the attributes from.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.controllers.managers.RAMSTKDataManager.do_select">
+<code class="sig-name descname">do_select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_id</span><span class="p">:</span> <span class="n">Any</span></em>, <em class="sig-param"><span class="n">table</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKDataManager.do_select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKDataManager.do_select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the RAMSTK data table record for the Node ID passed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_id</strong> – the Node ID of the data package to retrieve.</p></li>
+<li><p><strong>table</strong> – the name of the RAMSTK data table to retrieve the
+attributes from.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the instance of the RAMSTK&lt;MODULE&gt; data table that was
+requested or None if the requested Node ID does not exist.</p>
+</dd>
+<dt class="field-odd">Raise</dt>
+<dd class="field-odd"><p>KeyError if passed the name of a table that isn’t managed by
+this manager.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.controllers.managers.RAMSTKDataManager.do_select_matrix">
+<code class="sig-name descname">do_select_matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">matrix_type</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKDataManager.do_select_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKDataManager.do_select_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve all the values for the matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>matrix_type</strong> – the type of the Matrix to select from.  This
+selects the correct matrix from the dict of matrices managed by
+this matrix manager.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.controllers.managers.RAMSTKDataManager.do_set_attributes">
+<code class="sig-name descname">do_set_attributes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_id</span><span class="p">:</span> <span class="n">List</span></em>, <em class="sig-param"><span class="n">package</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span>Any<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKDataManager.do_set_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKDataManager.do_set_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the attributes of the record associated with node ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_id</strong> – the ID of the record in the RAMSTK Program database
+table whose attributes are to be set.</p></li>
+<li><p><strong>package</strong> – the key:value pair of the attribute to set.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.controllers.managers.RAMSTKDataManager.do_set_tree">
+<code class="sig-name descname">do_set_tree</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module_tree</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://treelib.readthedocs.io/en/latest/treelib.html#treelib.tree.Tree" title="(in treelib v1.5.5)">treelib.tree.Tree</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKDataManager.do_set_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKDataManager.do_set_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the MODULE treelib Tree().</p>
+<p>This method is generally used to respond to events such as successful
+calculations of the entire system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>module_tree</strong> – the treelib Tree() to assign to the tree attribute.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.controllers.managers.RAMSTKDataManager.do_update_all">
+<code class="sig-name descname">do_update_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKDataManager.do_update_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKDataManager.do_update_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update all MODULE data table records in the RAMSTK Program database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.controllers.managers.RAMSTKDataManager.do_update_matrix">
+<code class="sig-name descname">do_update_matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">matrix_type</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">matrix</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKDataManager.do_update_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKDataManager.do_update_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the matrix values in the RAMSTK Program database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>matrix_type</strong> – the type (name) of the matrix to update.</p></li>
+<li><p><strong>matrix</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – the actual matrix whose values are being updated in the
+database.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.controllers.managers.RAMSTKMatrixManager">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.controllers.managers.</code><code class="sig-name descname">RAMSTKMatrixManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">column_tables</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span>List<span class="p">[</span>Any<span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">row_table</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)">object</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKMatrixManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKMatrixManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>The meta-class for all RAMSTK Matrix Managers.</p>
+<p>The Matrix data model is an aggregate model of N x M cell data models.  The
+attributes of a Matrix are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_row_table</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><em>object</em></a>) – the RAMSTK Program database table to use for the
+matrix rows.  This is an SQLAlchemy object.</p></li>
+<li><p><strong>column_tables</strong> – a list of RAMSTK data table objects that
+comprise the columns.  One table per matrix managed by an instance of
+the matrix manager.</p></li>
+<li><p><strong>dic_matrices</strong> – the dictionary containing all the matrices managed
+by an instance of the matrix manager.</p></li>
+<li><p><strong>n_row</strong> – the number of rows in the Matrix.</p></li>
+<li><p><strong>n_col</strong> – the number of columns in the Matrix.</p></li>
+</ul>
+</dd>
+</dl>
+<p>There are currently 10 matrices as defined by their matrix type.  These
+are:</p>
+<blockquote>
+<div><table class="docutils align-default">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 25%" />
+<col style="width: 27%" />
+<col style="width: 27%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Matrix ID</p></td>
+<td><p>Row Table</p></td>
+<td><p>Column Table</p></td>
+<td><p>Matrix Type</p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Function</p></td>
+<td><p>Hardware</p></td>
+<td><p>fnctn_hrdwr</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Function</p></td>
+<td><p>Validation</p></td>
+<td><p>fnctn_vldtn</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>Requirement</p></td>
+<td><p>Hardware</p></td>
+<td><p>rqrmnt_hrdwr</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>Requirement</p></td>
+<td><p>Validation</p></td>
+<td><p>rqrmnt_vldtn</p></td>
+</tr>
+<tr class="row-even"><td><p>5</p></td>
+<td><p>Hardware</p></td>
+<td><p>Requirement</p></td>
+<td><p>hrdwr_rqrmnt</p></td>
+</tr>
+<tr class="row-odd"><td><p>6</p></td>
+<td><p>Hardware</p></td>
+<td><p>Validation</p></td>
+<td><p>hrdwr_vldtn</p></td>
+</tr>
+<tr class="row-even"><td><p>7</p></td>
+<td><p>Validation</p></td>
+<td><p>Requirement</p></td>
+<td><p>vldtn_rqrmnt</p></td>
+</tr>
+<tr class="row-odd"><td><p>8</p></td>
+<td><p>Validation</p></td>
+<td><p>Hardware</p></td>
+<td><p>vldtn_hrdwr</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<dl class="py method">
+<dt id="ramstk.controllers.managers.RAMSTKMatrixManager.do_create_columns">
+<code class="sig-name descname">do_create_columns</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">matrix_type</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKMatrixManager.do_create_columns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKMatrixManager.do_create_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the matrix columns.</p>
+<p>This will effectively create the requested matrix since the row
+headings column was already created.  All values in the resulting
+matrix will be zero.  Call do_load() to load the actual values into
+the matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>matrix_type</strong> – the type (name) of the matrix to create the
+columns for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.controllers.managers.RAMSTKMatrixManager.do_create_rows">
+<code class="sig-name descname">do_create_rows</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tree</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://treelib.readthedocs.io/en/latest/treelib.html#treelib.tree.Tree" title="(in treelib v1.5.5)">treelib.tree.Tree</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKMatrixManager.do_create_rows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKMatrixManager.do_create_rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the matrix rows.</p>
+<p>All matrices for a given workflow module will have the same row
+headings.  This method will create a matrix with only one column
+containing the row headings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tree</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">treelib.Tree</span></code>) – the treelib Tree() containing the workflow module’s data.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.controllers.managers.RAMSTKMatrixManager.do_delete_column">
+<code class="sig-name descname">do_delete_column</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_id</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em>, <em class="sig-param"><span class="n">matrix_type</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKMatrixManager.do_delete_column"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKMatrixManager.do_delete_column" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a column from the requested matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_id</strong> – the MODULE treelib Node ID that was deleted.
+Note that node ID = MODULE ID = matrix row ID.</p></li>
+<li><p><strong>matrix_type</strong> – the type of the Matrix to delete the column.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+<dt class="field-even">Raise</dt>
+<dd class="field-even"><p>KeyError if passed a node ID or matrix type that doesn’t exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.controllers.managers.RAMSTKMatrixManager.do_delete_row">
+<code class="sig-name descname">do_delete_row</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_id</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKMatrixManager.do_delete_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKMatrixManager.do_delete_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a row from all the matrices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node_id</strong> – the MODULE treelib Node ID that was deleted.
+Note that node ID = MODULE ID = matrix row ID.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+<dt class="field-even">Raise</dt>
+<dd class="field-even"><p>KeyError if passed a node ID that doesn’t exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.controllers.managers.RAMSTKMatrixManager.do_insert_column">
+<code class="sig-name descname">do_insert_column</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_id</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">matrix_type</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKMatrixManager.do_insert_column"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKMatrixManager.do_insert_column" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a column into the requested matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_id</strong> – the MODULE treelib Node ID that was inserted.
+Note that node ID = MODULE ID = matrix row ID.</p></li>
+<li><p><strong>matrix_type</strong> – the type of the Matrix to select from.  This
+selects the correct matrix from the dict of matrices managed by
+this matrix manager.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+<dt class="field-even">Raise</dt>
+<dd class="field-even"><p>KeyError if passed a node ID or matrix type that doesn’t exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.controllers.managers.RAMSTKMatrixManager.do_insert_row">
+<code class="sig-name descname">do_insert_row</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_id</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKMatrixManager.do_insert_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKMatrixManager.do_insert_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a row into each matrix managed by this matrix manager.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node_id</strong> – the MODULE treelib Node ID that was inserted.
+Note that node ID = MODULE ID = matrix row ID.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.controllers.managers.RAMSTKMatrixManager.do_load">
+<code class="sig-name descname">do_load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">matrix_type</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">matrix</span><span class="p">:</span> <span class="n">List<span class="p">[</span>Tuple<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a><span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKMatrixManager.do_load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKMatrixManager.do_load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the matrix values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>matrix_type</strong> – the type of the Matrix to select from.  This
+selects the correct matrix from the dict of matrices managed by
+this matrix manager.</p></li>
+<li><p><strong>matrix</strong> – a list of tuples (column ID, row ID, value) for the
+selected matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.controllers.managers.RAMSTKMatrixManager.do_request_update">
+<code class="sig-name descname">do_request_update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">matrix_type</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKMatrixManager.do_request_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKMatrixManager.do_request_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the requested matrix in the RAMSTK program database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>matrix_type</strong> – the type of the Matrix to select from.  This
+selects the correct matrix from the dict of matrices managed by
+this matrix manager.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.controllers.managers.RAMSTKMatrixManager.do_select">
+<code class="sig-name descname">do_select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">matrix_type</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">row</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em>, <em class="sig-param"><span class="n">col</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="../_modules/ramstk/controllers/managers.html#RAMSTKMatrixManager.do_select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.managers.RAMSTKMatrixManager.do_select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select the value from the cell identified by col and row.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>matrix_type</strong> – the type of the Matrix to select from.  This
+selects the correct matrix from the dict of matrices managed by
+this matrix manager.</p></li>
+<li><p><strong>row</strong> – the row of the cell.  This is the second index of the
+Pandas DataFrame.</p></li>
+<li><p><strong>col</strong> – the column of the cell.  This is the first index of the
+Pandas DataFrame.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the value in the cell at (col, row).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+<dt class="field-even">Raise</dt>
+<dd class="field-even"><p>KeyError if passed a matrix type, column, or row that doesn’t
+exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.controllers">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ramstk.controllers" title="Permalink to this headline">¶</a></h2>
+<p>The RAMSTK controllers package.</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">ramstk.controllers package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-ramstk.controllers.managers">ramstk.controllers.managers module</a></li>
+<li><a class="reference internal" href="#module-ramstk.controllers">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ramstk.analyses.statistics.html"
+                        title="previous chapter">ramstk.analyses.statistics package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ramstk.controllers.failure_definition.html"
+                        title="next chapter">ramstk.controllers.failure_definition package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/ramstk.controllers.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ramstk.controllers.failure_definition.html" title="ramstk.controllers.failure_definition package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ramstk.analyses.statistics.html" title="ramstk.analyses.statistics package"
+             accesskey="P">previous</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

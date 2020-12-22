@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.analyses.milhdbk217f.models.relay &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.analyses.milhdbk217f.models.relay</h1><div class="highlight"><pre>
+<span></span><span class="c1"># type: ignore</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.analyses.milhdbk217f.models.Relay.py is part of the RAMSTK</span>
+<span class="c1">#       Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2017 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;Relay MIL-HDBK-217F Calculations Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">exp</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="n">PART_COUNT_LAMBDA_B</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.13</span><span class="p">,</span> <span class="mf">0.28</span><span class="p">,</span> <span class="mf">2.1</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">3.8</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">1.9</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mf">0.66</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span>
+            <span class="mf">10.0</span><span class="p">,</span> <span class="mf">0.0</span>
+        <span class="p">],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.43</span><span class="p">,</span> <span class="mf">0.89</span><span class="p">,</span> <span class="mf">6.9</span><span class="p">,</span> <span class="mf">3.6</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">3.4</span><span class="p">,</span> <span class="mf">4.4</span><span class="p">,</span> <span class="mf">6.2</span><span class="p">,</span> <span class="mf">6.7</span><span class="p">,</span> <span class="mf">22.0</span><span class="p">,</span> <span class="mf">0.21</span><span class="p">,</span> <span class="mf">11.0</span><span class="p">,</span>
+            <span class="mf">32.0</span><span class="p">,</span> <span class="mf">0.0</span>
+        <span class="p">],</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.13</span><span class="p">,</span> <span class="mf">0.26</span><span class="p">,</span> <span class="mf">2.1</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">3.8</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">1.9</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mf">0.66</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span>
+            <span class="mf">10.0</span><span class="p">,</span> <span class="mf">0.0</span>
+        <span class="p">],</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.11</span><span class="p">,</span> <span class="mf">0.23</span><span class="p">,</span> <span class="mf">1.8</span><span class="p">,</span> <span class="mf">0.92</span><span class="p">,</span> <span class="mf">3.3</span><span class="p">,</span> <span class="mf">0.96</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">2.1</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mf">6.5</span><span class="p">,</span> <span class="mf">0.54</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span>
+            <span class="mf">9.0</span><span class="p">,</span> <span class="mf">0.0</span>
+        <span class="p">],</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.29</span><span class="p">,</span> <span class="mf">0.60</span><span class="p">,</span> <span class="mf">4.8</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">,</span> <span class="mf">8.2</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mf">2.9</span><span class="p">,</span> <span class="mf">4.1</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">,</span> <span class="mf">0.14</span><span class="p">,</span> <span class="mf">7.6</span><span class="p">,</span>
+            <span class="mf">22.0</span><span class="p">,</span> <span class="mf">0.0</span>
+        <span class="p">],</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.88</span><span class="p">,</span> <span class="mf">1.8</span><span class="p">,</span> <span class="mf">14.0</span><span class="p">,</span> <span class="mf">7.4</span><span class="p">,</span> <span class="mf">26.0</span><span class="p">,</span> <span class="mf">7.1</span><span class="p">,</span> <span class="mf">9.1</span><span class="p">,</span> <span class="mf">13.0</span><span class="p">,</span> <span class="mf">14.0</span><span class="p">,</span> <span class="mf">46.0</span><span class="p">,</span> <span class="mf">0.44</span><span class="p">,</span> <span class="mf">24.0</span><span class="p">,</span>
+            <span class="mf">67.0</span><span class="p">,</span> <span class="mf">0.0</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.40</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">4.8</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">,</span> <span class="mf">6.8</span><span class="p">,</span> <span class="mf">4.8</span><span class="p">,</span> <span class="mf">7.6</span><span class="p">,</span> <span class="mf">8.4</span><span class="p">,</span> <span class="mf">13.0</span><span class="p">,</span> <span class="mf">9.2</span><span class="p">,</span> <span class="mf">0.16</span><span class="p">,</span> <span class="mf">4.8</span><span class="p">,</span>
+            <span class="mf">13.0</span><span class="p">,</span> <span class="mf">240.0</span>
+        <span class="p">],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.50</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">8.5</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">9.5</span><span class="p">,</span> <span class="mf">11.0</span><span class="p">,</span> <span class="mf">16.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">0.20</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span>
+            <span class="mf">17.0</span><span class="p">,</span> <span class="mf">300.0</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">PART_COUNT_PI_Q</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">9.0</span><span class="p">],</span> <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]}</span>
+<span class="n">PART_STRESS_PI_Q</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]}</span>
+<span class="n">PI_C</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.75</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.25</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">]}</span>
+<span class="n">PI_E</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">27.0</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mf">9.0</span><span class="p">,</span> <span class="mf">11.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">46.0</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">,</span> <span class="mf">25.0</span><span class="p">,</span>
+            <span class="mf">66.0</span><span class="p">,</span> <span class="mf">0.0</span>
+        <span class="p">],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">2.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">44.0</span><span class="p">,</span> <span class="mf">24.0</span><span class="p">,</span> <span class="mf">78.0</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="mf">28.0</span><span class="p">,</span> <span class="mf">38.0</span><span class="p">,</span> <span class="mf">140.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span>
+            <span class="mf">72.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">0.0</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">17.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">19.0</span><span class="p">,</span> <span class="mf">21.0</span><span class="p">,</span> <span class="mf">32.0</span><span class="p">,</span> <span class="mf">23.0</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span>
+        <span class="mf">33.0</span><span class="p">,</span> <span class="mf">590.0</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+<span class="n">PI_F</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">18.0</span><span class="p">],</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">],</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="mf">7.0</span><span class="p">,</span> <span class="mf">14.0</span><span class="p">],</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="p">[</span><span class="mf">7.0</span><span class="p">,</span> <span class="mf">14.0</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">],</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">]</span>
+        <span class="p">},</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">],</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">],</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">],</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">]</span>
+        <span class="p">},</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">]</span>
+        <span class="p">},</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">]</span>
+        <span class="p">},</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">25.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+        <span class="p">},</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">]</span>
+        <span class="p">},</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">9.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">]</span>
+        <span class="p">},</span>
+        <span class="mi">8</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">],</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">40.0</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">]</span>
+        <span class="p">},</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">],</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">],</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">],</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">7.0</span><span class="p">,</span> <span class="mf">14.0</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">12.0</span><span class="p">,</span> <span class="mf">24.0</span><span class="p">],</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">],</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="calculate_cycling_factor"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.relay.calculate_cycling_factor">[docs]</a><span class="k">def</span> <span class="nf">calculate_cycling_factor</span><span class="p">(</span><span class="n">quality_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_cycles</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the cycling factor (piCYC) for the relay.</span>
+
+<span class="sd">    :param quality_id: the quality level identifier.</span>
+<span class="sd">    :param n_cycles: the number of relay cycles per hour in application.</span>
+<span class="sd">    :return: _pi_cyc; the calculate cycling factor.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">quality_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span> <span class="ow">and</span> <span class="n">n_cycles</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">):</span>
+        <span class="n">_pi_cyc</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="k">elif</span> <span class="n">quality_id</span> <span class="o">==</span> <span class="mi">7</span> <span class="ow">and</span> <span class="n">n_cycles</span> <span class="o">&gt;</span> <span class="mf">1000.0</span><span class="p">:</span>
+        <span class="n">_pi_cyc</span> <span class="o">=</span> <span class="p">(</span><span class="n">n_cycles</span> <span class="o">/</span> <span class="mf">100.0</span><span class="p">)</span><span class="o">**</span><span class="mf">2.0</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">quality_id</span> <span class="o">==</span> <span class="mi">7</span> <span class="ow">and</span> <span class="mf">10.0</span> <span class="o">&lt;</span> <span class="n">n_cycles</span> <span class="o">&lt;</span> <span class="mf">1000.0</span><span class="p">):</span>
+        <span class="n">_pi_cyc</span> <span class="o">=</span> <span class="n">n_cycles</span> <span class="o">/</span> <span class="mf">10.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_pi_cyc</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="k">return</span> <span class="n">_pi_cyc</span></div>
+
+
+<div class="viewcode-block" id="calculate_load_stress_factor"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.relay.calculate_load_stress_factor">[docs]</a><span class="k">def</span> <span class="nf">calculate_load_stress_factor</span><span class="p">(</span><span class="n">technology_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                 <span class="n">current_ratio</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the load stress factor (piL).</span>
+
+<span class="sd">    Only subcategory 1 relays use this in their calculation.</span>
+
+<span class="sd">    :param technology_id: the relay technology identifier.</span>
+<span class="sd">    :param current_ratio: the operating current ratio of the relay.</span>
+<span class="sd">    :return: _pi_l; the calculate value of piL.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">technology_id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">_pi_l</span> <span class="o">=</span> <span class="p">(</span><span class="n">current_ratio</span> <span class="o">/</span> <span class="mf">0.8</span><span class="p">)</span><span class="o">**</span><span class="mf">2.0</span>
+    <span class="k">elif</span> <span class="n">technology_id</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">_pi_l</span> <span class="o">=</span> <span class="p">(</span><span class="n">current_ratio</span> <span class="o">/</span> <span class="mf">0.4</span><span class="p">)</span><span class="o">**</span><span class="mf">2.0</span>
+    <span class="k">elif</span> <span class="n">technology_id</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">_pi_l</span> <span class="o">=</span> <span class="p">(</span><span class="n">current_ratio</span> <span class="o">/</span> <span class="mf">0.2</span><span class="p">)</span><span class="o">**</span><span class="mf">2.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_pi_l</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="k">return</span> <span class="n">_pi_l</span></div>
+
+
+<div class="viewcode-block" id="calculate_part_count"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.relay.calculate_part_count">[docs]</a><span class="k">def</span> <span class="nf">calculate_part_count</span><span class="p">(</span><span class="o">**</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Wrap get_part_count_lambda_b().</span>
+
+<span class="sd">    This wrapper allows us to pass an attributes dict from a generic parts</span>
+<span class="sd">    count function.</span>
+
+<span class="sd">    :param attributes: the attributes for the connection being calculated.</span>
+<span class="sd">    :return: _base_hr; the parts count base hazard rates.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">get_part_count_lambda_b</span><span class="p">(</span>
+        <span class="n">subcategory_id</span><span class="o">=</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">],</span>
+        <span class="n">type_id</span><span class="o">=</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;type_id&#39;</span><span class="p">],</span>
+        <span class="n">environment_active_id</span><span class="o">=</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;environment_active_id&#39;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="calculate_part_stress"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.relay.calculate_part_stress">[docs]</a><span class="k">def</span> <span class="nf">calculate_part_stress</span><span class="p">(</span><span class="o">**</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the part stress hazard rate for a relay.</span>
+
+<span class="sd">    This function calculates the MIL-HDBK-217F hazard rate using the part</span>
+<span class="sd">    stress method.</span>
+
+<span class="sd">    :return: (attributes, _msg); the keyword argument (hardware attribute)</span>
+<span class="sd">             dictionary with updated values and the error message, if any.</span>
+<span class="sd">    :rtype: (dict, str)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;lambda_b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calculate_part_stress_lambda_b</span><span class="p">(</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">],</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;type_id&#39;</span><span class="p">],</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;temperature_active&#39;</span><span class="p">])</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piCYC&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calculate_cycling_factor</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;quality_id&#39;</span><span class="p">],</span>
+                                                   <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;n_cycles&#39;</span><span class="p">])</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calculate_load_stress_factor</span><span class="p">(</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;technology_id&#39;</span><span class="p">],</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;current_ratio&#39;</span><span class="p">])</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_environment_factor</span><span class="p">(</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">],</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;quality_id&#39;</span><span class="p">],</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;environment_active_id&#39;</span><span class="p">])</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piF&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_application_construction_factor</span><span class="p">(</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;quality_id&#39;</span><span class="p">],</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;contact_rating_id&#39;</span><span class="p">],</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;construction_id&#39;</span><span class="p">],</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;application_id&#39;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piC&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PI_C</span><span class="p">[</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">]][</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;contact_form_id&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;lambda_b&#39;</span><span class="p">]</span>
+                                        <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piQ&#39;</span><span class="p">]</span>
+                                        <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piE&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span>
+                                            <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piL&#39;</span><span class="p">]</span>
+                                            <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piC&#39;</span><span class="p">]</span>
+                                            <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piCYC&#39;</span><span class="p">]</span>
+                                            <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piF&#39;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">attributes</span></div>
+
+
+<div class="viewcode-block" id="calculate_part_stress_lambda_b"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.relay.calculate_part_stress_lambda_b">[docs]</a><span class="k">def</span> <span class="nf">calculate_part_stress_lambda_b</span><span class="p">(</span><span class="n">subcategory_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">type_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                   <span class="n">temperature_active</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the base hazard rate for the relay.</span>
+
+<span class="sd">    :param subcategory_id: the subcategory identifier.</span>
+<span class="sd">    :param type_id: the relay type identifier.</span>
+<span class="sd">    :param temperature_active: the operating ambient temperature of the</span>
+<span class="sd">        relay in C.</span>
+<span class="sd">    :return: _lambda_b; the calculated part stress base hazard rate or 0.0 if</span>
+<span class="sd">        passed an unknown subcategory ID.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_dic_factors</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.00555</span><span class="p">,</span> <span class="mf">352.0</span><span class="p">,</span> <span class="mf">15.7</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0054</span><span class="p">,</span> <span class="mf">377.0</span><span class="p">,</span> <span class="mf">10.4</span><span class="p">]],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+    <span class="p">}</span>
+    <span class="n">_lambda_b</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="k">if</span> <span class="n">subcategory_id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">_f0</span> <span class="o">=</span> <span class="n">_dic_factors</span><span class="p">[</span><span class="n">subcategory_id</span><span class="p">][</span><span class="n">type_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">_f1</span> <span class="o">=</span> <span class="n">_dic_factors</span><span class="p">[</span><span class="n">subcategory_id</span><span class="p">][</span><span class="n">type_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">_f2</span> <span class="o">=</span> <span class="n">_dic_factors</span><span class="p">[</span><span class="n">subcategory_id</span><span class="p">][</span><span class="n">type_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">_lambda_b</span> <span class="o">=</span> <span class="n">_f0</span> <span class="o">*</span> <span class="n">exp</span><span class="p">(((</span><span class="n">temperature_active</span> <span class="o">+</span> <span class="mf">273.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">_f1</span><span class="p">)</span><span class="o">**</span><span class="n">_f2</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">subcategory_id</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">_lambda_b</span> <span class="o">=</span> <span class="n">_dic_factors</span><span class="p">[</span><span class="n">subcategory_id</span><span class="p">][</span><span class="n">type_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">_lambda_b</span></div>
+
+
+<div class="viewcode-block" id="get_application_construction_factor"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.relay.get_application_construction_factor">[docs]</a><span class="k">def</span> <span class="nf">get_application_construction_factor</span><span class="p">(</span><span class="n">quality_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                        <span class="n">contact_rating_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                        <span class="n">construction_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                        <span class="n">application_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the construction factor (piF) for the relay.</span>
+
+<span class="sd">    :param quality_id: the quality level identifier.</span>
+<span class="sd">    :param contact_rating_id: the relay contact current rating identifier.</span>
+<span class="sd">    :param construction_id: the relay construction identifier.</span>
+<span class="sd">    :param application_id: the relay application identifier.</span>
+<span class="sd">    :return: _pi_f; the selected application factor.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: KeyError if passed an unknown contact rating ID, construction ID,</span>
+<span class="sd">        or application ID.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">quality_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]:</span>
+        <span class="n">_quality</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_quality</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="k">return</span> <span class="n">PI_F</span><span class="p">[</span><span class="n">contact_rating_id</span><span class="p">][</span><span class="n">application_id</span><span class="p">][</span><span class="n">construction_id</span><span class="p">][</span><span class="n">_quality</span>
+                                                                    <span class="o">-</span> <span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_environment_factor"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.relay.get_environment_factor">[docs]</a><span class="k">def</span> <span class="nf">get_environment_factor</span><span class="p">(</span><span class="n">subcategory_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">quality_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                           <span class="n">environment_active_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Retrieve the environment factor (pi_E).</span>
+
+<span class="sd">    :param subcategory_id: the subcategory identifier.</span>
+<span class="sd">    :param quality_id: the quality level identifier.</span>
+<span class="sd">    :param environment_active_id: the active environment identifier.</span>
+<span class="sd">    :return: _pi_e; the selected environment factor.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: IndexError if passed an unknown active environment ID.</span>
+<span class="sd">    :raise: KeyError if passed an unknown subcategory ID.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">quality_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]:</span>
+        <span class="n">_quality</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_quality</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="k">if</span> <span class="n">subcategory_id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">_pi_e</span> <span class="o">=</span> <span class="n">PI_E</span><span class="p">[</span><span class="n">subcategory_id</span><span class="p">][</span><span class="n">_quality</span><span class="p">][</span><span class="n">environment_active_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_pi_e</span> <span class="o">=</span> <span class="n">PI_E</span><span class="p">[</span><span class="n">subcategory_id</span><span class="p">][</span><span class="n">environment_active_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">_pi_e</span></div>
+
+
+<div class="viewcode-block" id="get_part_count_lambda_b"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.relay.get_part_count_lambda_b">[docs]</a><span class="k">def</span> <span class="nf">get_part_count_lambda_b</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Retrieve the parts count base hazard rate (lambda b) from MIL-HDBK-217F.</span>
+
+<span class="sd">    This function calculates the MIL-HDBK-217F hazard rate using the parts</span>
+<span class="sd">    count method.</span>
+
+<span class="sd">    This function calculates the MIL-HDBK-217F hazard rate using the parts</span>
+<span class="sd">    count method.  The dictionary PART_COUNT_217F_LAMBDA_B contains the</span>
+<span class="sd">    MIL-HDBK-217F parts count base hazard rates.  Keys are for</span>
+<span class="sd">    PART_COUNT_217F_LAMBDA_B are:</span>
+
+<span class="sd">        #. subcategory_id</span>
+<span class="sd">        #. environment_active_id</span>
+<span class="sd">        #. type id; if the relay subcategory is NOT type dependent, then</span>
+<span class="sd">            the second key will be zero.</span>
+
+<span class="sd">    Current subcategory IDs are:</span>
+
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    | Subcategory    |              Relay            | MIL-HDBK-217F   |</span>
+<span class="sd">    |       ID       |              Style            |    Section      |</span>
+<span class="sd">    +================+===============================+=================+</span>
+<span class="sd">    |        1       | Mechanical                    |       13.1      |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    |        2       | Solid State                   |       13.2      |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+
+<span class="sd">    :param subcategory_id: the subcategory identifier.</span>
+<span class="sd">    :param type_id: the relay type identifier.</span>
+<span class="sd">    :param environment_active_id: the active environment identifier.</span>
+<span class="sd">    :return: _base_hr; the parts count base hazard rate.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: IndexError if passed an unknown active environment ID.</span>
+<span class="sd">    :raise: KeyError if passed an unknown subcategory ID or type ID.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_subcategory_id</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">_type_id</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type_id&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">_environment_active_id</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;environment_active_id&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">PART_COUNT_LAMBDA_B</span><span class="p">[</span><span class="n">_subcategory_id</span><span class="p">][</span><span class="n">_type_id</span><span class="p">][</span>
+        <span class="n">_environment_active_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

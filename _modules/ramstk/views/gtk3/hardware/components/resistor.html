@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.hardware.components.resistor &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../../" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script src="../../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.hardware.components.resistor</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.views.gtk3.hardware.components.resistor.py is part of the RAMSTK</span>
+<span class="c1">#       Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2020 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;Resistor Work View.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="c1"># noinspection PyPackageRequirements</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3</span> <span class="kn">import</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.widgets</span> <span class="kn">import</span> <span class="n">RAMSTKComboBox</span><span class="p">,</span> <span class="n">RAMSTKEntry</span>
+
+<span class="c1"># RAMSTK Local Imports</span>
+<span class="kn">from</span> <span class="nn">.panels</span> <span class="kn">import</span> <span class="n">RAMSTKAssessmentInputPanel</span><span class="p">,</span> <span class="n">RAMSTKAssessmentResultPanel</span>
+
+
+<div class="viewcode-block" id="AssessmentInputPanel"><a class="viewcode-back" href="../../../../../../api/ramstk.views.gtk3.hardware.components.html#ramstk.views.gtk3.hardware.components.resistor.AssessmentInputPanel">[docs]</a><span class="k">class</span> <span class="nc">AssessmentInputPanel</span><span class="p">(</span><span class="n">RAMSTKAssessmentInputPanel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Display Resistor assessment input attribute data.</span>
+
+<span class="sd">    The Resistor assessment input view displays all the assessment inputs for</span>
+<span class="sd">    the selected resistor.  This includes, currently, inputs for</span>
+<span class="sd">    MIL-HDBK-217FN2.  The attributes of a Resistor assessment input view are:</span>
+
+<span class="sd">    :cvar dict _dic_specifications: dictionary of resistor MIL-SPECs.  Key is</span>
+<span class="sd">        resistor subcategory ID; values are lists of specifications.</span>
+<span class="sd">    :cvar dict _dic_styles: dictionary of resistor styles defined in the</span>
+<span class="sd">        MIL-SPECs.  Key is resistor subcategory ID; values are lists of styles.</span>
+
+<span class="sd">    :ivar cmbSpecification: select and display the governing specification of</span>
+<span class="sd">        the resistor.</span>
+<span class="sd">    :ivar cmbType: select and display the type of thermistor.</span>
+<span class="sd">    :ivar cmbConstruction: select and display the method of construction of the</span>
+<span class="sd">        resistor.</span>
+<span class="sd">    :ivar txtResistance: enter and display the resistance of the resistor.</span>
+<span class="sd">    :ivar txtNElements: enter and display the number of active resistors in a</span>
+<span class="sd">        resistor network or the number of potentiometers taps.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Define private dict class attributes.</span>
+    <span class="n">_dic_quality</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;S&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;R&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;MIL-R-11&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;S&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;R&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;MIL-R-10509&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;MIL-R-22684&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]],</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;MIL-SPEC&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]],</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;MIL-SPEC&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]],</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;S&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;R&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;MIL-R-93&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]],</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;S&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;R&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;MIL-R-26&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]],</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;S&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;R&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;MIL-R-18546&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]],</span>
+        <span class="mi">8</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;MIL-SPEC&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]],</span>
+        <span class="mi">9</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;S&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;R&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;MIL-R-27208&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]],</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;MIL-SPEC&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]],</span>
+        <span class="mi">11</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;MIL-SPEC&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]],</span>
+        <span class="mi">12</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;MIL-SPEC&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]],</span>
+        <span class="mi">13</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;S&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;R&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;MIL-R-22097&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]],</span>
+        <span class="mi">14</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;MIL-SPEC&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]],</span>
+        <span class="mi">15</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;MIL-SPEC&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]]</span>
+    <span class="p">}</span>
+    <span class="c1"># Key is subcategory ID; index is specification ID.</span>
+    <span class="n">_dic_specifications</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;MIL-R-10509&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;MIL-R-22684&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;MIL-R-39017&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="s2">&quot;MIL-R-55182&quot;</span><span class="p">]],</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;MIL-R-26&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;MIL-R-39007&quot;</span><span class="p">]],</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;MIL-R-18546&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;MIL-R-39009&quot;</span><span class="p">]],</span>
+        <span class="mi">15</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;MIL-R-23285&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;MIL-R-39023&quot;</span><span class="p">]]</span>
+    <span class="p">}</span>
+    <span class="c1"># Key is subcategory ID, index is type ID.</span>
+    <span class="n">_dic_types</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;RCR&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RC&quot;</span><span class="p">]],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;RLR&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RL&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RNR&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RN&quot;</span><span class="p">]],</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;RBR&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RB&quot;</span><span class="p">]],</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;RWR&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW&quot;</span><span class="p">]],</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;RER&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RE&quot;</span><span class="p">]],</span>
+        <span class="mi">9</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;RTR&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RT&quot;</span><span class="p">]],</span>
+        <span class="mi">11</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;RA&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RK&quot;</span><span class="p">]],</span>
+        <span class="mi">13</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;RJR&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RJ&quot;</span><span class="p">]],</span>
+        <span class="mi">15</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;RO&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RVC&quot;</span><span class="p">]]</span>
+    <span class="p">}</span>
+    <span class="c1"># First key is subcategory ID; second key is specification ID.</span>
+    <span class="c1"># Index is style ID.</span>
+    <span class="n">_dic_styles</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;RWR 71&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RWR 74&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RWR 78&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RWR 80&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RWR 81&quot;</span><span class="p">],</span>
+                <span class="p">[</span><span class="s2">&quot;RWR 82&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RWR 84&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RWR 89&quot;</span><span class="p">]],</span>
+            <span class="mi">2</span><span class="p">:</span>
+            <span class="p">[[</span><span class="s2">&quot;RW 10&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 11&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 12&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 13&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 14&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 15&quot;</span><span class="p">],</span>
+             <span class="p">[</span><span class="s2">&quot;RW 16&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 20&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 21 &quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 22&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 23&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 24&quot;</span><span class="p">],</span>
+             <span class="p">[</span><span class="s2">&quot;RW 29&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 30&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 31&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 32&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 33&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 34&quot;</span><span class="p">],</span>
+             <span class="p">[</span><span class="s2">&quot;RW 35&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 36&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 37&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 38&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 39&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 47&quot;</span><span class="p">],</span>
+             <span class="p">[</span><span class="s2">&quot;RW 55&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 56&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 67&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 68&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 69&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 70&quot;</span><span class="p">],</span>
+             <span class="p">[</span><span class="s2">&quot;RW 74&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 78&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 79&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 80&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RW 81&quot;</span><span class="p">]]</span>
+        <span class="p">},</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;RE 60/RER 60&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RE 65/RER 65&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RE 70/RER 70&quot;</span><span class="p">],</span>
+                <span class="p">[</span><span class="s2">&quot;RE 75/RER 75&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RE 77&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RE 80&quot;</span><span class="p">]],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;RE 60/RER40&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RE 65/RER 45&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RE 70/ RER 50&quot;</span><span class="p">],</span>
+                <span class="p">[</span><span class="s2">&quot;RE 75/RER 55&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RE 77&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RE 80&quot;</span><span class="p">]]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="c1"># Key is subcategory ID; index is construction ID.</span>
+    <span class="n">_dic_construction</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;RR0900A2A9J103&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RR0900A3A9J103&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;RR0900A4A9J103&quot;</span><span class="p">],</span>
+             <span class="p">[</span><span class="s2">&quot;RR0900A5A9J103&quot;</span><span class="p">]],</span>
+        <span class="mi">12</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Enclosed&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Unenclosed&quot;</span><span class="p">)]]</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Define private list class attributes.</span>
+
+    <span class="c1"># Define private scalar class attributes.</span>
+
+    <span class="c1"># Define public dictionary class attributes.</span>
+
+    <span class="c1"># Define public list class attributes.</span>
+
+    <span class="c1"># Define public scalar class attributes.</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the Resistor assessment input view.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_keys</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;quality_id&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;specification_id&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;type_id&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;family_id&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;construction_id&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;resistance&#39;</span><span class="p">,</span> <span class="s1">&#39;float&#39;</span><span class="p">],</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;n_elements&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_labels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Quality Level:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Resistance (</span><span class="se">\u03A9</span><span class="s2">):&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Specification:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Type:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Style:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Construction:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Number of Elements:&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The quality level of the resistor.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The resistance (in </span><span class="se">\u03A9</span><span class="s2">) of the resistor.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The governing specification for the resistor.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The type of thermistor.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The style of resistor.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The method of construction of the resistor.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The number of active resistors in a resistor network or the &quot;</span>
+              <span class="s2">&quot;number of potentiometer taps.&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbStyle</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtNElements</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtResistance</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_updater</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;construction_id&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;family_id&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbStyle</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="s1">&#39;n_elements&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">txtNElements</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="s1">&#39;quality_id&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+            <span class="s1">&#39;resistance&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">txtResistance</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+            <span class="s1">&#39;specification_id&#39;</span><span class="p">:</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+            <span class="s1">&#39;type_id&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtResistance</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbStyle</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtNElements</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_properties</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_make_panel_fixed</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_callbacks</span><span class="p">()</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_load_comboboxes</span><span class="p">,</span> <span class="s1">&#39;changed_subcategory&#39;</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_load_panel</span><span class="p">,</span>
+                      <span class="s1">&#39;succeed_get_all_hardware_attributes&#39;</span><span class="p">)</span>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="c1"># noinspection PyUnusedLocal</span>
+<div class="viewcode-block" id="AssessmentInputPanel.do_load_comboboxes"><a class="viewcode-back" href="../../../../../../api/ramstk.views.gtk3.hardware.components.html#ramstk.views.gtk3.hardware.components.resistor.AssessmentInputPanel.do_load_comboboxes">[docs]</a>    <span class="k">def</span> <span class="nf">do_load_comboboxes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subcategory_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the Resistor RKTComboBox()s.</span>
+
+<span class="sd">        :param subcategory_id: the subcategory ID of the selected capacitor.</span>
+<span class="sd">            This is unused in this method but required because this method is a</span>
+<span class="sd">            PyPubSub listener.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_load_quality_combo</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_load_specification_combo</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_load_type_combo</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_load_style_combo</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_load_construction_combo</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_do_load_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the Resistor assessment input widgets.</span>
+
+<span class="sd">        :param attributes: the attributes dictionary for the selected</span>
+<span class="sd">            Resistor.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_load_panel</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;type_id&#39;</span><span class="p">],</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># MIL-HDBK-17F, Part Stress</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;specification_id&#39;</span><span class="p">],</span>
+                                            <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbStyle</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;family_id&#39;</span><span class="p">],</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;construction_id&#39;</span><span class="p">],</span>
+                                           <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtResistance</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;resistance&#39;</span><span class="p">])),</span>
+                                         <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>  <span class="c1"># noqa</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtNElements</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;n_elements&#39;</span><span class="p">]),</span>
+                                        <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>  <span class="c1"># noqa</span>
+
+    <span class="k">def</span> <span class="nf">_do_set_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set widget sensitivity as needed for the selected resistor.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtResistance</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtResistance</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_construction_combo_sensitive</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_elements_entry_sensitive</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_specification_combo_sensitive</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_style_combo_sensitive</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_type_combo_sensitive</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__do_load_construction_combo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the Resistor construction RAMSTKComboBox().</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_construction</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="n">_data</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_load_quality_combo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the Resistor quality RAMSTKComboBox().</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">_quality</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;S&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;R&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">],</span>
+                                             <span class="p">[</span><span class="s2">&quot;MIL-SPEC&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_quality</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_quality</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">_quality</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;&#39;</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="n">entries</span><span class="o">=</span><span class="n">_quality</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_load_specification_combo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the Resistor specification RAMSTKComboBox().</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_specifications</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="n">_data</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_load_style_combo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the Resistor style RAMSTKComboBox().</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_specification_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">get_active</span><span class="p">())</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_styles</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_styles</span><span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span><span class="p">][</span><span class="n">_specification_id</span><span class="p">]</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">):</span>
+            <span class="n">_styles</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;&#39;</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbStyle</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="n">entries</span><span class="o">=</span><span class="n">_styles</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_load_type_combo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the Resistor (thermistor) type RAMSTKComboBox().</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">_types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_types</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_types</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Bead&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Disk&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Rod&quot;</span><span class="p">)]]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">_types</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="n">entries</span><span class="o">=</span><span class="n">_types</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_construction_combo_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the Resistor construction RAMSTKComboBox() sensitive or not.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">2</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_elements_entry_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set Resistor number of elements RAMSTKEntry() sensitive or not.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">2</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtNElements</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtNElements</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_specification_combo_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the Resistor specification RAMSTKComboBox() sensitive or not.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">2</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">15</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_style_combo_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the Resistor style RAMSTKComboBox() sensitive or not.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">2</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbStyle</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbStyle</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_type_combo_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the Resistor type RAMSTKComboBox() sensitive or not.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">1</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">15</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__set_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set callback methods for Resistor assessment input widgets.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># ----- COMBOBOXES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+                                                       <span class="bp">self</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span>
+                                                       <span class="mi">1</span><span class="p">,</span>
+                                                       <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbStyle</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbStyle</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbConstruction</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+                                                      <span class="bp">self</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span>
+                                                      <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+
+        <span class="c1"># ----- ENTRIES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtResistance</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtResistance</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">on_changed_entry</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span>
+                                                    <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtNElements</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtNElements</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+                                                   <span class="bp">self</span><span class="o">.</span><span class="n">on_changed_entry</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span>
+                                                   <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__set_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set properties for Resistor assessment input widgets.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">()</span>
+
+        <span class="c1"># ----- ENTRIES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtNElements</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">tooltip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span>
+                                            <span class="n">width</span><span class="o">=</span><span class="mi">125</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtResistance</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">tooltip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                             <span class="n">width</span><span class="o">=</span><span class="mi">125</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AssessmentResultPanel"><a class="viewcode-back" href="../../../../../../api/ramstk.views.gtk3.hardware.components.html#ramstk.views.gtk3.hardware.components.resistor.AssessmentResultPanel">[docs]</a><span class="k">class</span> <span class="nc">AssessmentResultPanel</span><span class="p">(</span><span class="n">RAMSTKAssessmentResultPanel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Display Resistor assessment results attribute data.</span>
+
+<span class="sd">    The Resistor assessment result view displays all the assessment results</span>
+<span class="sd">    for the selected resistor.  This includes, currently, results for</span>
+<span class="sd">    MIL-HDBK-217FN2 parts count and MIL-HDBK-217FN2 part stress methods.  The</span>
+<span class="sd">    attributes of a Resistor assessment result view are:</span>
+
+<span class="sd">    :ivar txtPiR: displays the resistance factor for the resistor.</span>
+<span class="sd">    :ivar txtPiT: displays the temperature factor for the resistor.</span>
+<span class="sd">    :ivar txtPiNR: displays the number of resistors factor for the resistor.</span>
+<span class="sd">    :ivar txtPiTAPS: displays the potentiometer taps factor for the resistor.</span>
+<span class="sd">    :ivar txtPiV: displays the voltage factor for the resistor.</span>
+<span class="sd">    :ivar txtPiC: displays the construction class factor for the resistor.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Define private dict class attributes.</span>
+    <span class="n">_dic_part_stress</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;R&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;R&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;R&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">4</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;T&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;NR&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;R&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">6</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;R&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">7</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;R&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&quot;</span>
+        <span class="s2">&quot;&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">8</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">9</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;TAPS&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;R&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&quot;</span>
+        <span class="s2">&quot;&gt;V&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;TAPS&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;C&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&quot;</span>
+        <span class="s2">&quot;&gt;R&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;V&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&quot;</span>
+        <span class="s2">&quot;&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">11</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;TAPS&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;R&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&quot;</span>
+        <span class="s2">&quot;&gt;V&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">12</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;TAPS&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;R&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&quot;</span>
+        <span class="s2">&quot;&gt;V&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;C&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&quot;</span>
+        <span class="s2">&quot;&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">13</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;TAPS&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;R&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&quot;</span>
+        <span class="s2">&quot;&gt;V&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">14</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;TAPS&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;R&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&quot;</span>
+        <span class="s2">&quot;&gt;V&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">15</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;TAPS&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;R&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&quot;</span>
+        <span class="s2">&quot;&gt;V&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&gt;&lt;/span&gt; &quot;</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Define private list class attributes.</span>
+
+    <span class="c1"># Define private scalar class attributes.</span>
+
+    <span class="c1"># Define public dictionary class attributes.</span>
+
+    <span class="c1"># Define public list class attributes.</span>
+
+    <span class="c1"># Define public scalar class attributes.</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the Resistor assessment result view.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Initialize private dict attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_labels</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;:&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;:&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&gt;:&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;R&lt;/sub&gt;:&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="se">\u03C0</span><span class="s1">&lt;sub&gt;T&lt;/sub&gt;:&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="se">\u03C0</span><span class="s1">&lt;sub&gt;NR&lt;/sub&gt;:&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;TAPS&lt;/sub&gt;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;V&lt;/sub&gt;:&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;C&lt;/sub&gt;:&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The assessment model used to calculate the resistor hazard &quot;</span>
+              <span class="s2">&quot;rate.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The base hazard rate for the resistor.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The quality factor for the resistor.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The environment factor for the resistor.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The resistance factor for the resistor.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The temperature factor for the resistor.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The number of resistors factor for the resistor network.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The potentiometer taps factor for the resistor.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The voltage factor for the resistor.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The construction class factor for the resistor.&#39;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiC</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiNR</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiR</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiT</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiTAPS</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiV</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lblModel</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtLambdaB</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiQ</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiE</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiR</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiT</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiNR</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiTAPS</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiV</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiC</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_make_panel_fixed</span><span class="p">()</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_load_panel</span><span class="p">,</span>
+                      <span class="s1">&#39;succeed_get_all_hardware_attributes&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_load_panel</span><span class="p">,</span> <span class="s1">&#39;succeed_calculate_hardware&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_load_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the Resistor assessment results page.</span>
+
+<span class="sd">        :param attributes: the attributes dictionary for the selected</span>
+<span class="sd">            Resistor.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_load_panel</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiR</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piR&#39;</span><span class="p">])))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiT</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piT&#39;</span><span class="p">])))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiNR</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piNR&#39;</span><span class="p">])))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiTAPS</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piTAPS&#39;</span><span class="p">])))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiV</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piV&#39;</span><span class="p">])))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiC</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piC&#39;</span><span class="p">])))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_set_sensitive</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_do_set_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set widget sensitivity as needed for the selected resistor.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiQ</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_pic_sensitive</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_pie_sensitive</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_pir_sensitive</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_pit_pinr_sensitive</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_pitaps_piv_sensitive</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_pic_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the Resistor PiC RAMSTKEntry() sensitive or not.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">2</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiC</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiC</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_pie_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the Resistor PiE RAMSTKEntry() sensitive or not.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiE</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiE</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_pir_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the Resistor PiR RAMSTKEntry() sensitive or not.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="o">!=</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiR</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiR</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_pit_pinr_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the Resistor PiT and PiNR RAMSTKEntry() sensitive or not.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiT</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiNR</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiT</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiNR</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_pitaps_piv_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the Resistor PiTAPS and PiV RAMSTKEntry() sensitive or not.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">2</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiTAPS</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiV</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiTAPS</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiV</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

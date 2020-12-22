@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.models.programdb.ramstkdesignelectric &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.models.programdb.ramstkdesignelectric</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.data.storage.RAMSTKDesignElectric.py is part of The RAMSTK</span>
+<span class="c1">#       Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2017 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;RAMSTKDesignElectric Table Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">relationship</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.db</span> <span class="kn">import</span> <span class="n">RAMSTK_BASE</span>
+<span class="kn">from</span> <span class="nn">ramstk.models</span> <span class="kn">import</span> <span class="n">RAMSTKBaseTable</span>
+
+
+<span class="c1"># pylint: disable=R0902</span>
+<div class="viewcode-block" id="RAMSTKDesignElectric"><a class="viewcode-back" href="../../../../api/ramstk.models.programdb.html#ramstk.models.programdb.ramstkdesignelectric.RAMSTKDesignElectric">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKDesignElectric</span><span class="p">(</span><span class="n">RAMSTK_BASE</span><span class="p">,</span> <span class="n">RAMSTKBaseTable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Represent ramstk_design_electric table in the RAMSTK Program database.</span>
+
+<span class="sd">    This table shares a One-to-One relationship with ramstk_hardware.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__defaults__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;application_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;area&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;capacitance&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;configuration_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;construction_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;contact_form_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;contact_gauge&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;contact_rating_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;current_operating&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;current_rated&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;current_ratio&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;environment_active_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;environment_dormant_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;family_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;feature_size&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;frequency_operating&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;insert_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;insulation_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;manufacturing_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;matching_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;n_active_pins&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;n_circuit_planes&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s1">&#39;n_cycles&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;n_elements&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;n_hand_soldered&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;n_wave_soldered&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;operating_life&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;overstress&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;package_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;power_operating&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;power_rated&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;power_ratio&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;reason&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;resistance&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;specification_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;technology_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;temperature_active&#39;</span><span class="p">:</span> <span class="mf">35.0</span><span class="p">,</span>
+        <span class="s1">&#39;temperature_case&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;temperature_dormant&#39;</span><span class="p">:</span> <span class="mf">25.0</span><span class="p">,</span>
+        <span class="s1">&#39;temperature_hot_spot&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;temperature_junction&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;temperature_knee&#39;</span><span class="p">:</span> <span class="mf">25.0</span><span class="p">,</span>
+        <span class="s1">&#39;temperature_rated_max&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;temperature_rated_min&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;temperature_rise&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;theta_jc&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;type_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;voltage_ac_operating&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;voltage_dc_operating&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;voltage_esd&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;voltage_rated&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;voltage_ratio&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;years_in_production&#39;</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">}</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;ramstk_design_electric&#39;</span>
+    <span class="n">__table_args__</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;extend_existing&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+
+    <span class="n">hardware_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_hardware_id&#39;</span><span class="p">,</span>
+                         <span class="n">Integer</span><span class="p">,</span>
+                         <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;ramstk_hardware.fld_hardware_id&#39;</span><span class="p">),</span>
+                         <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                         <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">application_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_application_id&#39;</span><span class="p">,</span>
+                            <span class="n">Integer</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;application_id&#39;</span><span class="p">])</span>
+    <span class="n">area</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_area&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;area&#39;</span><span class="p">])</span>
+    <span class="n">capacitance</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_capacitance&#39;</span><span class="p">,</span>
+                         <span class="n">Float</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;capacitance&#39;</span><span class="p">])</span>
+    <span class="n">configuration_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_configuration_id&#39;</span><span class="p">,</span>
+                              <span class="n">Integer</span><span class="p">,</span>
+                              <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;configuration_id&#39;</span><span class="p">])</span>
+    <span class="n">construction_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_construction_id&#39;</span><span class="p">,</span>
+                             <span class="n">Integer</span><span class="p">,</span>
+                             <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;construction_id&#39;</span><span class="p">])</span>
+    <span class="n">contact_form_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_contact_form_id&#39;</span><span class="p">,</span>
+                             <span class="n">Integer</span><span class="p">,</span>
+                             <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;contact_form_id&#39;</span><span class="p">])</span>
+    <span class="n">contact_gauge</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_contact_gauge&#39;</span><span class="p">,</span>
+                           <span class="n">Integer</span><span class="p">,</span>
+                           <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;contact_gauge&#39;</span><span class="p">])</span>
+    <span class="n">contact_rating_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_contact_rating_id&#39;</span><span class="p">,</span>
+                               <span class="n">Integer</span><span class="p">,</span>
+                               <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;contact_rating_id&#39;</span><span class="p">])</span>
+    <span class="n">current_operating</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_current_operating&#39;</span><span class="p">,</span>
+                               <span class="n">Float</span><span class="p">,</span>
+                               <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;current_operating&#39;</span><span class="p">])</span>
+    <span class="n">current_rated</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_current_rated&#39;</span><span class="p">,</span>
+                           <span class="n">Float</span><span class="p">,</span>
+                           <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;current_rated&#39;</span><span class="p">])</span>
+    <span class="n">current_ratio</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_current_ratio&#39;</span><span class="p">,</span>
+                           <span class="n">Float</span><span class="p">,</span>
+                           <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;current_ratio&#39;</span><span class="p">])</span>
+    <span class="n">environment_active_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_environment_active_id&#39;</span><span class="p">,</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;environment_active_id&#39;</span><span class="p">])</span>
+    <span class="n">environment_dormant_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_environment_dormant_id&#39;</span><span class="p">,</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;environment_dormant_id&#39;</span><span class="p">])</span>
+    <span class="n">family_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_family_id&#39;</span><span class="p">,</span>
+                       <span class="n">Integer</span><span class="p">,</span>
+                       <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;family_id&#39;</span><span class="p">])</span>
+    <span class="n">feature_size</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_feature_size&#39;</span><span class="p">,</span>
+                          <span class="n">Float</span><span class="p">,</span>
+                          <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;feature_size&#39;</span><span class="p">])</span>
+    <span class="n">frequency_operating</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_frequency_operating&#39;</span><span class="p">,</span>
+                                 <span class="n">Float</span><span class="p">,</span>
+                                 <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;frequency_operating&#39;</span><span class="p">])</span>
+    <span class="n">insert_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_insert_id&#39;</span><span class="p">,</span>
+                       <span class="n">Integer</span><span class="p">,</span>
+                       <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;insert_id&#39;</span><span class="p">])</span>
+    <span class="n">insulation_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_insulation_id&#39;</span><span class="p">,</span>
+                           <span class="n">Integer</span><span class="p">,</span>
+                           <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;insulation_id&#39;</span><span class="p">])</span>
+    <span class="n">manufacturing_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_manufacturing_id&#39;</span><span class="p">,</span>
+                              <span class="n">Integer</span><span class="p">,</span>
+                              <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;manufacturing_id&#39;</span><span class="p">])</span>
+    <span class="n">matching_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_matching_id&#39;</span><span class="p">,</span>
+                         <span class="n">Integer</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;matching_id&#39;</span><span class="p">])</span>
+    <span class="n">n_active_pins</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_n_active_pins&#39;</span><span class="p">,</span>
+                           <span class="n">Integer</span><span class="p">,</span>
+                           <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;n_active_pins&#39;</span><span class="p">])</span>
+    <span class="n">n_circuit_planes</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_n_circuit_planes&#39;</span><span class="p">,</span>
+                              <span class="n">Integer</span><span class="p">,</span>
+                              <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;n_circuit_planes&#39;</span><span class="p">])</span>
+    <span class="n">n_cycles</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_n_cycles&#39;</span><span class="p">,</span>
+                      <span class="n">Integer</span><span class="p">,</span>
+                      <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;n_cycles&#39;</span><span class="p">])</span>
+    <span class="n">n_elements</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_n_elements&#39;</span><span class="p">,</span>
+                        <span class="n">Integer</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;n_elements&#39;</span><span class="p">])</span>
+    <span class="n">n_hand_soldered</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_n_hand_soldered&#39;</span><span class="p">,</span>
+                             <span class="n">Integer</span><span class="p">,</span>
+                             <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;n_hand_soldered&#39;</span><span class="p">])</span>
+    <span class="n">n_wave_soldered</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_n_wave_soldered&#39;</span><span class="p">,</span>
+                             <span class="n">Integer</span><span class="p">,</span>
+                             <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;n_wave_soldered&#39;</span><span class="p">])</span>
+    <span class="n">operating_life</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_operating_life&#39;</span><span class="p">,</span>
+                            <span class="n">Float</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;operating_life&#39;</span><span class="p">])</span>
+    <span class="n">overstress</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_overstress&#39;</span><span class="p">,</span>
+                        <span class="n">Integer</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;overstress&#39;</span><span class="p">])</span>
+    <span class="n">package_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_package_id&#39;</span><span class="p">,</span>
+                        <span class="n">Integer</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;package_id&#39;</span><span class="p">])</span>
+    <span class="n">power_operating</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_power_operating&#39;</span><span class="p">,</span>
+                             <span class="n">Float</span><span class="p">,</span>
+                             <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;power_operating&#39;</span><span class="p">])</span>
+    <span class="n">power_rated</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_power_rated&#39;</span><span class="p">,</span>
+                         <span class="n">Float</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;power_rated&#39;</span><span class="p">])</span>
+    <span class="n">power_ratio</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_power_ratio&#39;</span><span class="p">,</span>
+                         <span class="n">Float</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;power_ratio&#39;</span><span class="p">])</span>
+    <span class="n">reason</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_reason&#39;</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;reason&#39;</span><span class="p">])</span>
+    <span class="n">resistance</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_resistance&#39;</span><span class="p">,</span>
+                        <span class="n">Float</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;resistance&#39;</span><span class="p">])</span>
+    <span class="n">specification_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_specification_id&#39;</span><span class="p">,</span>
+                              <span class="n">Integer</span><span class="p">,</span>
+                              <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;specification_id&#39;</span><span class="p">])</span>
+    <span class="n">technology_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_technology_id&#39;</span><span class="p">,</span>
+                           <span class="n">Integer</span><span class="p">,</span>
+                           <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;technology_id&#39;</span><span class="p">])</span>
+    <span class="n">temperature_active</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_temperature_active&#39;</span><span class="p">,</span>
+                                <span class="n">Float</span><span class="p">,</span>
+                                <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;temperature_active&#39;</span><span class="p">])</span>
+    <span class="n">temperature_case</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_temperature_case&#39;</span><span class="p">,</span>
+                              <span class="n">Float</span><span class="p">,</span>
+                              <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;temperature_case&#39;</span><span class="p">])</span>
+    <span class="n">temperature_dormant</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_temperature_dormant&#39;</span><span class="p">,</span>
+                                 <span class="n">Float</span><span class="p">,</span>
+                                 <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;temperature_dormant&#39;</span><span class="p">])</span>
+    <span class="n">temperature_hot_spot</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_temperature_hot_spot&#39;</span><span class="p">,</span>
+                                  <span class="n">Float</span><span class="p">,</span>
+                                  <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;temperature_hot_spot&#39;</span><span class="p">])</span>
+    <span class="n">temperature_junction</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_temperature_junction&#39;</span><span class="p">,</span>
+                                  <span class="n">Float</span><span class="p">,</span>
+                                  <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;temperature_junction&#39;</span><span class="p">])</span>
+    <span class="n">temperature_knee</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_temperature_knee&#39;</span><span class="p">,</span>
+                              <span class="n">Float</span><span class="p">,</span>
+                              <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;temperature_knee&#39;</span><span class="p">])</span>
+    <span class="n">temperature_rated_max</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_temperature_rated_max&#39;</span><span class="p">,</span>
+        <span class="n">Float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;temperature_rated_max&#39;</span><span class="p">])</span>
+    <span class="n">temperature_rated_min</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_temperature_rated_min&#39;</span><span class="p">,</span>
+        <span class="n">Float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;temperature_rated_min&#39;</span><span class="p">])</span>
+    <span class="n">temperature_rise</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_temperature_rise&#39;</span><span class="p">,</span>
+                              <span class="n">Float</span><span class="p">,</span>
+                              <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;temperature_rise&#39;</span><span class="p">])</span>
+    <span class="n">theta_jc</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_theta_jc&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;theta_jc&#39;</span><span class="p">])</span>
+    <span class="n">type_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_type_id&#39;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;type_id&#39;</span><span class="p">])</span>
+    <span class="n">voltage_ac_operating</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_voltage_ac_operating&#39;</span><span class="p">,</span>
+                                  <span class="n">Float</span><span class="p">,</span>
+                                  <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;voltage_ac_operating&#39;</span><span class="p">])</span>
+    <span class="n">voltage_dc_operating</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_voltage_dc_operating&#39;</span><span class="p">,</span>
+                                  <span class="n">Float</span><span class="p">,</span>
+                                  <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;voltage_dc_operating&#39;</span><span class="p">])</span>
+    <span class="n">voltage_esd</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_voltage_esd&#39;</span><span class="p">,</span>
+                         <span class="n">Float</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;voltage_esd&#39;</span><span class="p">])</span>
+    <span class="n">voltage_rated</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_voltage_rated&#39;</span><span class="p">,</span>
+                           <span class="n">Float</span><span class="p">,</span>
+                           <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;voltage_rated&#39;</span><span class="p">])</span>
+    <span class="n">voltage_ratio</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_voltage_ratio&#39;</span><span class="p">,</span>
+                           <span class="n">Float</span><span class="p">,</span>
+                           <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;voltage_ratio&#39;</span><span class="p">])</span>
+    <span class="n">weight</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_weight&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">])</span>
+    <span class="n">years_in_production</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_years_in_production&#39;</span><span class="p">,</span>
+                                 <span class="n">Integer</span><span class="p">,</span>
+                                 <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;years_in_production&#39;</span><span class="p">])</span>
+
+    <span class="c1"># Define the relationships to other tables in the RAMSTK Program database.</span>
+    <span class="n">hardware</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+        <span class="s1">&#39;RAMSTKHardware&#39;</span><span class="p">,</span> <span class="n">back_populates</span><span class="o">=</span><span class="s1">&#39;design_electric&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RAMSTKDesignElectric.get_attributes"><a class="viewcode-back" href="../../../../api/ramstk.models.programdb.html#ramstk.models.programdb.ramstkdesignelectric.RAMSTKDesignElectric.get_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve current values of RAMSTKDesignElectric model attributes.</span>
+
+<span class="sd">        :return: {hardware_id, application_id, area, capacitance,</span>
+<span class="sd">                  configuration_id, construction_id, contact_form_id,</span>
+<span class="sd">                  contact_gauge, contact_rating_id, current_operating,</span>
+<span class="sd">                  current_rated, current_ratio, environment_active_id,</span>
+<span class="sd">                  environment_dormant_id, family_id, feature_size,</span>
+<span class="sd">                  frequency_operating, insert_id, insulation_id,</span>
+<span class="sd">                  manufacturing_id, matching_id, n_active_pins,</span>
+<span class="sd">                  n_circuit_planes, n_cycles, n_elements, n_hand_soldered,</span>
+<span class="sd">                  n_wave_soldered, operating_life, overstress, package_id,</span>
+<span class="sd">                  power_operating, power_rated, power_ratio, reason,</span>
+<span class="sd">                  resistance, specification_id, technology_id,</span>
+<span class="sd">                  temperature_active, temperature_case, temperature_dormant,</span>
+<span class="sd">                  temperature_hot_spot, temperature_junction, temperature_knee,</span>
+<span class="sd">                  temperature_rated_max, temperature_rated_min,</span>
+<span class="sd">                  temperature_rise, theta_jc, type_id, voltage_ac_operating,</span>
+<span class="sd">                  voltage_dc_operating, voltage_esd, voltage_rated,</span>
+<span class="sd">                  voltage_ratio, weight, years_in_production} pairs.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_attributes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;hardware_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hardware_id</span><span class="p">,</span>
+            <span class="s1">&#39;application_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">application_id</span><span class="p">,</span>
+            <span class="s1">&#39;area&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="p">,</span>
+            <span class="s1">&#39;capacitance&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">capacitance</span><span class="p">,</span>
+            <span class="s1">&#39;configuration_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration_id</span><span class="p">,</span>
+            <span class="s1">&#39;construction_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">construction_id</span><span class="p">,</span>
+            <span class="s1">&#39;contact_form_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">contact_form_id</span><span class="p">,</span>
+            <span class="s1">&#39;contact_gauge&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">contact_gauge</span><span class="p">,</span>
+            <span class="s1">&#39;contact_rating_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">contact_rating_id</span><span class="p">,</span>
+            <span class="s1">&#39;current_operating&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_operating</span><span class="p">,</span>
+            <span class="s1">&#39;current_rated&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_rated</span><span class="p">,</span>
+            <span class="s1">&#39;current_ratio&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_ratio</span><span class="p">,</span>
+            <span class="s1">&#39;environment_active_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">environment_active_id</span><span class="p">,</span>
+            <span class="s1">&#39;environment_dormant_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">environment_dormant_id</span><span class="p">,</span>
+            <span class="s1">&#39;family_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">family_id</span><span class="p">,</span>
+            <span class="s1">&#39;feature_size&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_size</span><span class="p">,</span>
+            <span class="s1">&#39;frequency_operating&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency_operating</span><span class="p">,</span>
+            <span class="s1">&#39;insert_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">insert_id</span><span class="p">,</span>
+            <span class="s1">&#39;insulation_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">insulation_id</span><span class="p">,</span>
+            <span class="s1">&#39;manufacturing_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">manufacturing_id</span><span class="p">,</span>
+            <span class="s1">&#39;matching_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">matching_id</span><span class="p">,</span>
+            <span class="s1">&#39;n_active_pins&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_active_pins</span><span class="p">,</span>
+            <span class="s1">&#39;n_circuit_planes&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_circuit_planes</span><span class="p">,</span>
+            <span class="s1">&#39;n_cycles&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_cycles</span><span class="p">,</span>
+            <span class="s1">&#39;n_elements&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_elements</span><span class="p">,</span>
+            <span class="s1">&#39;n_hand_soldered&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hand_soldered</span><span class="p">,</span>
+            <span class="s1">&#39;n_wave_soldered&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_wave_soldered</span><span class="p">,</span>
+            <span class="s1">&#39;operating_life&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">operating_life</span><span class="p">,</span>
+            <span class="s1">&#39;overstress&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">overstress</span><span class="p">,</span>
+            <span class="s1">&#39;package_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">package_id</span><span class="p">,</span>
+            <span class="s1">&#39;power_operating&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">power_operating</span><span class="p">,</span>
+            <span class="s1">&#39;power_rated&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">power_rated</span><span class="p">,</span>
+            <span class="s1">&#39;power_ratio&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">power_ratio</span><span class="p">,</span>
+            <span class="s1">&#39;reason&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reason</span><span class="p">,</span>
+            <span class="s1">&#39;resistance&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span><span class="p">,</span>
+            <span class="s1">&#39;specification_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">specification_id</span><span class="p">,</span>
+            <span class="s1">&#39;technology_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">technology_id</span><span class="p">,</span>
+            <span class="s1">&#39;temperature_active&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature_active</span><span class="p">,</span>
+            <span class="s1">&#39;temperature_case&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature_case</span><span class="p">,</span>
+            <span class="s1">&#39;temperature_dormant&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature_dormant</span><span class="p">,</span>
+            <span class="s1">&#39;temperature_hot_spot&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature_hot_spot</span><span class="p">,</span>
+            <span class="s1">&#39;temperature_junction&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature_junction</span><span class="p">,</span>
+            <span class="s1">&#39;temperature_knee&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature_knee</span><span class="p">,</span>
+            <span class="s1">&#39;temperature_rated_max&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature_rated_max</span><span class="p">,</span>
+            <span class="s1">&#39;temperature_rated_min&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature_rated_min</span><span class="p">,</span>
+            <span class="s1">&#39;temperature_rise&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature_rise</span><span class="p">,</span>
+            <span class="s1">&#39;theta_jc&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta_jc</span><span class="p">,</span>
+            <span class="s1">&#39;type_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_id</span><span class="p">,</span>
+            <span class="s1">&#39;voltage_ac_operating&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage_ac_operating</span><span class="p">,</span>
+            <span class="s1">&#39;voltage_dc_operating&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage_dc_operating</span><span class="p">,</span>
+            <span class="s1">&#39;voltage_esd&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage_esd</span><span class="p">,</span>
+            <span class="s1">&#39;voltage_rated&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage_rated</span><span class="p">,</span>
+            <span class="s1">&#39;voltage_ratio&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage_ratio</span><span class="p">,</span>
+            <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span>
+            <span class="s1">&#39;years_in_production&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">years_in_production</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">_attributes</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

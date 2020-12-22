@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.books.modulebook &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.books.modulebook</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.views.gtk3.books.modulebook.py is part of The RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2017 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;RAMSTK Module Book Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+<span class="kn">from</span> <span class="nn">treelib</span> <span class="kn">import</span> <span class="n">Tree</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.configuration</span> <span class="kn">import</span> <span class="n">RAMSTKUserConfiguration</span>
+<span class="kn">from</span> <span class="nn">ramstk.logger</span> <span class="kn">import</span> <span class="n">RAMSTKLogManager</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3</span> <span class="kn">import</span> <span class="n">Gtk</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.function</span> <span class="kn">import</span> <span class="n">mvwFunction</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.hardware</span> <span class="kn">import</span> <span class="n">mvwHardware</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.requirement</span> <span class="kn">import</span> <span class="n">mvwRequirement</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.revision</span> <span class="kn">import</span> <span class="n">mvwRevision</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.validation</span> <span class="kn">import</span> <span class="n">mvwValidation</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.widgets</span> <span class="kn">import</span> <span class="n">RAMSTKBaseBook</span>
+
+
+<div class="viewcode-block" id="RAMSTKModuleBook"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.books.html#ramstk.views.gtk3.books.modulebook.RAMSTKModuleBook">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKModuleBook</span><span class="p">(</span><span class="n">RAMSTKBaseBook</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Display Module Views for the RAMSTK modules.</span>
+
+<span class="sd">    Attributes of the Module Book are:</span>
+
+<span class="sd">    :ivar dict _dic_module_views: dictionary containing the Module View to</span>
+<span class="sd">        load into the RAMSTK Module Book for each RAMSTK module.  Key is the</span>
+<span class="sd">        RAMSTK module name; value is the View associated with that RAMSTK</span>
+<span class="sd">        module.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="n">RAMSTKUserConfiguration</span><span class="p">,</span>
+                 <span class="n">logger</span><span class="p">:</span> <span class="n">RAMSTKLogManager</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the Module Book class.</span>
+
+<span class="sd">        :param configuration: the RAMSTKUserConfiguration class instance.</span>
+<span class="sd">        :param logger: the RAMSTKLogManager class instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">RAMSTKBaseBook</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_module_views</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;revision&#39;</span><span class="p">:</span> <span class="n">mvwRevision</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">),</span>
+            <span class="s1">&#39;function&#39;</span><span class="p">:</span> <span class="n">mvwFunction</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">),</span>
+            <span class="s1">&#39;requirement&#39;</span><span class="p">:</span> <span class="n">mvwRequirement</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">),</span>
+            <span class="s1">&#39;hardware&#39;</span><span class="p">:</span> <span class="n">mvwHardware</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">),</span>
+            <span class="s1">&#39;validation&#39;</span><span class="p">:</span> <span class="n">mvwValidation</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">icoStatus</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">StatusIcon</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">StatusIcon</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_properties</span><span class="p">(</span><span class="s1">&#39;modulebook&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__make_ui</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_callbacks</span><span class="p">()</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_open</span><span class="p">,</span> <span class="s1">&#39;succeed_retrieve_revisions&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_close</span><span class="p">,</span> <span class="s1">&#39;succeed_closed_program&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__make_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Build the user interface.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">insert_page</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dic_module_views</span><span class="p">[</span><span class="s1">&#39;revision&#39;</span><span class="p">],</span>
+            <span class="n">tab_label</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dic_module_views</span><span class="p">[</span><span class="s1">&#39;revision&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">hbx_tab_label</span><span class="p">,</span>
+            <span class="n">position</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_current_page</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__set_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set callback methods for the RAMSTKListBook and widgets.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;select-page&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;select-page&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_switch_page</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;switch-page&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;switch-page&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_switch_page</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_on_close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Update the Module View when a RAMSTK Program database is closed.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Remove all the non-Revision pages.</span>
+        <span class="n">_n_pages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_n_pages</span><span class="p">()</span>
+        <span class="c1"># pylint: disable=unused-variable</span>
+        <span class="k">for</span> <span class="n">_page</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">_n_pages</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_page</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Clear the Revision page treeview.</span>
+        <span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_module_views</span><span class="p">[</span><span class="s1">&#39;revision&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+        <span class="n">_model</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="c1"># noinspection PyUnusedLocal</span>
+    <span class="k">def</span> <span class="nf">_on_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Insert a page in the module book for each active work stream module.</span>
+
+<span class="sd">        :param tree: the work stream module&#39;s treelib Tree() containing all</span>
+<span class="sd">            the data for the work stream module.  Unused in this method,</span>
+<span class="sd">            but is required as an argument since it is the data package for</span>
+<span class="sd">            the &#39;succeed_retrieve_revisions&#39; message.</span>
+<span class="sd">        :type tree: :class:`treelib.Tree`</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_PAGE_NUMBER</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">_mkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_PAGE_NUMBER</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span>
+            <span class="n">_module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_module_views</span><span class="p">[</span><span class="n">_mkey</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">insert_page</span><span class="p">(</span><span class="n">_module</span><span class="p">,</span>
+                             <span class="n">tab_label</span><span class="o">=</span><span class="n">_module</span><span class="o">.</span><span class="n">hbx_tab_label</span><span class="p">,</span>
+                             <span class="n">position</span><span class="o">=</span><span class="n">_key</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;mvwSwitchedPage&#39;</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s1">&#39;revision&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_on_switch_page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__notebook</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Notebook</span><span class="p">,</span> <span class="n">__page</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Widget</span><span class="p">,</span>
+                        <span class="n">page_num</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Handle page changes in the Module Book Gtk.Notebook().</span>
+
+<span class="sd">        :param __notebook: the Tree Book notebook widget.</span>
+<span class="sd">        :type __notebook: :class:`Gtk.Notebook`</span>
+<span class="sd">        :param __page: the newly selected page&#39;s child widget.</span>
+<span class="sd">        :type __page: :class:`Gtk.Widget`</span>
+<span class="sd">        :param page_num: the newly selected page number.</span>
+<span class="sd">            0 = Revision Tree</span>
+<span class="sd">            1 = Function Tree</span>
+<span class="sd">            2 = Requirements Tree</span>
+<span class="sd">            3 = Hardware Tree</span>
+<span class="sd">            4 = Software Tree (future)</span>
+<span class="sd">            5 = Testing Tree (future)</span>
+<span class="sd">            6 = Validation Tree</span>
+<span class="sd">            7 = Incident Tree (future)</span>
+<span class="sd">            8 = Survival Analyses Tree (future)</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Key errors occur when no RAMSTK Program database has been loaded.  In</span>
+        <span class="c1"># that case, select the Revision page to load.</span>
+        <span class="c1"># // TODO: Raise error dialog when RAMSTKModuleBook switches page</span>
+        <span class="c1"># //</span>
+        <span class="c1"># // The KeyError in RAMSTKModuleBook._on_switch_page() should send</span>
+        <span class="c1"># // a pubsub message for listeners to respond to.  An error dialog</span>
+        <span class="c1"># // should be raised for the user to understand why the Revision</span>
+        <span class="c1"># // module was shown instead.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_PAGE_NUMBER</span><span class="p">[</span>
+                <span class="n">page_num</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">_module</span> <span class="o">=</span> <span class="s1">&#39;revision&#39;</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;mvwSwitchedPage&#39;</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="n">_module</span><span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

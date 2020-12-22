@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.models.programdb.ramstkdesignmechanic &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.models.programdb.ramstkdesignmechanic</h1><div class="highlight"><pre>
+<span></span><span class="c1"># pylint: disable=too-many-instance-attributes</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.data.storage.RAMSTKDesignMechanic.py is part of The RAMSTK</span>
+<span class="c1">#       Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2017 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;RAMSTKDesignMechanic Table Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">Integer</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">relationship</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.db</span> <span class="kn">import</span> <span class="n">RAMSTK_BASE</span>
+<span class="kn">from</span> <span class="nn">ramstk.models</span> <span class="kn">import</span> <span class="n">RAMSTKBaseTable</span>
+
+
+<div class="viewcode-block" id="RAMSTKDesignMechanic"><a class="viewcode-back" href="../../../../api/ramstk.models.programdb.html#ramstk.models.programdb.ramstkdesignmechanic.RAMSTKDesignMechanic">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKDesignMechanic</span><span class="p">(</span><span class="n">RAMSTK_BASE</span><span class="p">,</span> <span class="n">RAMSTKBaseTable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Represent ramstk_design_mechanic table in the RAMSTK Program database.</span>
+
+<span class="sd">    This table shares a One-to-One relationship with ramstk_hardware.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__defaults__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;altitude_operating&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;application_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;balance_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;clearance&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;casing_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;contact_pressure&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;deflection&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;diameter_coil&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;diameter_inner&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;diameter_outer&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;diameter_wire&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;filter_size&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;flow_design&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;flow_operating&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;frequency_operating&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;friction&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;impact_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;leakage_allowable&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;length&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;length_compressed&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;length_relaxed&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;load_design&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;load_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;load_operating&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;lubrication_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;manufacturing_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;material_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;meyer_hardness&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;misalignment_angle&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;n_ten&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;n_cycles&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;n_elements&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;offset&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;particle_size&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;pressure_contact&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;pressure_delta&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;pressure_downstream&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;pressure_rated&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;pressure_upstream&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;rpm_design&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;rpm_operating&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;service_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;spring_index&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;surface_finish&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;technology_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;thickness&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;torque_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;type_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;viscosity_design&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;viscosity_dynamic&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;water_per_cent&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;width_minimum&#39;</span><span class="p">:</span> <span class="mf">0.0</span>
+    <span class="p">}</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;ramstk_design_mechanic&#39;</span>
+    <span class="n">__table_args__</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;extend_existing&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+
+    <span class="n">hardware_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_hardware_id&#39;</span><span class="p">,</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;ramstk_hardware.fld_hardware_id&#39;</span><span class="p">),</span>
+        <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">altitude_operating</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_altitude_operating&#39;</span><span class="p">,</span>
+                                <span class="n">Float</span><span class="p">,</span>
+                                <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;altitude_operating&#39;</span><span class="p">])</span>
+    <span class="n">application_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_application_id&#39;</span><span class="p">,</span>
+                            <span class="n">Integer</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;application_id&#39;</span><span class="p">])</span>
+    <span class="n">balance_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_balance_id&#39;</span><span class="p">,</span>
+                        <span class="n">Integer</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;balance_id&#39;</span><span class="p">])</span>
+    <span class="n">clearance</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_clearance&#39;</span><span class="p">,</span>
+                       <span class="n">Float</span><span class="p">,</span>
+                       <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;clearance&#39;</span><span class="p">])</span>
+    <span class="n">casing_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_casing_id&#39;</span><span class="p">,</span>
+                       <span class="n">Integer</span><span class="p">,</span>
+                       <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;casing_id&#39;</span><span class="p">])</span>
+    <span class="n">contact_pressure</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_contact_pressure&#39;</span><span class="p">,</span>
+                              <span class="n">Float</span><span class="p">,</span>
+                              <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;contact_pressure&#39;</span><span class="p">])</span>
+    <span class="n">deflection</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_deflection&#39;</span><span class="p">,</span>
+                        <span class="n">Float</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;deflection&#39;</span><span class="p">])</span>
+    <span class="n">diameter_coil</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_diameter_coil&#39;</span><span class="p">,</span>
+                           <span class="n">Float</span><span class="p">,</span>
+                           <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;diameter_coil&#39;</span><span class="p">])</span>
+    <span class="n">diameter_inner</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_diameter_inner&#39;</span><span class="p">,</span>
+                            <span class="n">Float</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;diameter_inner&#39;</span><span class="p">])</span>
+    <span class="n">diameter_outer</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_diameter_outer&#39;</span><span class="p">,</span>
+                            <span class="n">Float</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;diameter_outer&#39;</span><span class="p">])</span>
+    <span class="n">diameter_wire</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_diameter_wire&#39;</span><span class="p">,</span>
+                           <span class="n">Float</span><span class="p">,</span>
+                           <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;diameter_wire&#39;</span><span class="p">])</span>
+    <span class="n">filter_size</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_filter_size&#39;</span><span class="p">,</span>
+                         <span class="n">Float</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;filter_size&#39;</span><span class="p">])</span>
+    <span class="n">flow_design</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_flow_design&#39;</span><span class="p">,</span>
+                         <span class="n">Float</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;flow_design&#39;</span><span class="p">])</span>
+    <span class="n">flow_operating</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_flow_operating&#39;</span><span class="p">,</span>
+                            <span class="n">Float</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;flow_operating&#39;</span><span class="p">])</span>
+    <span class="n">frequency_operating</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_frequency_operating&#39;</span><span class="p">,</span>
+                                 <span class="n">Float</span><span class="p">,</span>
+                                 <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;frequency_operating&#39;</span><span class="p">])</span>
+    <span class="n">friction</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_friction&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;friction&#39;</span><span class="p">])</span>
+    <span class="n">impact_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_impact_id&#39;</span><span class="p">,</span>
+                       <span class="n">Integer</span><span class="p">,</span>
+                       <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;impact_id&#39;</span><span class="p">])</span>
+    <span class="n">leakage_allowable</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_leakage_allowable&#39;</span><span class="p">,</span>
+                               <span class="n">Float</span><span class="p">,</span>
+                               <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;leakage_allowable&#39;</span><span class="p">])</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_length&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;length&#39;</span><span class="p">])</span>
+    <span class="n">length_compressed</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_length_compressed&#39;</span><span class="p">,</span>
+                               <span class="n">Float</span><span class="p">,</span>
+                               <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;length_compressed&#39;</span><span class="p">])</span>
+    <span class="n">length_relaxed</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_length_relaxed&#39;</span><span class="p">,</span>
+                            <span class="n">Float</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;length_relaxed&#39;</span><span class="p">])</span>
+    <span class="n">load_design</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_load_design&#39;</span><span class="p">,</span>
+                         <span class="n">Float</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;load_design&#39;</span><span class="p">])</span>
+    <span class="n">load_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_load_id&#39;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;load_id&#39;</span><span class="p">])</span>
+    <span class="n">load_operating</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_load_operating&#39;</span><span class="p">,</span>
+                            <span class="n">Float</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;load_operating&#39;</span><span class="p">])</span>
+    <span class="n">lubrication_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_lubrication_id&#39;</span><span class="p">,</span>
+                            <span class="n">Integer</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;lubrication_id&#39;</span><span class="p">])</span>
+    <span class="n">manufacturing_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_manufacturing_id&#39;</span><span class="p">,</span>
+                              <span class="n">Integer</span><span class="p">,</span>
+                              <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;manufacturing_id&#39;</span><span class="p">])</span>
+    <span class="n">material_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_material_id&#39;</span><span class="p">,</span>
+                         <span class="n">Integer</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;material_id&#39;</span><span class="p">])</span>
+    <span class="n">meyer_hardness</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_meyer_hardness&#39;</span><span class="p">,</span>
+                            <span class="n">Float</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;meyer_hardness&#39;</span><span class="p">])</span>
+    <span class="n">misalignment_angle</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_misalignment_angle&#39;</span><span class="p">,</span>
+                                <span class="n">Float</span><span class="p">,</span>
+                                <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;misalignment_angle&#39;</span><span class="p">])</span>
+    <span class="n">n_ten</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_n_ten&#39;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;n_ten&#39;</span><span class="p">])</span>
+    <span class="n">n_cycles</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_n_cycles&#39;</span><span class="p">,</span>
+                      <span class="n">Integer</span><span class="p">,</span>
+                      <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;n_cycles&#39;</span><span class="p">])</span>
+    <span class="n">n_elements</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_n_elements&#39;</span><span class="p">,</span>
+                        <span class="n">Integer</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;n_elements&#39;</span><span class="p">])</span>
+    <span class="n">offset</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_offset&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;offset&#39;</span><span class="p">])</span>
+    <span class="n">particle_size</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_particle_size&#39;</span><span class="p">,</span>
+                           <span class="n">Float</span><span class="p">,</span>
+                           <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;particle_size&#39;</span><span class="p">])</span>
+    <span class="n">pressure_contact</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_pressure_contact&#39;</span><span class="p">,</span>
+                              <span class="n">Float</span><span class="p">,</span>
+                              <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;pressure_contact&#39;</span><span class="p">])</span>
+    <span class="n">pressure_delta</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_pressure_delta&#39;</span><span class="p">,</span>
+                            <span class="n">Float</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;pressure_delta&#39;</span><span class="p">])</span>
+    <span class="n">pressure_downstream</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_pressure_downstream&#39;</span><span class="p">,</span>
+                                 <span class="n">Float</span><span class="p">,</span>
+                                 <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;pressure_downstream&#39;</span><span class="p">])</span>
+    <span class="n">pressure_rated</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_pressure_rated&#39;</span><span class="p">,</span>
+                            <span class="n">Float</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;pressure_rated&#39;</span><span class="p">])</span>
+    <span class="n">pressure_upstream</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_pressure_upstream&#39;</span><span class="p">,</span>
+                               <span class="n">Float</span><span class="p">,</span>
+                               <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;pressure_upstream&#39;</span><span class="p">])</span>
+    <span class="n">rpm_design</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_rpm_design&#39;</span><span class="p">,</span>
+                        <span class="n">Float</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;rpm_design&#39;</span><span class="p">])</span>
+    <span class="n">rpm_operating</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_rpm_operating&#39;</span><span class="p">,</span>
+                           <span class="n">Float</span><span class="p">,</span>
+                           <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;rpm_operating&#39;</span><span class="p">])</span>
+    <span class="n">service_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_service_id&#39;</span><span class="p">,</span>
+                        <span class="n">Integer</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;service_id&#39;</span><span class="p">])</span>
+    <span class="n">spring_index</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_spring_index&#39;</span><span class="p">,</span>
+                          <span class="n">Float</span><span class="p">,</span>
+                          <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;spring_index&#39;</span><span class="p">])</span>
+    <span class="n">surface_finish</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_surface_finish&#39;</span><span class="p">,</span>
+                            <span class="n">Float</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;surface_finish&#39;</span><span class="p">])</span>
+    <span class="n">technology_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_technology_id&#39;</span><span class="p">,</span>
+                           <span class="n">Integer</span><span class="p">,</span>
+                           <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;technology_id&#39;</span><span class="p">])</span>
+    <span class="n">thickness</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_thickness&#39;</span><span class="p">,</span>
+                       <span class="n">Float</span><span class="p">,</span>
+                       <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;thickness&#39;</span><span class="p">])</span>
+    <span class="n">torque_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_torque_id&#39;</span><span class="p">,</span>
+                       <span class="n">Integer</span><span class="p">,</span>
+                       <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;torque_id&#39;</span><span class="p">])</span>
+    <span class="n">type_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_type_id&#39;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;type_id&#39;</span><span class="p">])</span>
+    <span class="n">viscosity_design</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_viscosity_design&#39;</span><span class="p">,</span>
+                              <span class="n">Float</span><span class="p">,</span>
+                              <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;viscosity_design&#39;</span><span class="p">])</span>
+    <span class="n">viscosity_dynamic</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_viscosity_dynamic&#39;</span><span class="p">,</span>
+                               <span class="n">Float</span><span class="p">,</span>
+                               <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;viscosity_dynamic&#39;</span><span class="p">])</span>
+    <span class="n">water_per_cent</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_water_per_cent&#39;</span><span class="p">,</span>
+                            <span class="n">Float</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;water_per_cent&#39;</span><span class="p">])</span>
+    <span class="n">width_minimum</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_width_minimum&#39;</span><span class="p">,</span>
+                           <span class="n">Float</span><span class="p">,</span>
+                           <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;width_minimum&#39;</span><span class="p">])</span>
+
+    <span class="c1"># Define the relationships to other tables in the RAMSTK Program database.</span>
+    <span class="n">hardware</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+        <span class="s1">&#39;RAMSTKHardware&#39;</span><span class="p">,</span> <span class="n">back_populates</span><span class="o">=</span><span class="s1">&#39;design_mechanic&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RAMSTKDesignMechanic.get_attributes"><a class="viewcode-back" href="../../../../api/ramstk.models.programdb.html#ramstk.models.programdb.ramstkdesignmechanic.RAMSTKDesignMechanic.get_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve current values of RAMSTKDesignMechanic model attributes.</span>
+
+<span class="sd">        :return: {hardware_id, altitude_operating, application_id, balance_id,</span>
+<span class="sd">                  clearance, casing_id, contact_pressure, deflection,</span>
+<span class="sd">                  diameter_coil, diameter_inner, diameter_outer, diameter_wire,</span>
+<span class="sd">                  filter_size, flow_design, flow_operating,</span>
+<span class="sd">                  frequency_operating, friction, impact_id, leakage_allowable,</span>
+<span class="sd">                  length, length_compressed, length_relaxed, load_design,</span>
+<span class="sd">                  load_id, load_operating, lubrication_id, manufacturing_id,</span>
+<span class="sd">                  material_id, meyer_hardness, misalignment_angle, n_ten,</span>
+<span class="sd">                  n_cycles, n_elements, offset, particle_size,</span>
+<span class="sd">                  pressure_contact, pressure_delta, pressure_downstream,</span>
+<span class="sd">                  pressure_rated, pressure_upstream, rpm_design, rpm_operating,</span>
+<span class="sd">                  service_id, spring_index, surface_finish, technology_id,</span>
+<span class="sd">                  thickness, torque_id, type_id, viscosity_design,</span>
+<span class="sd">                  viscosity_dynamic, water_per_cent, width_minimum} pairs.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_attributes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;hardware_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hardware_id</span><span class="p">,</span>
+            <span class="s1">&#39;altitude_operating&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">altitude_operating</span><span class="p">,</span>
+            <span class="s1">&#39;application_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">application_id</span><span class="p">,</span>
+            <span class="s1">&#39;balance_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">balance_id</span><span class="p">,</span>
+            <span class="s1">&#39;clearance&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">clearance</span><span class="p">,</span>
+            <span class="s1">&#39;casing_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">casing_id</span><span class="p">,</span>
+            <span class="s1">&#39;contact_pressure&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">contact_pressure</span><span class="p">,</span>
+            <span class="s1">&#39;deflection&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">deflection</span><span class="p">,</span>
+            <span class="s1">&#39;diameter_coil&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">diameter_coil</span><span class="p">,</span>
+            <span class="s1">&#39;diameter_inner&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">diameter_inner</span><span class="p">,</span>
+            <span class="s1">&#39;diameter_outer&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">diameter_outer</span><span class="p">,</span>
+            <span class="s1">&#39;diameter_wire&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">diameter_wire</span><span class="p">,</span>
+            <span class="s1">&#39;filter_size&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_size</span><span class="p">,</span>
+            <span class="s1">&#39;flow_design&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_design</span><span class="p">,</span>
+            <span class="s1">&#39;flow_operating&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_operating</span><span class="p">,</span>
+            <span class="s1">&#39;frequency_operating&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency_operating</span><span class="p">,</span>
+            <span class="s1">&#39;friction&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">friction</span><span class="p">,</span>
+            <span class="s1">&#39;impact_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">impact_id</span><span class="p">,</span>
+            <span class="s1">&#39;leakage_allowable&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">leakage_allowable</span><span class="p">,</span>
+            <span class="s1">&#39;length&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">,</span>
+            <span class="s1">&#39;length_compressed&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">length_compressed</span><span class="p">,</span>
+            <span class="s1">&#39;length_relaxed&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">length_relaxed</span><span class="p">,</span>
+            <span class="s1">&#39;load_design&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_design</span><span class="p">,</span>
+            <span class="s1">&#39;load_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_id</span><span class="p">,</span>
+            <span class="s1">&#39;load_operating&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_operating</span><span class="p">,</span>
+            <span class="s1">&#39;lubrication_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">lubrication_id</span><span class="p">,</span>
+            <span class="s1">&#39;manufacturing_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">manufacturing_id</span><span class="p">,</span>
+            <span class="s1">&#39;material_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">material_id</span><span class="p">,</span>
+            <span class="s1">&#39;meyer_hardness&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">meyer_hardness</span><span class="p">,</span>
+            <span class="s1">&#39;misalignment_angle&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">misalignment_angle</span><span class="p">,</span>
+            <span class="s1">&#39;n_ten&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_ten</span><span class="p">,</span>
+            <span class="s1">&#39;n_cycles&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_cycles</span><span class="p">,</span>
+            <span class="s1">&#39;n_elements&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_elements</span><span class="p">,</span>
+            <span class="s1">&#39;offset&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span>
+            <span class="s1">&#39;particle_size&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">particle_size</span><span class="p">,</span>
+            <span class="s1">&#39;pressure_contact&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressure_contact</span><span class="p">,</span>
+            <span class="s1">&#39;pressure_delta&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressure_delta</span><span class="p">,</span>
+            <span class="s1">&#39;pressure_downstream&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressure_downstream</span><span class="p">,</span>
+            <span class="s1">&#39;pressure_rated&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressure_rated</span><span class="p">,</span>
+            <span class="s1">&#39;pressure_upstream&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressure_upstream</span><span class="p">,</span>
+            <span class="s1">&#39;rpm_design&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rpm_design</span><span class="p">,</span>
+            <span class="s1">&#39;rpm_operating&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rpm_operating</span><span class="p">,</span>
+            <span class="s1">&#39;service_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">service_id</span><span class="p">,</span>
+            <span class="s1">&#39;spring_index&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">spring_index</span><span class="p">,</span>
+            <span class="s1">&#39;surface_finish&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface_finish</span><span class="p">,</span>
+            <span class="s1">&#39;technology_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">technology_id</span><span class="p">,</span>
+            <span class="s1">&#39;thickness&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">thickness</span><span class="p">,</span>
+            <span class="s1">&#39;torque_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">torque_id</span><span class="p">,</span>
+            <span class="s1">&#39;type_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_id</span><span class="p">,</span>
+            <span class="s1">&#39;viscosity_design&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">viscosity_design</span><span class="p">,</span>
+            <span class="s1">&#39;viscosity_dynamic&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">viscosity_dynamic</span><span class="p">,</span>
+            <span class="s1">&#39;water_per_cent&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">water_per_cent</span><span class="p">,</span>
+            <span class="s1">&#39;width_minimum&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">width_minimum</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">_attributes</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

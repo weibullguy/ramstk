@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.models.programdb.ramstkrequirement &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.models.programdb.ramstkrequirement</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.models.programdb.RAMSTKRequirement.py is part of The RAMSTK</span>
+<span class="c1">#       Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2017 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;RAMSTKRequirement Table Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Date</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">relationship</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.db</span> <span class="kn">import</span> <span class="n">RAMSTK_BASE</span>
+<span class="kn">from</span> <span class="nn">ramstk.models</span> <span class="kn">import</span> <span class="n">RAMSTKBaseTable</span>
+<span class="kn">from</span> <span class="nn">ramstk.utilities</span> <span class="kn">import</span> <span class="n">none_to_default</span>
+
+
+<div class="viewcode-block" id="RAMSTKRequirement"><a class="viewcode-back" href="../../../../api/ramstk.models.programdb.html#ramstk.models.programdb.ramstkrequirement.RAMSTKRequirement">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKRequirement</span><span class="p">(</span><span class="n">RAMSTK_BASE</span><span class="p">,</span> <span class="n">RAMSTKBaseTable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class to represent ramstk_requirement table in RAMSTK Program database.</span>
+
+<span class="sd">    This table shares a Many-to-One relationship with ramstk_revision.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__defaults__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;derived&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;figure_number&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;owner&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;page_number&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;parent_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;priority&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;requirement_code&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;specification&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;requirement_type&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;validated&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;validated_date&#39;</span><span class="p">:</span> <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">(),</span>
+        <span class="s1">&#39;q_clarity_0&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_clarity_1&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_clarity_2&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_clarity_3&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_clarity_4&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_clarity_5&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_clarity_6&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_clarity_7&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_clarity_8&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_complete_0&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_complete_1&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_complete_2&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_complete_3&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_complete_4&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_complete_5&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_complete_6&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_complete_7&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_complete_8&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_complete_9&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_consistent_0&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_consistent_1&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_consistent_2&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_consistent_3&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_consistent_4&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_consistent_5&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_consistent_6&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_consistent_7&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_consistent_8&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_verifiable_0&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_verifiable_1&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_verifiable_2&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_verifiable_3&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_verifiable_4&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;q_verifiable_5&#39;</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;ramstk_requirement&#39;</span>
+    <span class="n">__table_args__</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;extend_existing&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+
+    <span class="n">revision_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_revision_id&#39;</span><span class="p">,</span>
+                         <span class="n">Integer</span><span class="p">,</span>
+                         <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;ramstk_revision.fld_revision_id&#39;</span><span class="p">),</span>
+                         <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">requirement_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_requirement_id&#39;</span><span class="p">,</span>
+                            <span class="n">Integer</span><span class="p">,</span>
+                            <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                            <span class="n">autoincrement</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                            <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">derived</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_derived&#39;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;derived&#39;</span><span class="p">])</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_description&#39;</span><span class="p">,</span>
+                         <span class="n">String</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">])</span>
+    <span class="n">figure_number</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_figure_number&#39;</span><span class="p">,</span>
+                           <span class="n">String</span><span class="p">(</span><span class="mi">256</span><span class="p">),</span>
+                           <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;figure_number&#39;</span><span class="p">])</span>
+    <span class="n">owner</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_owner&#39;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;owner&#39;</span><span class="p">])</span>
+    <span class="n">page_number</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_page_number&#39;</span><span class="p">,</span>
+                         <span class="n">String</span><span class="p">(</span><span class="mi">256</span><span class="p">),</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;page_number&#39;</span><span class="p">])</span>
+    <span class="n">parent_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_parent_id&#39;</span><span class="p">,</span>
+                       <span class="n">Integer</span><span class="p">,</span>
+                       <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;parent_id&#39;</span><span class="p">])</span>
+    <span class="n">priority</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_priority&#39;</span><span class="p">,</span>
+                      <span class="n">Integer</span><span class="p">,</span>
+                      <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;priority&#39;</span><span class="p">])</span>
+    <span class="n">requirement_code</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_requirement_code&#39;</span><span class="p">,</span>
+                              <span class="n">String</span><span class="p">(</span><span class="mi">256</span><span class="p">),</span>
+                              <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;requirement_code&#39;</span><span class="p">])</span>
+    <span class="n">specification</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_specification&#39;</span><span class="p">,</span>
+                           <span class="n">String</span><span class="p">(</span><span class="mi">256</span><span class="p">),</span>
+                           <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;specification&#39;</span><span class="p">])</span>
+    <span class="n">requirement_type</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_requirement_type&#39;</span><span class="p">,</span>
+                              <span class="n">Integer</span><span class="p">,</span>
+                              <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;requirement_type&#39;</span><span class="p">])</span>
+    <span class="n">validated</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_validated&#39;</span><span class="p">,</span>
+                       <span class="n">Integer</span><span class="p">,</span>
+                       <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;validated&#39;</span><span class="p">])</span>
+    <span class="n">validated_date</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_validated_date&#39;</span><span class="p">,</span>
+                            <span class="n">Date</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;validated_date&#39;</span><span class="p">])</span>
+
+    <span class="c1"># Clarity of requirement questions.</span>
+    <span class="n">q_clarity_0</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_clarity_0&#39;</span><span class="p">,</span>
+                         <span class="n">Integer</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_clarity_0&#39;</span><span class="p">])</span>
+    <span class="n">q_clarity_1</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_clarity_1&#39;</span><span class="p">,</span>
+                         <span class="n">Integer</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_clarity_1&#39;</span><span class="p">])</span>
+    <span class="n">q_clarity_2</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_clarity_2&#39;</span><span class="p">,</span>
+                         <span class="n">Integer</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_clarity_2&#39;</span><span class="p">])</span>
+    <span class="n">q_clarity_3</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_clarity_3&#39;</span><span class="p">,</span>
+                         <span class="n">Integer</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_clarity_3&#39;</span><span class="p">])</span>
+    <span class="n">q_clarity_4</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_clarity_4&#39;</span><span class="p">,</span>
+                         <span class="n">Integer</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_clarity_4&#39;</span><span class="p">])</span>
+    <span class="n">q_clarity_5</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_clarity_5&#39;</span><span class="p">,</span>
+                         <span class="n">Integer</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_clarity_5&#39;</span><span class="p">])</span>
+    <span class="n">q_clarity_6</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_clarity_6&#39;</span><span class="p">,</span>
+                         <span class="n">Integer</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_clarity_6&#39;</span><span class="p">])</span>
+    <span class="n">q_clarity_7</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_clarity_7&#39;</span><span class="p">,</span>
+                         <span class="n">Integer</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_clarity_7&#39;</span><span class="p">])</span>
+    <span class="n">q_clarity_8</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_clarity_8&#39;</span><span class="p">,</span>
+                         <span class="n">Integer</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_clarity_8&#39;</span><span class="p">])</span>
+
+    <span class="c1"># Completeness of requirement questions.</span>
+    <span class="n">q_complete_0</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_complete_0&#39;</span><span class="p">,</span>
+                          <span class="n">Integer</span><span class="p">,</span>
+                          <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_complete_0&#39;</span><span class="p">])</span>
+    <span class="n">q_complete_1</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_complete_1&#39;</span><span class="p">,</span>
+                          <span class="n">Integer</span><span class="p">,</span>
+                          <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_complete_1&#39;</span><span class="p">])</span>
+    <span class="n">q_complete_2</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_complete_2&#39;</span><span class="p">,</span>
+                          <span class="n">Integer</span><span class="p">,</span>
+                          <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_complete_2&#39;</span><span class="p">])</span>
+    <span class="n">q_complete_3</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_complete_3&#39;</span><span class="p">,</span>
+                          <span class="n">Integer</span><span class="p">,</span>
+                          <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_complete_3&#39;</span><span class="p">])</span>
+    <span class="n">q_complete_4</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_complete_4&#39;</span><span class="p">,</span>
+                          <span class="n">Integer</span><span class="p">,</span>
+                          <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_complete_4&#39;</span><span class="p">])</span>
+    <span class="n">q_complete_5</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_complete_5&#39;</span><span class="p">,</span>
+                          <span class="n">Integer</span><span class="p">,</span>
+                          <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_complete_5&#39;</span><span class="p">])</span>
+    <span class="n">q_complete_6</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_complete_6&#39;</span><span class="p">,</span>
+                          <span class="n">Integer</span><span class="p">,</span>
+                          <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_complete_6&#39;</span><span class="p">])</span>
+    <span class="n">q_complete_7</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_complete_7&#39;</span><span class="p">,</span>
+                          <span class="n">Integer</span><span class="p">,</span>
+                          <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_complete_7&#39;</span><span class="p">])</span>
+    <span class="n">q_complete_8</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_complete_8&#39;</span><span class="p">,</span>
+                          <span class="n">Integer</span><span class="p">,</span>
+                          <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_complete_8&#39;</span><span class="p">])</span>
+    <span class="n">q_complete_9</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_complete_9&#39;</span><span class="p">,</span>
+                          <span class="n">Integer</span><span class="p">,</span>
+                          <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_complete_9&#39;</span><span class="p">])</span>
+
+    <span class="c1"># Consitency of requirement questions.</span>
+    <span class="n">q_consistent_0</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_consistent_0&#39;</span><span class="p">,</span>
+                            <span class="n">Integer</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_consistent_0&#39;</span><span class="p">])</span>
+    <span class="n">q_consistent_1</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_consistent_1&#39;</span><span class="p">,</span>
+                            <span class="n">Integer</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_consistent_1&#39;</span><span class="p">])</span>
+    <span class="n">q_consistent_2</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_consistent_2&#39;</span><span class="p">,</span>
+                            <span class="n">Integer</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_consistent_2&#39;</span><span class="p">])</span>
+    <span class="n">q_consistent_3</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_consistent_3&#39;</span><span class="p">,</span>
+                            <span class="n">Integer</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_consistent_3&#39;</span><span class="p">])</span>
+    <span class="n">q_consistent_4</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_consistent_4&#39;</span><span class="p">,</span>
+                            <span class="n">Integer</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_consistent_4&#39;</span><span class="p">])</span>
+    <span class="n">q_consistent_5</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_consistent_5&#39;</span><span class="p">,</span>
+                            <span class="n">Integer</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_consistent_5&#39;</span><span class="p">])</span>
+    <span class="n">q_consistent_6</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_consistent_6&#39;</span><span class="p">,</span>
+                            <span class="n">Integer</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_consistent_6&#39;</span><span class="p">])</span>
+    <span class="n">q_consistent_7</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_consistent_7&#39;</span><span class="p">,</span>
+                            <span class="n">Integer</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_consistent_7&#39;</span><span class="p">])</span>
+    <span class="n">q_consistent_8</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_consistent_8&#39;</span><span class="p">,</span>
+                            <span class="n">Integer</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_consistent_8&#39;</span><span class="p">])</span>
+
+    <span class="c1"># Verifiablity of requirement questions.</span>
+    <span class="n">q_verifiable_0</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_verifiable_0&#39;</span><span class="p">,</span>
+                            <span class="n">Integer</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_verifiable_0&#39;</span><span class="p">])</span>
+    <span class="n">q_verifiable_1</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_verifiable_1&#39;</span><span class="p">,</span>
+                            <span class="n">Integer</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_verifiable_1&#39;</span><span class="p">])</span>
+    <span class="n">q_verifiable_2</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_verifiable_2&#39;</span><span class="p">,</span>
+                            <span class="n">Integer</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_verifiable_2&#39;</span><span class="p">])</span>
+    <span class="n">q_verifiable_3</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_verifiable_3&#39;</span><span class="p">,</span>
+                            <span class="n">Integer</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_verifiable_3&#39;</span><span class="p">])</span>
+    <span class="n">q_verifiable_4</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_verifiable_4&#39;</span><span class="p">,</span>
+                            <span class="n">Integer</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_verifiable_4&#39;</span><span class="p">])</span>
+    <span class="n">q_verifiable_5</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_verifiable_5&#39;</span><span class="p">,</span>
+                            <span class="n">Integer</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;q_verifiable_5&#39;</span><span class="p">])</span>
+
+    <span class="c1"># Define the relationships to other tables in the RAMSTK Program database.</span>
+    <span class="n">revision</span><span class="p">:</span> <span class="n">relationship</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span>
+        <span class="s1">&#39;RAMSTKRevision&#39;</span><span class="p">,</span>
+        <span class="n">back_populates</span><span class="o">=</span><span class="s1">&#39;requirement&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="RAMSTKRequirement.get_attributes"><a class="viewcode-back" href="../../../../api/ramstk.models.programdb.html#ramstk.models.programdb.ramstkrequirement.RAMSTKRequirement.get_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve current values of the Requirement data model attributes.</span>
+
+<span class="sd">        :return: {revision_id, requirement_id, derived, description,</span>
+<span class="sd">                  figure_number, owner, page_number, parent_id, priority,</span>
+<span class="sd">                  requirement_code, specification, requirement_type, validated,</span>
+<span class="sd">                  validated_date, q_clarity_0, q_clarity_1, q_clarity_2,</span>
+<span class="sd">                  q_clarity_3, q_clarity_4, q_clarity_5, q_clarity_6,</span>
+<span class="sd">                  q_clarity_7, q_clarity_8, q_complete_0, q_complete_1,</span>
+<span class="sd">                  q_complete_2, q_complete_3, q_complete_4, q_complete_5,</span>
+<span class="sd">                  q_complete_6, q_complete_7, q_complete_8, q_complete_9,</span>
+<span class="sd">                  q_consistent_0, q_consistent_1, q_consistent_2,</span>
+<span class="sd">                  q_consistent_3, q_consistent_4, q_consistent_5,</span>
+<span class="sd">                  q_consistent_6, q_consistent_7, q_consistent_8,</span>
+<span class="sd">                  q_verifiable_0, q_verifiable_1, q_verifiable_2,</span>
+<span class="sd">                  q_verifiable_3, q_verifiable_4, q_verifiable_5} pairs.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_attributes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;revision_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">revision_id</span><span class="p">,</span>
+            <span class="s1">&#39;requirement_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">requirement_id</span><span class="p">,</span>
+            <span class="s1">&#39;derived&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">derived</span><span class="p">,</span>
+            <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+            <span class="s1">&#39;figure_number&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure_number</span><span class="p">,</span>
+            <span class="s1">&#39;owner&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="p">,</span>
+            <span class="s1">&#39;page_number&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span><span class="p">,</span>
+            <span class="s1">&#39;parent_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent_id</span><span class="p">,</span>
+            <span class="s1">&#39;priority&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span>
+            <span class="s1">&#39;requirement_code&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">requirement_code</span><span class="p">,</span>
+            <span class="s1">&#39;specification&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">specification</span><span class="p">,</span>
+            <span class="s1">&#39;requirement_type&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">requirement_type</span><span class="p">,</span>
+            <span class="s1">&#39;validated&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">validated</span><span class="p">,</span>
+            <span class="s1">&#39;validated_date&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">validated_date</span><span class="p">,</span>
+            <span class="s1">&#39;q_clarity_0&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_clarity_0</span><span class="p">,</span>
+            <span class="s1">&#39;q_clarity_1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_clarity_1</span><span class="p">,</span>
+            <span class="s1">&#39;q_clarity_2&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_clarity_2</span><span class="p">,</span>
+            <span class="s1">&#39;q_clarity_3&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_clarity_3</span><span class="p">,</span>
+            <span class="s1">&#39;q_clarity_4&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_clarity_4</span><span class="p">,</span>
+            <span class="s1">&#39;q_clarity_5&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_clarity_5</span><span class="p">,</span>
+            <span class="s1">&#39;q_clarity_6&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_clarity_6</span><span class="p">,</span>
+            <span class="s1">&#39;q_clarity_7&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_clarity_7</span><span class="p">,</span>
+            <span class="s1">&#39;q_clarity_8&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_clarity_8</span><span class="p">,</span>
+            <span class="s1">&#39;q_complete_0&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_complete_0</span><span class="p">,</span>
+            <span class="s1">&#39;q_complete_1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_complete_1</span><span class="p">,</span>
+            <span class="s1">&#39;q_complete_2&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_complete_2</span><span class="p">,</span>
+            <span class="s1">&#39;q_complete_3&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_complete_3</span><span class="p">,</span>
+            <span class="s1">&#39;q_complete_4&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_complete_4</span><span class="p">,</span>
+            <span class="s1">&#39;q_complete_5&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_complete_5</span><span class="p">,</span>
+            <span class="s1">&#39;q_complete_6&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_complete_6</span><span class="p">,</span>
+            <span class="s1">&#39;q_complete_7&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_complete_7</span><span class="p">,</span>
+            <span class="s1">&#39;q_complete_8&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_complete_8</span><span class="p">,</span>
+            <span class="s1">&#39;q_complete_9&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_complete_9</span><span class="p">,</span>
+            <span class="s1">&#39;q_consistent_0&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_consistent_0</span><span class="p">,</span>
+            <span class="s1">&#39;q_consistent_1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_consistent_1</span><span class="p">,</span>
+            <span class="s1">&#39;q_consistent_2&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_consistent_2</span><span class="p">,</span>
+            <span class="s1">&#39;q_consistent_3&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_consistent_3</span><span class="p">,</span>
+            <span class="s1">&#39;q_consistent_4&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_consistent_4</span><span class="p">,</span>
+            <span class="s1">&#39;q_consistent_5&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_consistent_5</span><span class="p">,</span>
+            <span class="s1">&#39;q_consistent_6&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_consistent_6</span><span class="p">,</span>
+            <span class="s1">&#39;q_consistent_7&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_consistent_7</span><span class="p">,</span>
+            <span class="s1">&#39;q_consistent_8&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_consistent_8</span><span class="p">,</span>
+            <span class="s1">&#39;q_verifiable_0&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_verifiable_0</span><span class="p">,</span>
+            <span class="s1">&#39;q_verifiable_1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_verifiable_1</span><span class="p">,</span>
+            <span class="s1">&#39;q_verifiable_2&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_verifiable_2</span><span class="p">,</span>
+            <span class="s1">&#39;q_verifiable_3&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_verifiable_3</span><span class="p">,</span>
+            <span class="s1">&#39;q_verifiable_4&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_verifiable_4</span><span class="p">,</span>
+            <span class="s1">&#39;q_verifiable_5&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_verifiable_5</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">_attributes</span></div>
+
+<div class="viewcode-block" id="RAMSTKRequirement.create_code"><a class="viewcode-back" href="../../../../api/ramstk.models.programdb.html#ramstk.models.programdb.ramstkrequirement.RAMSTKRequirement.create_code">[docs]</a>    <span class="k">def</span> <span class="nf">create_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create Requirement code based on the requirement type and it&#39;s ID.</span>
+
+<span class="sd">        :param prefix: the prefix to use for the Requirement code.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Pad the suffix (Requirement ID) with zeros so the suffix is four</span>
+        <span class="c1"># characters wide and then create the code.</span>
+        <span class="n">_zeds</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">requirement_id</span><span class="p">))</span>
+        <span class="n">_pad</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span> <span class="o">*</span> <span class="n">_zeds</span>
+        <span class="n">_code</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:s}</span><span class="s1">-</span><span class="si">{1:s}{2:d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">_pad</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">requirement_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">requirement_code</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">none_to_default</span><span class="p">(</span><span class="n">_code</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

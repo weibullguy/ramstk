@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.hardware.components.connection &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../../" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/jquery.js"></script>
+    <script src="../../../../../../_static/underscore.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script src="../../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.hardware.components.connection</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.views.gtk3.hardware.components.connection.py is part of the</span>
+<span class="c1">#       RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2020 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;Connection Work View.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="c1"># noinspection PyPackageRequirements</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3</span> <span class="kn">import</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.widgets</span> <span class="kn">import</span> <span class="n">RAMSTKComboBox</span><span class="p">,</span> <span class="n">RAMSTKEntry</span>
+
+<span class="c1"># RAMSTK Local Imports</span>
+<span class="kn">from</span> <span class="nn">.panels</span> <span class="kn">import</span> <span class="n">RAMSTKAssessmentInputPanel</span><span class="p">,</span> <span class="n">RAMSTKAssessmentResultPanel</span>
+
+
+<div class="viewcode-block" id="AssessmentInputPanel"><a class="viewcode-back" href="../../../../../../api/ramstk.views.gtk3.hardware.components.html#ramstk.views.gtk3.hardware.components.connection.AssessmentInputPanel">[docs]</a><span class="k">class</span> <span class="nc">AssessmentInputPanel</span><span class="p">(</span><span class="n">RAMSTKAssessmentInputPanel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Displays connection assessment input attribute data.</span>
+
+<span class="sd">    The Connection assessment input view displays all the assessment inputs for</span>
+<span class="sd">    the selected connection.  This includes, currently, inputs for</span>
+<span class="sd">    MIL-HDBK-217FN2 parts count and part stress analysis.  The attributes of a</span>
+<span class="sd">    Connection assessment input view are:</span>
+
+<span class="sd">    :cvar dict _dic_quality: dictionary of MIL-HDBK-217 capacitor quality</span>
+<span class="sd">        levels.  Key is capacitor subcategory ID; values are lists of quality</span>
+<span class="sd">        levels.</span>
+<span class="sd">    :cvar dict _dic_insert: dictionary of connector insert materials.  First</span>
+<span class="sd">        key is connector type ID, second key is connector specification ID;</span>
+<span class="sd">        values are lists of insert materials.</span>
+<span class="sd">     :cvar dict _dic_insert: dictionary of connector insert materials.  First</span>
+<span class="sd">        key is connector type ID, second key is connector specification ID;</span>
+<span class="sd">        values are lists of insert materials.</span>
+<span class="sd">    :cvar dict _dic_type: dictionary of connector types.  Key is connector</span>
+<span class="sd">        subcategory ID; values are lists of types.</span>
+
+<span class="sd">    :ivar list _lst_labels: list of label text to display for the capacitor</span>
+<span class="sd">        MIL-HDBK-217 input parameters.</span>
+<span class="sd">    :ivar _lst_widgets: the list of widgets to display in the panel.  These</span>
+<span class="sd">        are listed in the order they should appear on the panel.</span>
+
+<span class="sd">    :ivar _hazard_rate_method_id: the ID of the method to use for estimating</span>
+<span class="sd">        the Hardware item&#39;s hazard rate.</span>
+<span class="sd">    :ivar _subcategory_id: the ID of the Hardware item&#39;s subcategory.</span>
+<span class="sd">    :ivar _title: the text to put on the RAMSTKFrame() holding the</span>
+<span class="sd">        assessment input widgets.</span>
+
+<span class="sd">    :ivar fmt: the formatting to use when displaying float values.</span>
+<span class="sd">    :ivar cmbInsert: select and display the available insert materials for the</span>
+<span class="sd">        connector.</span>
+<span class="sd">    :ivar cmbSpecification: select and display the governing specification of</span>
+<span class="sd">        the connection.</span>
+<span class="sd">    :ivar cmbType: select and display the type of the connection.</span>
+
+<span class="sd">    :ivar txtActivePins: enter and display the number of active pins in the</span>
+<span class="sd">        connector.</span>
+<span class="sd">    :ivar txtAmpsContact: enter and display the amps carried by the pins in the</span>
+<span class="sd">        connector.</span>
+<span class="sd">    :ivar txtContactGauge: enter and display the contact gauge of the</span>
+<span class="sd">        connector.</span>
+<span class="sd">    :ivar txtMating: enter and display the number of mate/demate cycles the</span>
+<span class="sd">        connector undergoes per 1000 hours.</span>
+<span class="sd">    :ivar txtNHand: enter and display the number of hand soldered PTH</span>
+<span class="sd">        connections.</span>
+<span class="sd">    :ivar txtNPlanes: enter and display the number of layers in the circuit</span>
+<span class="sd">        board the PTH needs to penetrate.</span>
+<span class="sd">    :ivar txtNWave: enter and display the number of wave soldered PTH</span>
+<span class="sd">        connections.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Define private dict class attributes.</span>
+
+    <span class="c1"># Quality levels; key is the subcategory ID.</span>
+    <span class="n">_dic_quality</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;MIL-SPEC&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[[</span><span class="s2">&quot;MIL-SPEC&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]],</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-SPEC or comparable IPC standards&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]],</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Automated&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Manual, Upper&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Manual, Standard&quot;</span><span class="p">)],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Manual, Lower&quot;</span><span class="p">)]]</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Connector types; key is the subcategory ID.</span>
+    <span class="n">_dic_type</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Rack and Panel&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Circular&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Power&quot;</span><span class="p">)],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Coaxial&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Triaxial&quot;</span><span class="p">)]],</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;PWA/PCB with PTHs&quot;</span><span class="p">)],</span>
+            <span class="p">[</span>
+                <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Discrete Wiring with Electroless Deposited PTH (&lt;3 Levels &quot;</span>
+                  <span class="s2">&quot;of Circuitry)&quot;</span><span class="p">)</span>
+            <span class="p">]],</span>  <span class="c1"># noqa</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Hand Solder w/o Wrapping&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Hand Solder w/ Wrapping&quot;</span><span class="p">)],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Crimp&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Weld&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Solderless Wrap&quot;</span><span class="p">)],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Clip Termination&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Reflow Solder&quot;</span><span class="p">)]]</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Specifications; key is the type ID.</span>
+    <span class="n">_dic_specification</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-24308&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-28748&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-28804&quot;</span><span class="p">)],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-83513&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-83733&quot;</span><span class="p">)]],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-5015&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-26482&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-28840&quot;</span><span class="p">)],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-38999&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-81511&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-83723&quot;</span><span class="p">)]],</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-3767&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-22992&quot;</span><span class="p">)]],</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-3607&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-3643&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-3650&quot;</span><span class="p">)],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-3655&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-25516&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-39012&quot;</span><span class="p">)],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-55235&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-55339&quot;</span><span class="p">)]],</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-C-49142&quot;</span><span class="p">)]]</span>
+    <span class="p">}</span>
+
+    <span class="n">_lst_insert_A</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Vitreous Glass&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Alumina Ceramic&quot;</span><span class="p">)],</span>
+                                <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Polyimide&quot;</span><span class="p">)]]</span>
+    <span class="n">_lst_insert_B</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Diallylphtalate&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Melamine&quot;</span><span class="p">)],</span>
+                     <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Flourosilicone&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Silicone Rubber&quot;</span><span class="p">)],</span>
+                     <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Polysulfone&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Epoxy Resin&quot;</span><span class="p">)]]</span>
+    <span class="n">_lst_insert_C</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Polytetraflourethylene (Teflon)&quot;</span><span class="p">)],</span>
+                     <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Chlorotriflourethylene (Kel-f)&quot;</span><span class="p">)]]</span>
+    <span class="n">_lst_insert_D</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Polyamide (Nylon)&quot;</span><span class="p">)],</span>
+                     <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Polychloroprene (Neoprene)&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Polyethylene&quot;</span><span class="p">)]]</span>
+    <span class="c1"># Connector insert material; first key is the type ID, second key is the</span>
+    <span class="c1"># specification ID.</span>
+    <span class="n">_dic_insert</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="n">_lst_insert_B</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="n">_lst_insert_B</span><span class="p">,</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="n">_lst_insert_A</span> <span class="o">+</span> <span class="n">_lst_insert_B</span><span class="p">,</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="n">_lst_insert_A</span> <span class="o">+</span> <span class="n">_lst_insert_B</span><span class="p">,</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="n">_lst_insert_A</span> <span class="o">+</span> <span class="n">_lst_insert_B</span>
+        <span class="p">},</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="n">_lst_insert_B</span> <span class="o">+</span> <span class="n">_lst_insert_D</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="n">_lst_insert_A</span> <span class="o">+</span> <span class="n">_lst_insert_B</span> <span class="o">+</span> <span class="n">_lst_insert_D</span><span class="p">,</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="n">_lst_insert_A</span> <span class="o">+</span> <span class="n">_lst_insert_B</span><span class="p">,</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="n">_lst_insert_A</span> <span class="o">+</span> <span class="n">_lst_insert_B</span><span class="p">,</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="n">_lst_insert_B</span><span class="p">,</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="n">_lst_insert_B</span>
+        <span class="p">},</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="n">_lst_insert_B</span> <span class="o">+</span> <span class="n">_lst_insert_D</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="n">_lst_insert_B</span> <span class="o">+</span> <span class="n">_lst_insert_D</span>
+        <span class="p">},</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="n">_lst_insert_C</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="n">_lst_insert_C</span><span class="p">,</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="n">_lst_insert_C</span><span class="p">,</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="n">_lst_insert_C</span><span class="p">,</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="n">_lst_insert_C</span><span class="p">,</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="n">_lst_insert_C</span><span class="p">,</span>
+            <span class="mi">7</span><span class="p">:</span> <span class="n">_lst_insert_C</span><span class="p">,</span>
+            <span class="mi">8</span><span class="p">:</span> <span class="n">_lst_insert_B</span> <span class="o">+</span> <span class="n">_lst_insert_C</span>
+        <span class="p">},</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="n">_lst_insert_B</span> <span class="o">+</span> <span class="n">_lst_insert_C</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Define private list attributes.</span>
+
+    <span class="c1"># Define private scalar class attributes.</span>
+
+    <span class="c1"># Define public dictionary class attributes.</span>
+
+    <span class="c1"># Define public list class attributes.</span>
+
+    <span class="c1"># Define public scalar class attributes.</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the Connection assessment input view.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_keys</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;quality_id&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;type_id&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;specification_id&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;insert_id&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;contact_gauge&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;n_active_pins&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;current_operating&#39;</span><span class="p">,</span> <span class="s1">&#39;float&#39;</span><span class="p">],</span>
+            <span class="mi">7</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;n_cycles&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">8</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;n_wave_soldered&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">9</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;n_hand_soldered&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">10</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;n_circuit_planes&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_labels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Quality Level:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Connector Type:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Specification:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Insert Material:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Contact Gauge:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Active Pins:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Amperes/Contact:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Mating/Unmating Cycles (per 1000 hours):&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Number of Wave Soldered PTH:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Number of Hand Soldered PTH:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Number of Circuit Planes:&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The quality level of the connector/connection.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The type of connector/connection.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The governing specification for the connection.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The connector insert material.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The gauge of the contacts in the connector.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The number of active pins in the connector.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The amperes per active contact.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The number of connector mate and unmate cycles per 1000 hours &quot;</span>
+              <span class="s2">&quot;of operation.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The number of wave soldered PTH connections.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The number of hand soldered PTH connections.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The number of circuit planes for wave soldered connections.&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbInsert</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtContactGauge</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtActivePins</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtAmpsContact</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtMating</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtNWave</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtNHand</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtNPlanes</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_updater</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;quality_id&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;specification_id&#39;</span><span class="p">:</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="s1">&#39;type_id&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="s1">&#39;insert_id&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbInsert</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+            <span class="s1">&#39;contact_gauge&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">txtContactGauge</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+            <span class="s1">&#39;n_active_pins&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">txtActivePins</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+            <span class="s1">&#39;current_operating&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">txtAmpsContact</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+            <span class="s1">&#39;n_cycles&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">txtMating</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>
+            <span class="s1">&#39;n_wave_soldered&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">txtNWave</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>
+            <span class="s1">&#39;n_hand_soldered&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">txtNHand</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span>
+            <span class="s1">&#39;n_circuit_planes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">txtNPlanes</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbInsert</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtContactGauge</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtActivePins</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtAmpsContact</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtMating</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtNWave</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtNHand</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtNPlanes</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_properties</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_make_panel_fixed</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_callbacks</span><span class="p">()</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_load_comboboxes</span><span class="p">,</span> <span class="s1">&#39;changed_subcategory&#39;</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_load_panel</span><span class="p">,</span>
+                      <span class="s1">&#39;succeed_get_all_hardware_attributes&#39;</span><span class="p">)</span>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+<div class="viewcode-block" id="AssessmentInputPanel.do_load_comboboxes"><a class="viewcode-back" href="../../../../../../api/ramstk.views.gtk3.hardware.components.html#ramstk.views.gtk3.hardware.components.connection.AssessmentInputPanel.do_load_comboboxes">[docs]</a>    <span class="k">def</span> <span class="nf">do_load_comboboxes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subcategory_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the connection RKTComboBox()s.</span>
+
+<span class="sd">        :param subcategory_id: the subcategory ID of the selected capacitor.</span>
+<span class="sd">            This is unused in this method but required because this method is a</span>
+<span class="sd">            PyPubSub listener.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Load the quality level RAMSTKComboBox().</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># MIL-HDBK-217F parts count.</span>
+            <span class="n">_data</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;MIL-SPEC&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lower&quot;</span><span class="p">)]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_quality</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="n">_data</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Load the connector type RAMSTKComboBox().</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_type</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="n">_data</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Clear the remaining ComboBox()s.  These are loaded dynamically</span>
+        <span class="c1"># based on the selection made in other ComboBox()s.</span>
+        <span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+        <span class="n">_model</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbInsert</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+        <span class="n">_model</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_do_load_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the Connection assessment input widgets.</span>
+
+<span class="sd">        :param attributes: the attributes dictionary for the selected</span>
+<span class="sd">            Connection.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_load_panel</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+
+        <span class="c1"># We don&#39;t block the callback signal otherwise the specification</span>
+        <span class="c1"># RAMSTKComboBox() will not be loaded and set.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;type_id&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># We don&#39;t block the callback signal otherwise the insert</span>
+            <span class="c1"># RAMSTKComboBox() will not be loaded and set.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;specification_id&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbInsert</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;insert_id&#39;</span><span class="p">],</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtContactGauge</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;contact_gauge&#39;</span><span class="p">]),</span>
+                                           <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtActivePins</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;n_active_pins&#39;</span><span class="p">]),</span>
+                                         <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtAmpsContact</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;current_operating&#39;</span><span class="p">])),</span>
+                                          <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>  <span class="c1"># noqa</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtMating</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;n_cycles&#39;</span><span class="p">]),</span>
+                                     <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">txtNWave</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;n_wave_soldered&#39;</span><span class="p">]),</span>
+                                        <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">txtNHand</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;n_hand_soldered&#39;</span><span class="p">]),</span>
+                                        <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">txtNPlanes</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;n_circuit_planes&#39;</span><span class="p">]),</span>
+                                          <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_set_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set widget sensitivity as needed for the selected connection.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbInsert</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtActivePins</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtAmpsContact</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtContactGauge</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtMating</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtNHand</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtNPlanes</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtNWave</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_circular_sensitive</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_ic_socket_sensitive</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_pwa_edge_sensitive</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_pth_sensitive</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_do_load_insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combo</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the insert RAMSTKComboBox() when the specification changes.</span>
+
+<span class="sd">        :param combo: the specification RAMSTKCombo() that called this method.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_type_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">get_active</span><span class="p">())</span>
+            <span class="n">_spec_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">combo</span><span class="o">.</span><span class="n">get_active</span><span class="p">())</span>
+            <span class="n">_inserts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_insert</span><span class="p">[</span><span class="n">_type_id</span><span class="p">][</span><span class="n">_spec_id</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">_inserts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbInsert</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="n">entries</span><span class="o">=</span><span class="n">_inserts</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_load_specification</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combo</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve RAMSTKCombo() changes and assign to Connection attribute.</span>
+
+<span class="sd">        :param combo: the connection type RAMSTKCombo() that called this</span>
+<span class="sd">            method.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_type_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">combo</span><span class="o">.</span><span class="n">get_active</span><span class="p">())</span>
+            <span class="n">_specifications</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_specification</span><span class="p">[</span><span class="n">_type_id</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">_specifications</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="n">entries</span><span class="o">=</span><span class="n">_specifications</span><span class="p">,</span>
+                                            <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_circular_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the widgets for circular connectors sensitive or not.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbInsert</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtActivePins</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtAmpsContact</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtContactGauge</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtMating</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_ic_socket_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the widgets for IC socket connectors sensitive or not.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtActivePins</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_pwa_edge_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the widgets for PCB/PWA edge connectors sensitive or not.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtAmpsContact</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtContactGauge</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtMating</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtActivePins</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_pth_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the widgets for PTH connections sensitive or not.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtNWave</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtNHand</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtNPlanes</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__set_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set callback methods for Connection assessment input widgets.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># ----- COMBOBOXES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbQuality</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbType</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_load_specification</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbSpecification</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_load_insert</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbInsert</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbInsert</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+
+        <span class="c1"># ----- ENTRIES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtContactGauge</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtContactGauge</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+                                                      <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_entry</span><span class="p">,</span>
+                                                      <span class="mi">4</span><span class="p">,</span>
+                                                      <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtActivePins</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtActivePins</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+                                                    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_entry</span><span class="p">,</span>
+                                                    <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtAmpsContact</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtAmpsContact</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+                                                     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_entry</span><span class="p">,</span>
+                                                     <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtMating</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtMating</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_entry</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtNWave</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtNWave</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_entry</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtNHand</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtNHand</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_entry</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtNPlanes</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtNPlanes</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_entry</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__set_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set properties for Connection assessment input widgets.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">()</span>
+
+        <span class="c1"># ----- ENTRIES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtContactGauge</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">tooltip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+                                               <span class="n">width</span><span class="o">=</span><span class="mi">125</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtActivePins</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">tooltip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+                                             <span class="n">width</span><span class="o">=</span><span class="mi">125</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtAmpsContact</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">tooltip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span>
+                                              <span class="n">width</span><span class="o">=</span><span class="mi">125</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtMating</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">tooltip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
+                                         <span class="n">width</span><span class="o">=</span><span class="mi">125</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtNWave</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">tooltip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span>
+                                        <span class="n">width</span><span class="o">=</span><span class="mi">125</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtNHand</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">tooltip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">[</span><span class="mi">9</span><span class="p">],</span>
+                                        <span class="n">width</span><span class="o">=</span><span class="mi">125</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtNPlanes</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">tooltip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span>
+                                          <span class="n">width</span><span class="o">=</span><span class="mi">125</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AssessmentResultPanel"><a class="viewcode-back" href="../../../../../../api/ramstk.views.gtk3.hardware.components.html#ramstk.views.gtk3.hardware.components.connection.AssessmentResultPanel">[docs]</a><span class="k">class</span> <span class="nc">AssessmentResultPanel</span><span class="p">(</span><span class="n">RAMSTKAssessmentResultPanel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Displays connection assessment results attribute data.</span>
+
+<span class="sd">    The connection assessment result view displays all the assessment results</span>
+<span class="sd">    for the selected connection.  This includes, currently, results for</span>
+<span class="sd">    MIL-HDBK-217FN2 parts count and MIL-HDBK-217FN2 part stress methods.  The</span>
+<span class="sd">    attributes of a connection assessment result view are:</span>
+
+<span class="sd">    :cvar dict _dic_part_stress: dictionary of MIL-HDBK-217F part stress</span>
+<span class="sd">        models.  The key is the subcategory ID attribute of the component.</span>
+
+<span class="sd">    :ivar list _lst_labels: list of label text to display for the capacitor</span>
+<span class="sd">        MIL-HDBK-217 input parameters.</span>
+
+<span class="sd">    :ivar _hazard_rate_method_id: the ID of the method to use for estimating</span>
+<span class="sd">        the Hardware item&#39;s hazard rate.</span>
+<span class="sd">    :ivar _subcategory_id: the ID of the Hardware item&#39;s subcategory.</span>
+
+<span class="sd">    :ivar fmt: the formatting to use when displaying float values.</span>
+<span class="sd">    :ivar lblModel: displays the hazard rate model use to estimate the</span>
+<span class="sd">        Hardware item&#39;s hazard rate.</span>
+<span class="sd">    :ivar self.txtLambdaB: displays the base hazard rate for the Hardware</span>
+<span class="sd">        item.</span>
+<span class="sd">    :ivar txtPiC: displays the construction factor for the connection.</span>
+<span class="sd">        :ivar txtPiE: displays the environment factor for the Hardware item.</span>
+<span class="sd">    :ivar txtPiK: displays the capacitance factor for the connection.</span>
+<span class="sd">    :ivar txtPiP: displays the configuration factor for the connection.</span>
+<span class="sd">    :ivar txtPiQ: displays the quality factor for the Hardware item.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Define private dict class attributes.</span>
+    <span class="n">_dic_part_stress</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;K&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;P&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;&lt;sub&gt;E&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;K&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;P&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;&lt;sub&gt;E&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;P&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">4</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;[N&lt;sub&gt;1&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;C&lt;/sub&gt; + &quot;</span>
+        <span class="s2">&quot;N&lt;sub&gt;2&lt;/sub&gt;(</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;C&lt;/sub&gt; + &quot;</span>
+        <span class="s2">&quot;13)]</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&gt;&lt;/span&gt;&quot;</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">:</span>
+        <span class="s2">&quot;&lt;span foreground=</span><span class="se">\&quot;</span><span class="s2">blue</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;p&lt;/sub&gt; = &quot;</span>
+        <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&gt;&lt;/span&gt;&quot;</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Define private list class attributes.</span>
+
+    <span class="c1"># Define private scalar class attributes.</span>
+
+    <span class="c1"># Define public dictionary class attributes.</span>
+
+    <span class="c1"># Define public list class attributes.</span>
+
+    <span class="c1"># Define public scalar class attributes.</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the Connection assessment result view.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Initialize private dict attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_labels</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="se">\u03BB</span><span class="s2">&lt;sub&gt;b&lt;/sub&gt;:&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;Q&lt;/sub&gt;:&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="se">\u03C0</span><span class="s2">&lt;sub&gt;E&lt;/sub&gt;:&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="se">\u03C0</span><span class="s1">&lt;sub&gt;K&lt;/sub&gt;:&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="se">\u03C0</span><span class="s1">&lt;sub&gt;P&lt;/sub&gt;:&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="se">\u03C0</span><span class="s1">&lt;sub&gt;C&lt;/sub&gt;:&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The assessment model used to calculate the connection hazard &quot;</span>
+              <span class="s2">&quot;rate.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The base hazard rate for the connection.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The quality factor for the connection.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The environment factor for the connection.&#39;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The mating/unmating factor for the connection.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The active pins factor for the connection.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;The complexity factor for the connection.&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dict attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiC</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiK</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiP</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lblModel</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtLambdaB</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiQ</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiE</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiK</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiP</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiC</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_make_panel_fixed</span><span class="p">()</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_load_panel</span><span class="p">,</span>
+                      <span class="s1">&#39;succeed_get_all_hardware_attributes&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_load_panel</span><span class="p">,</span> <span class="s1">&#39;succeed_calculate_hardware&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_load_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the connection assessment results page.</span>
+
+<span class="sd">        :param attributes: the attributes dictionary for the selected</span>
+<span class="sd">                                Connection.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_load_panel</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiC</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piC&#39;</span><span class="p">])))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiK</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piK&#39;</span><span class="p">])))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiP</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piP&#39;</span><span class="p">])))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_set_sensitive</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_do_set_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set widget sensitivity as needed for the selected connection.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiK</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiP</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPiC</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hazard_rate_method_id</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiE</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_circular_pwa_sensitive</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_ic_socket_sensitive</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_pth_sensitive</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_non_pth_sensitive</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_circular_pwa_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set widgets for circular and PWS connectors sensitive or not.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiK</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiQ</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiP</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_ic_socket_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set widgets for IC socket connections sensitive or not.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiP</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiQ</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_pth_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set widgets for PTH connections sensitive or not.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiC</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiQ</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_non_pth_sensitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set widgets for non-PTH connections sensitive or not.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subcategory_id</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPiQ</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

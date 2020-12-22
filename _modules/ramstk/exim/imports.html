@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.exim.imports &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    
+    <script src="../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.exim.imports</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.exim.imports.py is part of The RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2019 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;The RAMSTK Import module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="c1"># noinspection PyPackageRequirements</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="c1"># noinspection PyPackageRequirements</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="c1"># noinspection PyPackageRequirements</span>
+<span class="kn">from</span> <span class="nn">dateutil</span> <span class="kn">import</span> <span class="n">parser</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.db.base</span> <span class="kn">import</span> <span class="n">BaseDatabase</span>
+<span class="kn">from</span> <span class="nn">ramstk.models.programdb</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RAMSTKNSWC</span><span class="p">,</span> <span class="n">RAMSTKAllocation</span><span class="p">,</span> <span class="n">RAMSTKDesignElectric</span><span class="p">,</span> <span class="n">RAMSTKDesignMechanic</span><span class="p">,</span>
+    <span class="n">RAMSTKFunction</span><span class="p">,</span> <span class="n">RAMSTKHardware</span><span class="p">,</span> <span class="n">RAMSTKMilHdbkF</span><span class="p">,</span> <span class="n">RAMSTKReliability</span><span class="p">,</span>
+    <span class="n">RAMSTKRequirement</span><span class="p">,</span> <span class="n">RAMSTKSimilarItem</span><span class="p">,</span> <span class="n">RAMSTKValidation</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_do_replace_nan</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Check for NaN values and replace any with the default value.</span>
+
+<span class="sd">    :param value: the value to check for NaN.</span>
+<span class="sd">    :param default: the default value to replace NaN.</span>
+<span class="sd">    :return: _value; the passed value or the default if the passed value</span>
+<span class="sd">        was NaN.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="c1"># Check for Python NaN&#39;s.</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="n">_value</span> <span class="o">=</span> <span class="n">default</span>
+    <span class="c1"># Non-numeric values raise a type error, so we can just move along.</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># Check for numpy NaN&#39;s.</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">:</span>
+        <span class="n">_value</span> <span class="o">=</span> <span class="n">default</span>
+
+    <span class="k">return</span> <span class="n">_value</span>
+
+
+<span class="k">def</span> <span class="nf">_get_input_value</span><span class="p">(</span><span class="n">mapper</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">df_row</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                     <span class="n">default</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Retrieve the input value for a field from the Pandas dataframe.</span>
+
+<span class="sd">    :param mapper: the field mapping dict to use as the Rosetta stone.</span>
+<span class="sd">    :param df_row: the row from the pandas DataFrame containing the input</span>
+<span class="sd">        data.</span>
+<span class="sd">    :type df_row: :class:`pandas.Series`</span>
+<span class="sd">    :param field: the name of the RAMSTK database field to retrieve the</span>
+<span class="sd">        data for.</span>
+<span class="sd">    :param default: the default value to assign to the field.</span>
+<span class="sd">    :return: _value</span>
+<span class="sd">    :rtype: the value of the requested input field or the default.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_value</span> <span class="o">=</span> <span class="n">df_row</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">mapper</span><span class="p">[</span><span class="n">field</span><span class="p">]]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">_value</span> <span class="o">=</span> <span class="n">default</span>
+
+    <span class="n">_value</span> <span class="o">=</span> <span class="n">_do_replace_nan</span><span class="p">(</span><span class="n">_value</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+
+    <span class="c1"># If it&#39;s supposed to be a date, make it a date.</span>
+    <span class="k">if</span> <span class="n">default</span> <span class="o">==</span> <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">():</span>
+        <span class="n">_value</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">_value</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_value</span>
+
+
+<div class="viewcode-block" id="Import"><a class="viewcode-back" href="../../../api/ramstk.exim.html#ramstk.exim.imports.Import">[docs]</a><span class="k">class</span> <span class="nc">Import</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Contains the methods for importing data to a program database.&quot;&quot;&quot;</span>
+
+    <span class="c1"># Ordered dictionaries of RAMSTK inputs field headers.  Must use</span>
+    <span class="c1"># OrderedDict to ensure they are always in the same order during program</span>
+    <span class="c1"># flow.</span>
+    <span class="n">_dic_field_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;Function&#39;</span><span class="p">:</span>
+        <span class="n">OrderedDict</span><span class="p">([(</span><span class="s1">&#39;Revision ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Function ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Level&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Function Code&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Function Name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Parent&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Remarks&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Safety Critical&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Type&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)]),</span>
+        <span class="s1">&#39;Requirement&#39;</span><span class="p">:</span>
+        <span class="n">OrderedDict</span><span class="p">([(</span><span class="s1">&#39;Revision ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Requirement ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Derived?&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Requirement&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Figure Number&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Owner&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Page Number&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Parent ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Priority&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Requirement Code&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Specification&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Requirement Type&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Validated?&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Validated Date&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)]),</span>
+        <span class="s1">&#39;Hardware&#39;</span><span class="p">:</span>
+        <span class="n">OrderedDict</span><span class="p">([(</span><span class="s1">&#39;Revision ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Hardware ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Alternate Part Number&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;CAGE Code&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Category ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Composite Ref. Des.&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Cost&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Cost Type&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Description&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Duty Cycle&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Figure Number&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;LCN&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Level&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Manufacturer&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Mission Time&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;NSN&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Page Number&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Parent Assembly&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Part&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Part Number&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Quantity&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Reference Designator&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Remarks&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Repairable&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Specification&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Subcategory ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Tagged Part&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Year of Manufacture&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)]),</span>
+        <span class="s1">&#39;Design Electric&#39;</span><span class="p">:</span>
+        <span class="n">OrderedDict</span><span class="p">([(</span><span class="s1">&#39;Hardware ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Application ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Area&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Capacitance&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Configuration ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Construction ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Contact Form ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Contact Gauge&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Contact Rating ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Current Operating&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Current Rated&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Current Ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Environment Active ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Environment Dormant ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Family ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Feature Size&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Frequency Operating&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Insert ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Insulation ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Manufacturing ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Matching ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;N Active Pins&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;N Circuit Planes&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;N Cycles&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;N Elements&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;N Hand Soldered&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;N Wave Soldered&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Operating Life&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Overstress&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Package ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Power Operating&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Power Rated&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Power Ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Reason&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Resistance&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Specification ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Technology ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Temperature, Active&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Temperature, Case&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Temperature, Dormant&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Temperature, Hot Spot&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Temperature, Junction&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Temperature, Knee&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Temperature, Rated Max&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Temperature, Rated Min&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Temperature Rise&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Theta JC&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Type ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Voltage, AC Operating&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Voltage, DC Operating&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Voltage ESD&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Voltage, Rated&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Voltage Ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Weight&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Years in Production&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)]),</span>
+        <span class="s1">&#39;Design Mechanic&#39;</span><span class="p">:</span>
+        <span class="n">OrderedDict</span><span class="p">([(</span><span class="s1">&#39;Hardware ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Altitude, Operating&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Application ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Balance ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Clearance&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Casing ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Contact Pressure&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Deflection&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Diameter, Coil&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Diameter, Inner&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Diameter, Outer&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Diameter, Wire&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Filter Size&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Flow, Design&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Flow, Operating&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Frequency, Operating&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Friction&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Impact ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Allowable Leakage&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Length&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Length, Compressed&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Length, Relaxed&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Design Load&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Load ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Operating Load&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Lubrication ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Manufacturing ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Material ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Meyer Hardness&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Misalignment Angle&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;N Ten&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;N Cycles&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;N Elements&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Offset&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Particle Size&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Contact Pressure&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Differential Pressure&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Downstream Pressure&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Rated Pressure&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Upstream Pressure&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Design RPM&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Operating RPM&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Service ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Spring Index&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Surface Finish&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Technology ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Thickness&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Torque ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Type ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Design Viscosity&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Dynamic Viscosity&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;% Water&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Minimum Width&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)]),</span>
+        <span class="s1">&#39;Reliability&#39;</span><span class="p">:</span>
+        <span class="n">OrderedDict</span><span class="p">([(</span><span class="s1">&#39;Hardware ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Additive Adjustment Factor&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Failure Distribution ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Failure Rate Method ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Failure Rate Model&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Specified Failure Rate&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Failure Rate Type ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Location Parameter&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Specified MTBF&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Multiplicative Adjustment Factor&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Quality ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Reliability Goal&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Reliability Goal Measure ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Scale Parameter&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Shape Parameter&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Survival Analysis ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)]),</span>
+        <span class="s1">&#39;Validation&#39;</span><span class="p">:</span>
+        <span class="n">OrderedDict</span><span class="p">([(</span><span class="s1">&#39;Revision ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Validation ID&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Acceptable Maximum&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Acceptable Mean&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Acceptable Minimum&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Acceptable Variance&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;s-Confidence&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Average Task Cost&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Maximum Task Cost&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Minimum Task Cost&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Start Date&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;End Date&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Task Description&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Unit of Measure&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Task Status&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Task Type&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Task Specification&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Average Task Time&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s1">&#39;Maximum Task Time&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Minimum Task Time&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)])</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an ImportProject module instance.&quot;&quot;&quot;</span>
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dao</span><span class="p">:</span> <span class="n">BaseDatabase</span> <span class="o">=</span> <span class="n">BaseDatabase</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_df_input_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({})</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_connect</span><span class="p">,</span> <span class="s1">&#39;succeed_connect_program_database&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_map_to_field</span><span class="p">,</span> <span class="s1">&#39;request_map_to_field&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_read_db_fields</span><span class="p">,</span> <span class="s1">&#39;request_db_fields&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_read_file</span><span class="p">,</span> <span class="s1">&#39;request_read_import_file&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_import</span><span class="p">,</span> <span class="s1">&#39;request_import&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dao</span><span class="p">:</span> <span class="n">BaseDatabase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Connect data manager to a database.</span>
+
+<span class="sd">        :param dao: the BaseDatabase() instance (data access object)</span>
+<span class="sd">            representing the connected RAMSTK Program database.</span>
+<span class="sd">        :type dao: :class:`ramstk.db.base.BaseDatabase`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dao</span> <span class="o">=</span> <span class="n">dao</span>
+
+    <span class="k">def</span> <span class="nf">_do_import</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Insert a new entity to the RAMSTK db with values from external file.</span>
+
+<span class="sd">        :param module: the name of the RAMSTK module to import.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_entities</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># pylint: disable=unused-variable</span>
+        <span class="k">for</span> <span class="n">__</span><span class="p">,</span> <span class="n">_row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df_input_data</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">module</span> <span class="o">==</span> <span class="s1">&#39;Function&#39;</span><span class="p">:</span>
+                <span class="n">_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_insert_function</span><span class="p">(</span><span class="n">_row</span><span class="p">)</span>
+                <span class="n">_entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_entity</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">module</span> <span class="o">==</span> <span class="s1">&#39;Requirement&#39;</span><span class="p">:</span>
+                <span class="n">_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_insert_requirement</span><span class="p">(</span><span class="n">_row</span><span class="p">)</span>
+                <span class="n">_entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_entity</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">module</span> <span class="o">==</span> <span class="s1">&#39;Hardware&#39;</span><span class="p">:</span>
+                <span class="n">_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_insert_hardware</span><span class="p">(</span><span class="n">_row</span><span class="p">)</span>
+                <span class="n">_entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_entity</span><span class="p">)</span>
+                <span class="n">_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_insert_allocation</span><span class="p">(</span><span class="n">_row</span><span class="p">)</span>
+                <span class="n">_entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_entity</span><span class="p">)</span>
+                <span class="n">_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_insert_similar_item</span><span class="p">(</span><span class="n">_row</span><span class="p">)</span>
+                <span class="n">_entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_entity</span><span class="p">)</span>
+                <span class="n">_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_insert_design_electric</span><span class="p">(</span><span class="n">_row</span><span class="p">)</span>
+                <span class="n">_entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_entity</span><span class="p">)</span>
+                <span class="n">_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_insert_mil_hdbk_f</span><span class="p">(</span><span class="n">_row</span><span class="p">)</span>
+                <span class="n">_entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_entity</span><span class="p">)</span>
+                <span class="n">_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_insert_design_mechanic</span><span class="p">(</span><span class="n">_row</span><span class="p">)</span>
+                <span class="n">_entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_entity</span><span class="p">)</span>
+                <span class="n">_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_insert_nswc</span><span class="p">(</span><span class="n">_row</span><span class="p">)</span>
+                <span class="n">_entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_entity</span><span class="p">)</span>
+                <span class="n">_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_insert_reliability</span><span class="p">(</span><span class="n">_row</span><span class="p">)</span>
+                <span class="n">_entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_entity</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">module</span> <span class="o">==</span> <span class="s1">&#39;Validation&#39;</span><span class="p">:</span>
+                <span class="n">_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_insert_validation</span><span class="p">(</span><span class="n">_row</span><span class="p">)</span>
+                <span class="n">_entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_entity</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dao</span><span class="o">.</span><span class="n">do_insert_many</span><span class="p">(</span><span class="n">_entities</span><span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_import_module&#39;</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="n">module</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;fail_import_module&#39;</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="n">module</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_insert_allocation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RAMSTKAllocation</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Insert a new Allocation record to the RAMSTK database.</span>
+
+<span class="sd">        :param row: the row from the pandas DataFrame containing the input</span>
+<span class="sd">            data.</span>
+<span class="sd">        :type row: :class:`pandas.Series`</span>
+<span class="sd">        :return: _allocation; an instance of the RAMSTKAllocation database</span>
+<span class="sd">            table record.</span>
+<span class="sd">        :rtype: :class:`ramstk.models.programdb.RAMSTKAllocation`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_allocation</span> <span class="o">=</span> <span class="n">RAMSTKAllocation</span><span class="p">()</span>
+        <span class="n">_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_field_map</span><span class="p">[</span><span class="s1">&#39;Hardware&#39;</span><span class="p">]</span>
+
+        <span class="n">_allocation</span><span class="o">.</span><span class="n">revision_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Revision ID&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_allocation</span><span class="o">.</span><span class="n">hardware_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Hardware ID&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_allocation</span><span class="o">.</span><span class="n">parent_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Parent Assembly&#39;</span><span class="p">,</span>
+                                                 <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_allocation</span>
+
+    <span class="k">def</span> <span class="nf">_do_insert_design_electric</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                   <span class="n">row</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RAMSTKDesignElectric</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Insert a new Design Electric entity to the RAMSTK db.</span>
+
+<span class="sd">        :param row: the row from the pandas DataFrame containing the input</span>
+<span class="sd">            data.</span>
+<span class="sd">        :type row: :class:`pandas.Series`</span>
+<span class="sd">        :return: _entity</span>
+<span class="sd">        :rtype: :class:`ramstk.models.programdb.RAMMSTKDesignElectric`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_design_electric</span> <span class="o">=</span> <span class="n">RAMSTKDesignElectric</span><span class="p">()</span>
+
+        <span class="n">_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_field_map</span><span class="p">[</span><span class="s1">&#39;Hardware&#39;</span><span class="p">]</span>
+
+        <span class="n">_design_electric</span><span class="o">.</span><span class="n">hardware_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Hardware ID&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_field_map</span><span class="p">[</span><span class="s1">&#39;Design Electric&#39;</span><span class="p">]</span>
+        <span class="n">_design_electric</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">({</span>
+            <span class="s1">&#39;application_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Application ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;area&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Area&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;capacitance&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Capacitance&#39;</span><span class="p">,</span> <span class="mf">0.000001</span><span class="p">),</span>
+            <span class="s1">&#39;configuration_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Configuration ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;construction_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Construction ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;contact_form_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Contact Form ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;contact_gauge&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Contact Gauge&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
+            <span class="s1">&#39;contact_rating_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Contact Rating ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;current_operating&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Current Operating&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;current_rated&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Current Rated&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;current_ratio&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Current Ratio&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;environment_active_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Environment Active ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;environment_dormant_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Environment Dormant ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;family_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Family ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;feature_size&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Feature Size&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+            <span class="s1">&#39;frequency_operating&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Frequency Operating&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;insert_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Insert ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;insulation_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Insulation ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;manufacturing_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Manufacturing ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;matching_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Matching ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;n_active_pins&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;N Active Pins&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;n_circuit_planes&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;N Circuit Planes&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="s1">&#39;n_cycles&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;N Cycles&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;n_elements&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;N Elements&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;n_hand_soldered&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;N Hand Soldered&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;n_wave_soldered&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;N Wave Soldered&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;operating_life&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Operating Life&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;overstress&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Overstress&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;package_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Package ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;power_operating&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Power Operating&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;power_rated&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Power Rated&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;power_ratio&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Power Ratio&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;reason&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Reason&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;resistance&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Resistance&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;specification_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Specification ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;technology_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Technology ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;temperature_active&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Temperature, Active&#39;</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">),</span>
+            <span class="s1">&#39;temperature_case&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Temperature, Case&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;temperature_dormant&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Temperature, Dormant&#39;</span><span class="p">,</span> <span class="mf">25.0</span><span class="p">),</span>
+            <span class="s1">&#39;temperature_hot_spot&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Temperature, Hot Spot&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;temperature_junction&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Temperature, Junction&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;temperature_knee&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Temperature, Knee&#39;</span><span class="p">,</span> <span class="mf">25.0</span><span class="p">),</span>
+            <span class="s1">&#39;temperature_rated_max&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Temperature, Rated Max&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;temperature_rated_min&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Temperature, Rated Min&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;temperature_rise&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Temperature Rise&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;theta_jc&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Theta JC&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;type_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Type ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;voltage_ac_operating&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Voltage, AC Operating&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;voltage_dc_operating&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Voltage, DC Operating&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;voltage_esd&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Voltage ESD&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;voltage_rated&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Voltage, Rated&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;voltage_ratio&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Voltage Ratio&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;weight&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Weight&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+            <span class="s1">&#39;years_in_production&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Years in Production&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">_design_electric</span>
+
+    <span class="k">def</span> <span class="nf">_do_insert_design_mechanic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                   <span class="n">row</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RAMSTKDesignMechanic</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Insert a new Design Mechanic entity to the RAMSTK db.</span>
+
+<span class="sd">        :param row: the row from the pandas DataFrame containing the input</span>
+<span class="sd">            data.</span>
+<span class="sd">        :type row: :class:`pandas.Series`</span>
+<span class="sd">        :return: _entity</span>
+<span class="sd">        :rtype: :class:`ramstk.models.programdb.RAMMSTKDesignMechanic`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_design_mechanic</span> <span class="o">=</span> <span class="n">RAMSTKDesignMechanic</span><span class="p">()</span>
+
+        <span class="n">_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_field_map</span><span class="p">[</span><span class="s1">&#39;Hardware&#39;</span><span class="p">]</span>
+        <span class="n">_design_mechanic</span><span class="o">.</span><span class="n">hardware_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Hardware ID&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_field_map</span><span class="p">[</span><span class="s1">&#39;Design Mechanic&#39;</span><span class="p">]</span>
+        <span class="n">_design_mechanic</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">({</span>
+            <span class="s1">&#39;altitude_operating&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Altitude, Operating&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;application_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Application ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;balance_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Balance ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;clearance&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Clearance&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;casing_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Casing ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;contact_pressure&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Contact Pressure&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;deflection&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Deflection&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;diameter_coil&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Diameter, Coil&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;diameter_inner&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Diameter, Inner&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;diameter_outer&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Diameter, Outer&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;diameter_wire&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Diameter, Wire&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;filter_size&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Filter Size&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;flow_design&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Flow, Design&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;flow_operating&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Flow, Operating&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;frequency_operating&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Frequency, Operating&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;friction&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Friction&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;impact_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Impact ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;leakage_allowable&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Allowable Leakage&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;length&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Length&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;length_compressed&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Length, Compressed&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;length_relaxed&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Length, Relaxed&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;load_design&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Design Load&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;load_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Load ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;load_operating&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Operating Load&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;lubrication_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Lubrication ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;manufacturing_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Manufacturing ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;material_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Material ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;meyer_hardness&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Meyer Hardness&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;misalignment_angle&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Misalignment Angle&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;n_ten&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;N Ten&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;n_cycles&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;N Cycles&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;n_elements&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;N Elements&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;offset&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Offset&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;particle_size&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Particle Size&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;pressure_contact&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Contact Pressure&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;pressure_delta&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Differential Pressure&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;pressure_downstream&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Downstream Pressure&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;pressure_rated&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Rated Pressure&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;pressure_upstream&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Upstream Pressure&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;rpm_design&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Design RPM&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;rpm_operating&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Operating RPM&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;service_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Service ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;spring_index&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Spring Index&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;surface_finish&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Surface Finish&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;technology_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Technology ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;thickness&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Thickness&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;torque_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Torque ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;type_id&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Type ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;viscosity_design&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Design Viscosity&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;viscosity_dynamic&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Dynamic Viscosity&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;water_per_cent&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;% Water&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="s1">&#39;width_minimum&#39;</span><span class="p">:</span>
+            <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Minimum Width&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">_design_mechanic</span>
+
+    <span class="k">def</span> <span class="nf">_do_insert_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RAMSTKFunction</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Insert a new Function entity to the RAMSTK db.</span>
+
+<span class="sd">        :param row: the row from the pandas DataFrame containing the input</span>
+<span class="sd">            data.</span>
+<span class="sd">        :type row: :class:`pandas.Series`</span>
+<span class="sd">        :return: _entity</span>
+<span class="sd">        :rtype: :class:`ramstk.models.programdb.ramskfunction.RAMSTKFunction`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_function</span> <span class="o">=</span> <span class="n">RAMSTKFunction</span><span class="p">()</span>
+        <span class="n">_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_field_map</span><span class="p">[</span><span class="s1">&#39;Function&#39;</span><span class="p">]</span>
+
+        <span class="n">_function</span><span class="o">.</span><span class="n">revision_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Revision ID&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_function</span><span class="o">.</span><span class="n">function_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Function ID&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_function</span><span class="o">.</span><span class="n">function_code</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Function Code&#39;</span><span class="p">,</span>
+                                                   <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_function</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Level&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">_function</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Function Name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_function</span><span class="o">.</span><span class="n">parent_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Parent&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_function</span><span class="o">.</span><span class="n">remarks</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Remarks&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_function</span><span class="o">.</span><span class="n">safety_critical</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span>
+                                                     <span class="s1">&#39;Safety Critical&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">_function</span><span class="o">.</span><span class="n">type_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Type&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_function</span>
+
+    <span class="k">def</span> <span class="nf">_do_insert_hardware</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RAMSTKHardware</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Insert a new Hardware entity to the RAMSTK db.</span>
+
+<span class="sd">        :param row: the row from the pandas DataFrame containing the input</span>
+<span class="sd">            data.</span>
+<span class="sd">        :type row: :class:`pandas.Series`</span>
+<span class="sd">        :return: _entity</span>
+<span class="sd">        :rtype: :class:`ramstk.models.programdb.ramstkhardware.RAMSTKHardware`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_hardware</span> <span class="o">=</span> <span class="n">RAMSTKHardware</span><span class="p">()</span>
+        <span class="n">_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_field_map</span><span class="p">[</span><span class="s1">&#39;Hardware&#39;</span><span class="p">]</span>
+
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">revision_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Revision ID&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">hardware_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Hardware ID&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">alt_part_number</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span>
+                                                     <span class="s1">&#39;Alternate Part Number&#39;</span><span class="p">,</span>
+                                                     <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">cage_code</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;CAGE Code&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">category_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Category ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">comp_ref_des</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span>
+                                                  <span class="s1">&#39;Composite Ref. Des.&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Cost&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">cost_type_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Cost Type&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Description&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">duty_cycle</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Duty Cycle&#39;</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">figure_number</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Figure Number&#39;</span><span class="p">,</span>
+                                                   <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">lcn</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;LCN&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Level&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">manufacturer_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Manufacturer&#39;</span><span class="p">,</span>
+                                                     <span class="mi">0</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">mission_time</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Mission Time&#39;</span><span class="p">,</span>
+                                                  <span class="mf">24.0</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">nsn</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;NSN&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">page_number</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Page Number&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">parent_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Parent Assembly&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">part</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Part&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">part_number</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Part Number&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">quantity</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Quantity&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">ref_des</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Reference Designator&#39;</span><span class="p">,</span>
+                                             <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">remarks</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Remarks&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">repairable</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Repairable&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">specification_number</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Specification&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">subcategory_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span>
+                                                    <span class="s1">&#39;Subcategory ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">tagged_part</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Tagged Part&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">_hardware</span><span class="o">.</span><span class="n">year_of_manufacture</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Year of Manufacture&#39;</span><span class="p">,</span> <span class="mi">1900</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_hardware</span>
+
+    <span class="k">def</span> <span class="nf">_do_insert_mil_hdbk_f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RAMSTKMilHdbkF</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Insert a new MIL-HDBK-217F entity to the RAMSTK db.</span>
+
+<span class="sd">        :param row: the row from the pandas DataFrame containing the input</span>
+<span class="sd">            data.</span>
+<span class="sd">        :type row: :class:`pandas.Series`</span>
+<span class="sd">        :return: _entity</span>
+<span class="sd">        :rtype: :class:`ramstk.models.programdb.RAMSTKMilHdbkF`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_mil_hdbk_f</span> <span class="o">=</span> <span class="n">RAMSTKMilHdbkF</span><span class="p">()</span>
+
+        <span class="n">_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_field_map</span><span class="p">[</span><span class="s1">&#39;Hardware&#39;</span><span class="p">]</span>
+        <span class="n">_mil_hdbk_f</span><span class="o">.</span><span class="n">hardware_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Hardware ID&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_mil_hdbk_f</span>
+
+    <span class="k">def</span> <span class="nf">_do_insert_nswc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RAMSTKNSWC</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Insert a new NSWC entity to the RAMSTK db.</span>
+
+<span class="sd">        :param row: the row from the pandas DataFrame containing the input</span>
+<span class="sd">            data.</span>
+<span class="sd">        :type row: :class:`pandas.Series`</span>
+<span class="sd">        :return: _entity</span>
+<span class="sd">        :rtype: :class:`ramstk.models.programdb.ramstknswc.RAMSTKNSWC`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_nswc</span> <span class="o">=</span> <span class="n">RAMSTKNSWC</span><span class="p">()</span>
+
+        <span class="n">_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_field_map</span><span class="p">[</span><span class="s1">&#39;Hardware&#39;</span><span class="p">]</span>
+        <span class="n">_nswc</span><span class="o">.</span><span class="n">hardware_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Hardware ID&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_nswc</span>
+
+    <span class="k">def</span> <span class="nf">_do_insert_reliability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RAMSTKReliability</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Insert a new Reliability entity to the RAMSTK db.</span>
+
+<span class="sd">        :param row: the row from the pandas DataFrame containing the input</span>
+<span class="sd">            data.</span>
+<span class="sd">        :type row: :class:`pandas.Series`</span>
+<span class="sd">        :return: _entity</span>
+<span class="sd">        :rtype: :class:`ramstk.models.programdb.RAMSTKReliability`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_reliability</span> <span class="o">=</span> <span class="n">RAMSTKReliability</span><span class="p">()</span>
+
+        <span class="n">_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_field_map</span><span class="p">[</span><span class="s1">&#39;Hardware&#39;</span><span class="p">]</span>
+        <span class="n">_reliability</span><span class="o">.</span><span class="n">hardware_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Hardware ID&#39;</span><span class="p">,</span>
+                                                    <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_field_map</span><span class="p">[</span><span class="s1">&#39;Reliability&#39;</span><span class="p">]</span>
+        <span class="n">_reliability</span><span class="o">.</span><span class="n">add_adj_factor</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Additive Adjustment Factor&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">_reliability</span><span class="o">.</span><span class="n">failure_distribution_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Failure Distribution ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">_reliability</span><span class="o">.</span><span class="n">hazard_rate_method_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Failure Rate Method ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">_reliability</span><span class="o">.</span><span class="n">hazard_rate_model</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Failure Rate Model&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_reliability</span><span class="o">.</span><span class="n">hazard_rate_specified</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Specified Failure Rate&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">_reliability</span><span class="o">.</span><span class="n">hazard_rate_type_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Failure Rate Type ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">_reliability</span><span class="o">.</span><span class="n">location_parameter</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Location Parameter&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">_reliability</span><span class="o">.</span><span class="n">mtbf_specified</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span>
+                                                       <span class="s1">&#39;Specified MTBF&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">_reliability</span><span class="o">.</span><span class="n">mult_adj_factor</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Multiplicative Adjustment Factor&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">_reliability</span><span class="o">.</span><span class="n">quality_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Quality ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">_reliability</span><span class="o">.</span><span class="n">reliability_goal</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Reliability Goal&#39;</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">)</span>
+        <span class="n">_reliability</span><span class="o">.</span><span class="n">reliability_goal_measure_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Reliability Goal Measure ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">_reliability</span><span class="o">.</span><span class="n">scale_parameter</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Scale Parameter&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">_reliability</span><span class="o">.</span><span class="n">shape_parameter</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Shape Parameter&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">_reliability</span><span class="o">.</span><span class="n">survival_analysis_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Survival Analysis ID&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_reliability</span>
+
+    <span class="k">def</span> <span class="nf">_do_insert_requirement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RAMSTKRequirement</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Insert a new Requirement entity to the RAMSTK db.</span>
+
+<span class="sd">        :param row: the row from the pandas DataFrame containing the input</span>
+<span class="sd">            data.</span>
+<span class="sd">        :type row: :class:`pandas.Series`</span>
+<span class="sd">        :return: _entity</span>
+<span class="sd">        :rtype: :class:`ramstk.models.programdb.RAMSTKRequirement`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_requirement</span> <span class="o">=</span> <span class="n">RAMSTKRequirement</span><span class="p">()</span>
+        <span class="n">_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_field_map</span><span class="p">[</span><span class="s1">&#39;Requirement&#39;</span><span class="p">]</span>
+
+        <span class="n">_requirement</span><span class="o">.</span><span class="n">revision_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Revision ID&#39;</span><span class="p">,</span>
+                                                    <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_requirement</span><span class="o">.</span><span class="n">requirement_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span>
+                                                       <span class="s1">&#39;Requirement ID&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_requirement</span><span class="o">.</span><span class="n">derived</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Derived?&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">_requirement</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Requirement&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_requirement</span><span class="o">.</span><span class="n">figure_number</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span>
+                                                      <span class="s1">&#39;Figure Number&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_requirement</span><span class="o">.</span><span class="n">owner</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Owner&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_requirement</span><span class="o">.</span><span class="n">page_number</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Page Number&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_requirement</span><span class="o">.</span><span class="n">parent_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Parent ID&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_requirement</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Priority&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_requirement</span><span class="o">.</span><span class="n">requirement_code</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Requirement Code&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_requirement</span><span class="o">.</span><span class="n">specification</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span>
+                                                      <span class="s1">&#39;Specification&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_requirement</span><span class="o">.</span><span class="n">requirement_type</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Requirement Type&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_requirement</span><span class="o">.</span><span class="n">validated</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Validated?&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">_requirement</span><span class="o">.</span><span class="n">validated_date</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span>
+                                                       <span class="s1">&#39;Validated Date&#39;</span><span class="p">,</span>
+                                                       <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">_requirement</span>
+
+    <span class="k">def</span> <span class="nf">_do_insert_similar_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RAMSTKSimilarItem</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Insert a new Similar Item record to the RAMSTK db.</span>
+
+<span class="sd">        :param row: the row from the pandas DataFrame containing the input</span>
+<span class="sd">            data.</span>
+<span class="sd">        :type row: :class:`pandas.Series`</span>
+<span class="sd">        :return: _similar_item; an instance of the RAMSTKSimilarItem database</span>
+<span class="sd">            table record.</span>
+<span class="sd">        :rtype: :class:`ramstk.models.programdb.RAMSTKSimilarItem`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_similar_item</span> <span class="o">=</span> <span class="n">RAMSTKSimilarItem</span><span class="p">()</span>
+        <span class="n">_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_field_map</span><span class="p">[</span><span class="s1">&#39;Hardware&#39;</span><span class="p">]</span>
+
+        <span class="n">_similar_item</span><span class="o">.</span><span class="n">revision_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Revision ID&#39;</span><span class="p">,</span>
+                                                     <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_similar_item</span><span class="o">.</span><span class="n">hardware_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Hardware ID&#39;</span><span class="p">,</span>
+                                                     <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_similar_item</span><span class="o">.</span><span class="n">parent_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span>
+                                                   <span class="s1">&#39;Parent Assembly&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_similar_item</span>
+
+    <span class="k">def</span> <span class="nf">_do_insert_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RAMSTKValidation</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Insert a new Validation entity to the RAMSTK db.</span>
+
+<span class="sd">        :param row: the row from the pandas DataFrame containing the input</span>
+<span class="sd">            data.</span>
+<span class="sd">        :type row: :class:`pandas.Series`</span>
+<span class="sd">        :return: _entity</span>
+<span class="sd">        :rtype: :class:`ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_validation</span> <span class="o">=</span> <span class="n">RAMSTKValidation</span><span class="p">()</span>
+        <span class="n">_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_field_map</span><span class="p">[</span><span class="s1">&#39;Validation&#39;</span><span class="p">]</span>
+
+        <span class="n">_validation</span><span class="o">.</span><span class="n">revision_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Revision ID&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_validation</span><span class="o">.</span><span class="n">validation_id</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span>
+                                                     <span class="s1">&#39;Validation ID&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_validation</span><span class="o">.</span><span class="n">acceptable_maximum</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Acceptable Maximum&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">_validation</span><span class="o">.</span><span class="n">acceptable_mean</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span>
+                                                       <span class="s1">&#39;Acceptable Mean&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">_validation</span><span class="o">.</span><span class="n">acceptable_minimum</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Acceptable Minimum&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">_validation</span><span class="o">.</span><span class="n">acceptable_variance</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Acceptable Variance&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">_validation</span><span class="o">.</span><span class="n">confidence</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;s-Confidence&#39;</span><span class="p">,</span>
+                                                  <span class="mf">75.0</span><span class="p">)</span>
+        <span class="n">_validation</span><span class="o">.</span><span class="n">cost_average</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span>
+                                                    <span class="s1">&#39;Average Task Cost&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">_validation</span><span class="o">.</span><span class="n">cost_maximum</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span>
+                                                    <span class="s1">&#39;Maximum Task Cost&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">_validation</span><span class="o">.</span><span class="n">cost_minimum</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span>
+                                                    <span class="s1">&#39;Minimum Task Cost&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">_validation</span><span class="o">.</span><span class="n">date_start</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Start Date&#39;</span><span class="p">,</span>
+                                                  <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">())</span>
+        <span class="n">_validation</span><span class="o">.</span><span class="n">date_end</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;End Date&#39;</span><span class="p">,</span>
+                                                <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">())</span>
+        <span class="n">_validation</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span>
+                                                   <span class="s1">&#39;Task Description&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_validation</span><span class="o">.</span><span class="n">measurement_unit</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Unit of Measure&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_validation</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_validation</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Task Status&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">_validation</span><span class="o">.</span><span class="n">task_type</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Task Type&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_validation</span><span class="o">.</span><span class="n">task_specification</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span>
+            <span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="s1">&#39;Task Specification&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">_validation</span><span class="o">.</span><span class="n">time_average</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span>
+                                                    <span class="s1">&#39;Average Task Time&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">_validation</span><span class="o">.</span><span class="n">time_maximum</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span>
+                                                    <span class="s1">&#39;Maximum Task Time&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">_validation</span><span class="o">.</span><span class="n">time_minimum</span> <span class="o">=</span> <span class="n">_get_input_value</span><span class="p">(</span><span class="n">_map</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span>
+                                                    <span class="s1">&#39;Minimum Task Time&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_validation</span>
+
+    <span class="k">def</span> <span class="nf">_do_map_to_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">import_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                         <span class="n">format_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Map the external column to the RAMSTK database table field.</span>
+
+<span class="sd">        :param module: the RAMSTK module to map header fields for.</span>
+<span class="sd">        :param import_field: the string used for the column header in the</span>
+<span class="sd">            import file.</span>
+<span class="sd">        :param format_field: the string used for default titles in the</span>
+<span class="sd">            RAMSTK layout file.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_field_map</span><span class="p">[</span><span class="n">module</span><span class="p">][</span><span class="n">format_field</span><span class="p">]</span> <span class="o">=</span> <span class="n">import_field</span>
+
+    <span class="k">def</span> <span class="nf">_do_read_db_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return the database field names in a list.</span>
+
+<span class="sd">        :param module: the name of the work stream module to return</span>
+<span class="sd">            database field names for.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_db_fields</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">_field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_field_map</span><span class="p">[</span><span class="n">module</span><span class="p">]:</span>
+            <span class="n">_db_fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_field</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_read_db_fields&#39;</span><span class="p">,</span> <span class="n">db_fields</span><span class="o">=</span><span class="n">_db_fields</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_read_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Read contents of input file into a pandas DataFrame().</span>
+
+<span class="sd">        :param file_type: the type of file to import from.  Supported files</span>
+<span class="sd">            types are:</span>
+<span class="sd">                - CSV (using a semi-colon (;) delimiter)</span>
+<span class="sd">                - Excel</span>
+<span class="sd">        :param file_name: the name, with full path, of the file to export</span>
+<span class="sd">            the RAMSTK Program database data to.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">file_type</span> <span class="o">==</span> <span class="s1">&#39;csv&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df_input_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span>
+                                              <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span>
+                                              <span class="n">na_values</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">],</span>
+                                              <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">file_type</span> <span class="o">==</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df_input_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span>
+                                              <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span>
+                                              <span class="n">na_values</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">],</span>
+                                              <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">file_type</span> <span class="o">==</span> <span class="s1">&#39;excel&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df_input_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_read_import_file&#39;</span><span class="p">,</span>
+                        <span class="n">import_fields</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_df_input_data</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]))</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

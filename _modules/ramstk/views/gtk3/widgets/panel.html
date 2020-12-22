@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.widgets.panel &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.widgets.panel</h1><div class="highlight"><pre>
+<span></span><span class="c1"># pylint: disable=non-parent-init-called, too-many-public-methods</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.views.gtk3.widgets.panel.py is part of the RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2020 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;The RAMSTK GTK3 panel Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="c1"># pylint: disable=ungrouped-imports</span>
+<span class="c1"># noinspection PyPackageValidations</span>
+<span class="kn">import</span> <span class="nn">treelib</span>
+<span class="kn">from</span> <span class="nn">pandas.plotting</span> <span class="kn">import</span> <span class="n">register_matplotlib_converters</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.utilities</span> <span class="kn">import</span> <span class="n">boolean_to_integer</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3</span> <span class="kn">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">_</span>
+
+<span class="c1"># RAMSTK Local Imports</span>
+<span class="kn">from</span> <span class="nn">.button</span> <span class="kn">import</span> <span class="n">RAMSTKCheckButton</span>
+<span class="kn">from</span> <span class="nn">.combo</span> <span class="kn">import</span> <span class="n">RAMSTKComboBox</span>
+<span class="kn">from</span> <span class="nn">.entry</span> <span class="kn">import</span> <span class="n">RAMSTKEntry</span><span class="p">,</span> <span class="n">RAMSTKTextView</span>
+<span class="kn">from</span> <span class="nn">.frame</span> <span class="kn">import</span> <span class="n">RAMSTKFrame</span>
+<span class="kn">from</span> <span class="nn">.label</span> <span class="kn">import</span> <span class="n">RAMSTKLabel</span><span class="p">,</span> <span class="n">do_make_label_group</span>
+<span class="kn">from</span> <span class="nn">.matrixview</span> <span class="kn">import</span> <span class="n">RAMSTKMatrixView</span>
+<span class="kn">from</span> <span class="nn">.plot</span> <span class="kn">import</span> <span class="n">RAMSTKPlot</span>
+<span class="kn">from</span> <span class="nn">.scrolledwindow</span> <span class="kn">import</span> <span class="n">RAMSTKScrolledWindow</span>
+<span class="kn">from</span> <span class="nn">.treeview</span> <span class="kn">import</span> <span class="n">RAMSTKTreeView</span>
+
+<span class="n">register_matplotlib_converters</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="RAMSTKPanel"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKPanel</span><span class="p">(</span><span class="n">RAMSTKFrame</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The RAMSTKPanel class.</span>
+
+<span class="sd">    Implementations of the RAMSTKPanel() class should provide the following</span>
+<span class="sd">    methods:</span>
+
+<span class="sd">    __do_set_callbacks() to set the callback method for the widgets in the</span>
+<span class="sd">        panel.  The use of the public methods on_changed_combo(),</span>
+<span class="sd">        on_changed_entry(), on_focus_out(), and on_toggled() in this</span>
+<span class="sd">        meta-class shall be the preferred callback methods.</span>
+<span class="sd">    __do_set_properties() to set the properties of the widgets in the panel.</span>
+
+<span class="sd">    Implementations of the RAMSTKPanel() class may provide the following</span>
+<span class="sd">    methods:</span>
+
+<span class="sd">    _do_clear_panel() to clear the contents of the widgets in the panel.</span>
+<span class="sd">        Connect this as a listener for the &#39;closed_program&#39; signal.</span>
+<span class="sd">    _do_load_panel() to load the attribute data into the widgets in the</span>
+<span class="sd">        panel.  Connect this as a listener for the &#39;selected_&lt;module&gt;&#39; for</span>
+<span class="sd">        the work stream module the panel is associated with.</span>
+
+<span class="sd">    There are three types of panels that can be created.  These are:</span>
+
+<span class="sd">        * fixed: a panel containing a Gtk.Fixed() populated with labels</span>
+<span class="sd">            and widgets.</span>
+<span class="sd">        * plot: a panel containing a RAMSTKPlot().</span>
+<span class="sd">        * treeview: a panel containing a RAMSTKTreeView().</span>
+
+<span class="sd">    The attributes of a RAMSTKPanel are:</span>
+
+<span class="sd">    :ivar _dic_attribute_keys: contains key:value pairs where the key is</span>
+<span class="sd">        the index of the widget displaying the associated attribute and the</span>
+<span class="sd">        value is a list with the name of the attribute in position 0 and the</span>
+<span class="sd">        attribute&#39;s data type in position 1.  An example entry in this dict</span>
+<span class="sd">        might be:</span>
+
+<span class="sd">        0: [&#39;name&#39;, &#39;string&#39;]</span>
+
+<span class="sd">    :ivar _dic_attribute_updater: contains key:value pairs where the</span>
+<span class="sd">        key is the name of the attribute and the value is a list with the</span>
+<span class="sd">        method used to update a widget&#39;s display in position 0, the</span>
+<span class="sd">        name of the signal to block while updating the widget in position 1,</span>
+<span class="sd">        and the column number in the RAMSTKTreeView() where the attribute data</span>
+<span class="sd">        is displayed in position 2.  An example entry in this dict might be:</span>
+
+<span class="sd">        &#39;name&#39;: [self.txtName.do_update, &#39;changed&#39;, 0]</span>
+
+<span class="sd">    :ivar _dic_error_messages: contains the debug and error messages where</span>
+<span class="sd">        the key is the name of the error message and the value is the</span>
+<span class="sd">        message itself.  The message can have placeholders to use with</span>
+<span class="sd">        format().  An example entry in this dict might be:</span>
+
+<span class="sd">        &#39;load_row&#39;: (&#39;{0}: There was an error loading a row for module {1}.&#39;)</span>
+
+<span class="sd">    :ivar _dic_row_loader: contains the methods used to load the row data</span>
+<span class="sd">        into a RAMSTKTreeView() where the key is the name of the module and</span>
+<span class="sd">        the value is the method.  This is necessary for those views that</span>
+<span class="sd">        combine different tables such as the usage profile or FMEA.  Having</span>
+<span class="sd">        different loader methods for each type of entity may be needed to</span>
+<span class="sd">        load the data for each entity in the correct order.  Most work</span>
+<span class="sd">        stream modules will simple use the do_load_row() method of this</span>
+<span class="sd">        meta-class.  Example entries in this dict might be:</span>
+
+<span class="sd">        &#39;mission&#39;: self.__do_load_mission</span>
+<span class="sd">        &#39;function&#39;: super().do_load_row</span>
+
+<span class="sd">    :ivar _lst_labels: the list of text to display in the labels</span>
+<span class="sd">        for each widget in a panel.</span>
+<span class="sd">    :ivar _lst_widgets: the list of widgets to display in a panel.</span>
+<span class="sd">    :ivar _parent_id: the ID of the parent entity for the selected work stream</span>
+<span class="sd">        entity.  This is needed for hierarchical modules such as the</span>
+<span class="sd">        function module.  For flat modules, this will always be zero.</span>
+<span class="sd">    :ivar _record_id: the work stream module ID whose attributes</span>
+<span class="sd">        this panel is displaying.</span>
+<span class="sd">    :ivar _title: the title to place on the RAMSTKFrame() that is</span>
+<span class="sd">        this panel&#39;s container.</span>
+
+<span class="sd">    :ivar fmt: the formatting string for displaying float values.</span>
+<span class="sd">    :ivar pltPlot: a RAMSTPlot() for the panels that embed a plot.</span>
+<span class="sd">    :ivar tvwTreeView: a RAMSTKTreeView() for the panels that embed a</span>
+<span class="sd">        treeview.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Define private dict class attributes.</span>
+
+    <span class="c1"># Define private list class attributes.</span>
+
+    <span class="c1"># Define private scalar class attributes.</span>
+
+    <span class="c1"># Define public dict class attributes.</span>
+
+    <span class="c1"># Define public list class attributes.</span>
+
+    <span class="c1"># Define public scalar class attributes.</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the RAMSTKPanel.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Initialize private dict instance attributes.</span>
+        <span class="c1"># TODO: _dic_attribute_keys renamed to _dic_index_attribute?</span>
+        <span class="c1"># This may be more descriptive of the information the dict holds.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_keys</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_updater</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_error_messages</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_row_loader</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Initialize private list instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_col_order</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_labels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Initialize private scalar instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parent_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree_loaded</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Initialize public dict instance attributes.</span>
+
+        <span class="c1"># Initialize public list instance attributes.</span>
+
+        <span class="c1"># Initialize public scalar instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:0.6}</span><span class="s1">&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pltPlot</span><span class="p">:</span> <span class="n">RAMSTKPlot</span> <span class="o">=</span> <span class="n">RAMSTKPlot</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="p">:</span> <span class="n">RAMSTKTreeView</span> <span class="o">=</span> <span class="n">RAMSTKTreeView</span><span class="p">()</span>
+
+<div class="viewcode-block" id="RAMSTKPanel.do_clear_tree"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.do_clear_tree">[docs]</a>    <span class="k">def</span> <span class="nf">do_clear_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Clear the contents of a RAMSTKTreeView().</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+        <span class="n">_model</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RAMSTKPanel.do_expand_tree"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.do_expand_tree">[docs]</a>    <span class="k">def</span> <span class="nf">do_expand_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Expand the RAMSTKTreeView.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+        <span class="n">_row</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_iter_first</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">expand_all</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">_row</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_path</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="n">_row</span><span class="p">)</span>
+            <span class="n">_column</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">get_column</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">set_cursor</span><span class="p">(</span><span class="n">_path</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">row_activated</span><span class="p">(</span><span class="n">_path</span><span class="p">,</span> <span class="n">_column</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKPanel.do_load_panel"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.do_load_panel">[docs]</a>    <span class="k">def</span> <span class="nf">do_load_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeIter</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> \
+            <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load data into the RAMSTKPanel() widgets.</span>
+
+<span class="sd">        :param tree: the module&#39;s treelib Tree().</span>
+<span class="sd">        :param row: the parent row in the RAMSTKTreeView() to add the new item.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_node</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]]</span>
+
+        <span class="n">_new_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_load_row</span><span class="p">(</span><span class="n">_node</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">_n</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">children</span><span class="p">(</span><span class="n">_node</span><span class="o">.</span><span class="n">identifier</span><span class="p">):</span>
+            <span class="n">_child_tree</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">subtree</span><span class="p">(</span><span class="n">_n</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">do_load_panel</span><span class="p">(</span><span class="n">_child_tree</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="n">_new_row</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_expand_tree</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RAMSTKPanel.do_load_row"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.do_load_row">[docs]</a>    <span class="k">def</span> <span class="nf">do_load_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the data into a RAMSTKTreeView row.</span>
+
+<span class="sd">        :param attributes: the attributes dict for the row to be loaded.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+
+        <span class="n">_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">korder</span><span class="p">:</span>
+            <span class="n">_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">korder</span><span class="p">[</span><span class="n">_key</span><span class="p">]])</span>
+
+        <span class="c1"># Only load items that are immediate children of the selected item and</span>
+        <span class="c1"># prevent loading the selected item itself in the worksheet.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree_loaded</span><span class="p">:</span>
+            <span class="n">_model</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">_data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKPanel.do_load_tree"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.do_load_tree">[docs]</a>    <span class="k">def</span> <span class="nf">do_load_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the RAMSTKTreeView().</span>
+
+<span class="sd">        :param tree: the treelib Tree containing the module to load.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+        <span class="n">_model</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_tag</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">_tag</span> <span class="o">=</span> <span class="s2">&quot;UNK&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">do_load_tree</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">_tag</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">expand_all</span><span class="p">()</span>
+            <span class="n">_row</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_iter_first</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">_row</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">selection</span><span class="o">.</span><span class="n">select_iter</span><span class="p">(</span><span class="n">_row</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">_error_msg</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
+                <span class="s2">&quot;An error occurred while loading </span><span class="si">{1:s}</span><span class="s2"> data for Record &quot;</span>
+                <span class="s2">&quot;ID </span><span class="si">{0:d}</span><span class="s2"> into the view.  One or more values from the &quot;</span>
+                <span class="s2">&quot;database was the wrong type for the column it was trying to &quot;</span>
+                <span class="s2">&quot;load.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span><span class="p">,</span> <span class="n">_tag</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">_error_msg</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
+                <span class="s2">&quot;An error occurred while loading </span><span class="si">{1:s}</span><span class="s2"> data for Record &quot;</span>
+                <span class="s2">&quot;ID </span><span class="si">{0:d}</span><span class="s2"> into the view.  One or more values from the &quot;</span>
+                <span class="s2">&quot;database was missing.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span><span class="p">,</span> <span class="n">_tag</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKPanel.do_make_panel_fixed"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.do_make_panel_fixed">[docs]</a>    <span class="k">def</span> <span class="nf">do_make_panel_fixed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create a panel with the labels and widgets on a Gtk.Fixed().</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_justify</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;justify&#39;</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Justification</span><span class="o">.</span><span class="n">RIGHT</span><span class="p">)</span>
+
+        <span class="n">_fixed</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Fixed</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Fixed</span><span class="p">()</span>
+
+        <span class="n">_y_pos</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="c1"># noinspection PyTypeChecker</span>
+        <span class="p">(</span><span class="n">_x_pos</span><span class="p">,</span> <span class="n">_labels</span><span class="p">)</span> <span class="o">=</span> <span class="n">do_make_label_group</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lst_labels</span><span class="p">,</span>
+            <span class="n">bold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+            <span class="n">justify</span><span class="o">=</span><span class="n">_justify</span><span class="p">,</span>
+            <span class="n">x_pos</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+            <span class="n">y_pos</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="k">for</span> <span class="n">_idx</span><span class="p">,</span> <span class="n">_label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">_labels</span><span class="p">):</span>
+            <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">_label</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+
+            <span class="n">_minimum</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Requisition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span><span class="p">[</span>  <span class="c1"># type: ignore</span>
+                <span class="n">_idx</span><span class="p">]</span><span class="o">.</span><span class="n">get_preferred_size</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">_minimum</span><span class="o">.</span><span class="n">height</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">_minimum</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span><span class="p">[</span>  <span class="c1"># type: ignore</span>
+                    <span class="n">_idx</span><span class="p">]</span><span class="o">.</span><span class="n">height</span>
+
+            <span class="c1"># RAMSTKTextViews are placed inside a scrollwindow so that&#39;s</span>
+            <span class="c1"># what needs to be placed on the container.</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span><span class="p">[</span><span class="n">_idx</span><span class="p">],</span> <span class="n">RAMSTKTextView</span><span class="p">):</span>
+                <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span><span class="p">[</span><span class="n">_idx</span><span class="p">]</span><span class="o">.</span><span class="n">scrollwindow</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+                    <span class="n">_x_pos</span> <span class="o">+</span> <span class="mi">5</span><span class="p">,</span>
+                    <span class="n">_y_pos</span><span class="p">)</span>
+                <span class="n">_y_pos</span> <span class="o">+=</span> <span class="n">_minimum</span><span class="o">.</span><span class="n">height</span> <span class="o">+</span> <span class="mi">30</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span><span class="p">[</span><span class="n">_idx</span><span class="p">],</span> <span class="n">_x_pos</span> <span class="o">+</span> <span class="mi">5</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+                <span class="n">_y_pos</span> <span class="o">+=</span> <span class="n">_minimum</span><span class="o">.</span><span class="n">height</span> <span class="o">+</span> <span class="mi">5</span>
+
+        <span class="n">_scrollwindow</span><span class="p">:</span> <span class="n">RAMSTKScrolledWindow</span> <span class="o">=</span> <span class="n">RAMSTKScrolledWindow</span><span class="p">(</span><span class="n">_fixed</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_scrollwindow</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKPanel.do_make_panel_plot"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.do_make_panel_plot">[docs]</a>    <span class="k">def</span> <span class="nf">do_make_panel_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create a panel with a RAMSTKPlot().</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pltPlot</span><span class="p">)</span>
+
+        <span class="n">_scrollwindow</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ScrolledWindow</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ScrolledWindow</span><span class="p">()</span>
+        <span class="n">_scrollwindow</span><span class="o">.</span><span class="n">set_policy</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">PolicyType</span><span class="o">.</span><span class="n">AUTOMATIC</span><span class="p">,</span>
+                                 <span class="n">Gtk</span><span class="o">.</span><span class="n">PolicyType</span><span class="o">.</span><span class="n">AUTOMATIC</span><span class="p">)</span>
+        <span class="n">_scrollwindow</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pltPlot</span><span class="o">.</span><span class="n">canvas</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_scrollwindow</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKPanel.do_make_panel_matrixview"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.do_make_panel_matrixview">[docs]</a>    <span class="k">def</span> <span class="nf">do_make_panel_matrixview</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">:</span> <span class="n">RAMSTKMatrixView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create a panel with a RAMSTKMatrixView().</span>
+
+<span class="sd">        :param matrix: the matrix to display in the panel.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_scrollwindow</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ScrolledWindow</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ScrolledWindow</span><span class="p">()</span>
+        <span class="n">_scrollwindow</span><span class="o">.</span><span class="n">set_policy</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">PolicyType</span><span class="o">.</span><span class="n">AUTOMATIC</span><span class="p">,</span>
+                                 <span class="n">Gtk</span><span class="o">.</span><span class="n">PolicyType</span><span class="o">.</span><span class="n">AUTOMATIC</span><span class="p">)</span>
+        <span class="n">_scrollwindow</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_scrollwindow</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKPanel.do_make_panel_treeview"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.do_make_panel_treeview">[docs]</a>    <span class="k">def</span> <span class="nf">do_make_panel_treeview</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create a panel with a RAMSTKTreeView().</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="p">)</span>
+
+        <span class="n">_scrollwindow</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ScrolledWindow</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ScrolledWindow</span><span class="p">()</span>
+        <span class="n">_scrollwindow</span><span class="o">.</span><span class="n">set_policy</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">PolicyType</span><span class="o">.</span><span class="n">AUTOMATIC</span><span class="p">,</span>
+                                 <span class="n">Gtk</span><span class="o">.</span><span class="n">PolicyType</span><span class="o">.</span><span class="n">AUTOMATIC</span><span class="p">)</span>
+        <span class="n">_scrollwindow</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_scrollwindow</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKPanel.do_make_treeview"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.do_make_treeview">[docs]</a>    <span class="k">def</span> <span class="nf">do_make_treeview</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Make the RAMSTKTreeView() instance for this panel.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_bg_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;bg_color&#39;</span><span class="p">,</span> <span class="s1">&#39;#FFFFFF&#39;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">_fg_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fg_color&#39;</span><span class="p">,</span> <span class="s1">&#39;#000000&#39;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">_fmt_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fmt_file&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">do_parse_format</span><span class="p">(</span><span class="n">_fmt_file</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">do_make_model</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">do_make_columns</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;bg_color&#39;</span><span class="p">:</span> <span class="n">_bg_color</span><span class="p">,</span>
+            <span class="s1">&#39;fg_color&#39;</span><span class="p">:</span> <span class="n">_fg_color</span>
+        <span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_col_order</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="c1"># noinspection PyUnusedLocal</span>
+<div class="viewcode-block" id="RAMSTKPanel.do_refresh_tree"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.do_refresh_tree">[docs]</a>    <span class="k">def</span> <span class="nf">do_refresh_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">package</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Update the module view RAMSTKTreeView() with attribute changes.</span>
+
+<span class="sd">        This method receives two dicts.  This first is from the</span>
+<span class="sd">        workflow&#39;s workview module and is sent when a workview widget is</span>
+<span class="sd">        edited/changed.</span>
+
+<span class="sd">            `package` key: `package` value</span>
+
+<span class="sd">        corresponds to:</span>
+
+<span class="sd">            database field name: database field new value</span>
+
+<span class="sd">        The second dict is from the workflow&#39;s moduleview.</span>
+
+<span class="sd">            `keys` key: `keys` value</span>
+
+<span class="sd">        corresponds to:</span>
+
+<span class="sd">            database field name: TreeModel default column position</span>
+
+<span class="sd">        Since both dicts contain the same key values, this method can refresh</span>
+<span class="sd">        the proper column of the RAMSTKTreeView with the new data.</span>
+
+<span class="sd">        :param node_id: unused in this method.</span>
+<span class="sd">        :param package: the key:value for the data being updated.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="p">[[</span><span class="n">_key</span><span class="p">,</span> <span class="n">_value</span><span class="p">]]</span> <span class="o">=</span> <span class="n">package</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_col_order</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_updater</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span>
+                                            <span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
+
+            <span class="n">_model</span><span class="p">,</span> <span class="n">_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">get_selection</span><span class="p">()</span><span class="o">.</span><span class="n">get_selected</span><span class="p">()</span>
+            <span class="n">_model</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">_row</span><span class="p">,</span> <span class="n">_position</span><span class="p">,</span> <span class="n">_value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">_error</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">_error</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKPanel.do_set_callbacks"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.do_set_callbacks">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the callback methods for RAMSTKTreeView().</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">selection</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_row_change</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKPanel.do_set_cell_callbacks"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.do_set_cell_callbacks">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_cell_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the callback methods for RAMSTKTreeView() cells.</span>
+
+<span class="sd">        :param message: the PyPubSub message to broadcast on a</span>
+<span class="sd">            successful edit.</span>
+<span class="sd">        :param columns: the list of column numbers whose cells should</span>
+<span class="sd">            have a callback function assigned.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_idx</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">:</span>
+            <span class="n">_cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">get_column</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_lst_col_order</span><span class="p">[</span><span class="n">_idx</span><span class="p">])</span><span class="o">.</span><span class="n">get_cells</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">_cell</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_cell_edit</span><span class="p">,</span> <span class="n">_idx</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="n">_cell</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_cell_edit</span><span class="p">,</span> <span class="s1">&#39;new text&#39;</span><span class="p">,</span>
+                                 <span class="n">_idx</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKPanel.do_set_headings"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.do_set_headings">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_headings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the treeview headings depending on the selected row.</span>
+
+<span class="sd">        It&#39;s used when the tree displays an aggregation of models such as</span>
+<span class="sd">        the FMEA or PoF.  This method applies the appropriate headings when</span>
+<span class="sd">        a row is selected.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">get_columns</span><span class="p">()</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">headings</span><span class="p">:</span>
+            <span class="n">_label</span> <span class="o">=</span> <span class="n">RAMSTKLabel</span><span class="p">(</span><span class="s2">&quot;&lt;span weight=&#39;bold&#39;&gt;&quot;</span>
+                                 <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">headings</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&lt;/span&gt;&quot;</span><span class="p">)</span>
+            <span class="n">_label</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">height</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                                     <span class="n">justify</span><span class="o">=</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Justification</span><span class="o">.</span><span class="n">CENTER</span><span class="p">,</span>
+                                     <span class="n">wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">_label</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+            <span class="n">_columns</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_widget</span><span class="p">(</span><span class="n">_label</span><span class="p">)</span>
+            <span class="n">_columns</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">visible</span><span class="p">[</span><span class="n">_key</span><span class="p">])</span>
+
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="RAMSTKPanel.do_set_properties"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.do_set_properties">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set properties of the RAMSTKPanel() widgets.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">set_enable_tree_lines</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">set_grid_lines</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">TreeViewGridLines</span><span class="o">.</span><span class="n">BOTH</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">set_level_indentation</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">set_rubber_banding</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKPanel.on_cell_edit"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.on_cell_edit">[docs]</a>    <span class="k">def</span> <span class="nf">on_cell_edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRenderer</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                     <span class="n">position</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Handle edits of the RAMSTKTreeview() in a treeview panel.</span>
+
+<span class="sd">        :param cell: the Gtk.CellRenderer() that was edited.</span>
+<span class="sd">        :param path: the RAMSTKTreeView() path of the Gtk.CellRenderer()</span>
+<span class="sd">            that was edited.</span>
+<span class="sd">        :param new_text: the new text in the edited Gtk.CellRenderer().</span>
+<span class="sd">        :param position: the column position of the edited</span>
+<span class="sd">            Gtk.CellRenderer().</span>
+<span class="sd">        :param message: the PyPubSub message to publish.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_keys</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_col_order</span><span class="p">[</span><span class="n">position</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">do_edit_cell</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">new_text</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">message</span><span class="p">,</span>
+                            <span class="n">node_id</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">],</span>
+                            <span class="n">package</span><span class="o">=</span><span class="p">{</span><span class="n">_key</span><span class="p">:</span> <span class="n">new_text</span><span class="p">})</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+<div class="viewcode-block" id="RAMSTKPanel.on_cell_toggled"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.on_cell_toggled">[docs]</a>    <span class="k">def</span> <span class="nf">on_cell_toggled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRenderer</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                        <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Handle edits of the FMEA Work View RAMSTKTreeview() toggle cells.</span>
+
+<span class="sd">        :param cell: the Gtk.CellRenderer() that was toggled.</span>
+<span class="sd">        :param path: the RAMSTKTreeView() path of the Gtk.CellRenderer()</span>
+<span class="sd">            that was toggled.</span>
+<span class="sd">        :param position: the column position of the toggled</span>
+<span class="sd">            Gtk.CellRenderer().</span>
+<span class="sd">        :param message: the PyPubSub message to publish.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_new_text</span> <span class="o">=</span> <span class="n">boolean_to_integer</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">get_active</span><span class="p">())</span>
+        <span class="n">_lst_col_order</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_keys</span><span class="p">[</span><span class="n">_lst_col_order</span><span class="p">[</span><span class="n">position</span><span class="p">]]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">do_edit_cell</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">_new_text</span><span class="p">,</span>
+                                                 <span class="n">position</span><span class="p">):</span>
+                <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">message</span><span class="p">,</span>
+                                <span class="n">node_id</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">parent_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">],</span>
+                                <span class="n">package</span><span class="o">=</span><span class="p">{</span><span class="n">_key</span><span class="p">:</span> <span class="n">_new_text</span><span class="p">})</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="RAMSTKPanel.on_changed_combo"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.on_changed_combo">[docs]</a>    <span class="k">def</span> <span class="nf">on_changed_combo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combo</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                         <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve changes made in RAMSTKComboBox() widgets.</span>
+
+<span class="sd">        This method publishes the PyPubSub message that it is passed.  This</span>
+<span class="sd">        is usually sufficient to ensure the attributes are updated by the</span>
+<span class="sd">        datamanager.  This method also return a dict with {_key: _new_text}</span>
+<span class="sd">        if this information is needed by the child class.</span>
+
+<span class="sd">        :param combo: the RAMSTKComboBox() that called the method.</span>
+<span class="sd">        :param index: the position in the class&#39; Gtk.TreeModel() associated</span>
+<span class="sd">            with the attribute from the calling Gtk.Widget().</span>
+<span class="sd">        :param message: the PyPubSub message to publish.</span>
+<span class="sd">        :return: {_key: _new_text}; the work stream module&#39;s attribute name</span>
+<span class="sd">            and the new value from the RAMSTKComboBox().  The value {&#39;&#39;: -1}</span>
+<span class="sd">            will be returned when a KeyError or ValueError is raised by this</span>
+<span class="sd">            method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">_new_text</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="n">combo</span><span class="o">.</span><span class="n">handler_block</span><span class="p">(</span><span class="n">combo</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">])</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_keys</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="n">_new_text</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">combo</span><span class="o">.</span><span class="n">get_active</span><span class="p">())</span>
+
+            <span class="c1"># Only if something is selected should we send the message.</span>
+            <span class="c1"># Otherwise attributes get updated to a value of -1 which isn&#39;t</span>
+            <span class="c1"># correct.  And it sucks trying to figure out why, so leave the</span>
+            <span class="c1"># conditional unless you have a more elegant (and there prolly</span>
+            <span class="c1"># is) solution.</span>
+            <span class="k">if</span> <span class="n">_new_text</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">message</span><span class="p">,</span>
+                                <span class="n">node_id</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                                <span class="n">package</span><span class="o">=</span><span class="p">{</span><span class="n">_key</span><span class="p">:</span> <span class="n">_new_text</span><span class="p">})</span>
+
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="k">pass</span>
+
+        <span class="n">combo</span><span class="o">.</span><span class="n">handler_unblock</span><span class="p">(</span><span class="n">combo</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="n">_key</span><span class="p">:</span> <span class="n">_new_text</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="RAMSTKPanel.on_changed_entry"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.on_changed_entry">[docs]</a>    <span class="k">def</span> <span class="nf">on_changed_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">:</span> <span class="n">RAMSTKEntry</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                         <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve changes made in RAMSTKEntry() widgets.</span>
+
+<span class="sd">        This method is called by:</span>
+
+<span class="sd">            * RAMSTKEntry() &#39;changed&#39; signal</span>
+
+<span class="sd">        This method publishes the PyPubSub message that it is passed.  This</span>
+<span class="sd">        is usually sufficient to ensure the attributes are updated by the</span>
+<span class="sd">        datamanager.  This method also return a dict with {_key: _new_text}</span>
+<span class="sd">        if this information is needed by the child class.</span>
+
+<span class="sd">        :param entry: the RAMSTKEntry() that called the method.</span>
+<span class="sd">        :param index: the position in the class&#39; Gtk.TreeModel() associated</span>
+<span class="sd">            with the data from the calling RAMSTKEntry() or RAMSTKTextView().</span>
+<span class="sd">        :param message: the PyPubSub message to publish.</span>
+<span class="sd">        :return: {_key: _new_text}; the child module attribute name and the</span>
+<span class="sd">            new value from the RAMSTKEntry() or RAMSTKTextView(). The value</span>
+<span class="sd">            {&#39;&#39;: &#39;&#39;} will be returned when a KeyError or ValueError is raised</span>
+<span class="sd">            by this method.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">entry</span><span class="o">.</span><span class="n">handler_block</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">])</span>
+
+        <span class="n">_package</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__do_read_text</span><span class="p">(</span>
+            <span class="n">entry</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_keys</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+
+        <span class="n">entry</span><span class="o">.</span><span class="n">handler_unblock</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">])</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">message</span><span class="p">,</span>
+                        <span class="n">node_id</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="n">package</span><span class="o">=</span><span class="n">_package</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_package</span></div>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="c1"># noinspection PyUnusedLocal</span>
+<div class="viewcode-block" id="RAMSTKPanel.on_changed_textview"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.on_changed_textview">[docs]</a>    <span class="k">def</span> <span class="nf">on_changed_textview</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TextBuffer</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">textview</span><span class="p">:</span> <span class="n">RAMSTKTextView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve changes made in RAMSTKTextView() widgets.</span>
+
+<span class="sd">        This method is called by:</span>
+
+<span class="sd">            * Gtk.TextBuffer() &#39;changed&#39; signal</span>
+
+<span class="sd">        :param buffer: the Gtk.TextBuffer() calling this method.  This</span>
+<span class="sd">            parameter is unused in this method.</span>
+<span class="sd">        :param index: the position in the class&#39; Gtk.TreeModel() associated</span>
+<span class="sd">            with the data from the calling RAMSTKTextView().</span>
+<span class="sd">        :param message: the PyPubSub message to broadcast.</span>
+<span class="sd">        :param textview: the RAMSTKTextView() calling this method.</span>
+<span class="sd">        :return: {_key: _new_text}; the child module attribute name and the</span>
+<span class="sd">            new value from the RAMSTKTextView(). The value {&#39;&#39;: &#39;&#39;} will be</span>
+<span class="sd">            returned when a KeyError or ValueError is raised by this method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">textview</span><span class="o">.</span><span class="n">handler_block</span><span class="p">(</span><span class="n">textview</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">])</span>
+
+        <span class="n">_package</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__do_read_text</span><span class="p">(</span>
+            <span class="n">textview</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_keys</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+
+        <span class="n">textview</span><span class="o">.</span><span class="n">handler_unblock</span><span class="p">(</span><span class="n">textview</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">])</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">message</span><span class="p">,</span>
+                        <span class="n">node_id</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="n">package</span><span class="o">=</span><span class="n">_package</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_package</span></div>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="c1"># noinspection PyUnusedLocal</span>
+<div class="viewcode-block" id="RAMSTKPanel.on_delete"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.on_delete">[docs]</a>    <span class="k">def</span> <span class="nf">on_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Update the RAMSTKTreeView after deleting a line item.</span>
+
+<span class="sd">        :param node_id: the treelib Tree() node ID that was deleted.</span>
+<span class="sd">        :param tree: the treelib Tree() containing the workflow module data.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_model</span><span class="p">,</span> <span class="n">_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">selection</span><span class="o">.</span><span class="n">get_selected</span><span class="p">()</span>
+        <span class="n">_model</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">_row</span><span class="p">)</span>
+
+        <span class="n">_row</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_iter_first</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">_row</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">selection</span><span class="o">.</span><span class="n">select_iter</span><span class="p">(</span><span class="n">_row</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span></div>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="c1"># noinspection PyUnusedLocal</span>
+<div class="viewcode-block" id="RAMSTKPanel.on_edit"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.on_edit">[docs]</a>    <span class="k">def</span> <span class="nf">on_edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">package</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Update the panel&#39;s Gtk.Widgets() when attributes are changed.</span>
+
+<span class="sd">        This method is called whenever an attribute is edited in the module</span>
+<span class="sd">        view.</span>
+
+<span class="sd">        :param node_id: the list of IDs of the work stream module item</span>
+<span class="sd">            being edited.  This unused parameter is part of the PyPubSub</span>
+<span class="sd">            message data package that this method responds to so it must</span>
+<span class="sd">            remain in the argument list.</span>
+<span class="sd">        :param package: a dict containing the attribute name as key and</span>
+<span class="sd">            the new attribute value as the value.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="p">[[</span><span class="n">_key</span><span class="p">,</span> <span class="n">_value</span><span class="p">]]</span> <span class="o">=</span> <span class="n">package</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+
+        <span class="p">(</span><span class="n">_function</span><span class="p">,</span>
+         <span class="n">_signal</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_updater</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">_key</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">_function</span><span class="p">(</span><span class="n">_value</span><span class="p">,</span> <span class="n">_signal</span><span class="p">)</span>  <span class="c1"># type: ignore</span></div>
+
+<div class="viewcode-block" id="RAMSTKPanel.on_insert"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.on_insert">[docs]</a>    <span class="k">def</span> <span class="nf">on_insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add row to module view for newly added work stream element.</span>
+
+<span class="sd">        :param data: the data package for the work stream element to add.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_model</span><span class="p">,</span> <span class="n">_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">selection</span><span class="o">.</span><span class="n">get_selected</span><span class="p">()</span>
+
+        <span class="c1"># When inserting a child record, the selected row becomes the parent</span>
+        <span class="c1"># row.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent_id</span><span class="p">:</span>
+            <span class="n">_prow</span> <span class="o">=</span> <span class="n">_row</span>
+        <span class="c1"># When inserting a sibling record, use the parent of the selected</span>
+        <span class="c1"># row.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_prow</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">iter_parent</span><span class="p">(</span><span class="n">_row</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">do_insert_row</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">_prow</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKPanel.on_row_change"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.on_row_change">[docs]</a>    <span class="k">def</span> <span class="nf">on_row_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeSelection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Get the attributes for the newly selected row.</span>
+
+<span class="sd">        :param selection: the Gtk.TreeSelection() for the new row.</span>
+<span class="sd">        :return: _attributes; the dict of attributes and value for the item</span>
+<span class="sd">            in the selected row.  The key is the attribute name, the value is</span>
+<span class="sd">            the attribute value.  Pulling them from the RAMSTKTreeView()</span>
+<span class="sd">            ensures uncommitted changes are always selected.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">selection</span><span class="o">.</span><span class="n">handler_block</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">])</span>
+
+        <span class="n">_attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">_model</span><span class="p">,</span> <span class="n">_row</span> <span class="o">=</span> <span class="n">selection</span><span class="o">.</span><span class="n">get_selected</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">_row</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_updater</span><span class="p">:</span>
+                <span class="n">_attributes</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="n">_row</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_lst_col_order</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_updater</span><span class="p">[</span><span class="n">_key</span><span class="p">][</span><span class="mi">2</span><span class="p">]])</span>
+
+        <span class="n">selection</span><span class="o">.</span><span class="n">handler_unblock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">_attributes</span></div>
+
+<div class="viewcode-block" id="RAMSTKPanel.on_toggled"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel.on_toggled">[docs]</a>    <span class="k">def</span> <span class="nf">on_toggled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checkbutton</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                   <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve changes made in RAMSTKCheckButton() widgets.</span>
+
+<span class="sd">        :param checkbutton: the RAMSTKCheckButton() that was toggled.</span>
+<span class="sd">        :param index: the position in the class&#39; Gtk.TreeModel() associated</span>
+<span class="sd">            with the data from the calling RAMSTKCheckButton().</span>
+<span class="sd">        :param message: the PyPubSub message to broadcast.</span>
+<span class="sd">        :return: {_key: _new_text}; the child module attribute name and the</span>
+<span class="sd">            new value from the RAMSTKEntry() or RAMSTKTextView(). The value</span>
+<span class="sd">            {&#39;&#39;: -1} will be returned when a KeyError is raised by this method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">_new_text</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_keys</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="n">_new_text</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">checkbutton</span><span class="o">.</span><span class="n">get_active</span><span class="p">())</span>
+            <span class="n">checkbutton</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="n">_new_text</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;toggled&#39;</span><span class="p">)</span>
+
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">message</span><span class="p">,</span>
+                            <span class="n">node_id</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">],</span>
+                            <span class="n">package</span><span class="o">=</span><span class="p">{</span><span class="n">_key</span><span class="p">:</span> <span class="n">_new_text</span><span class="p">})</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="n">_key</span><span class="p">:</span> <span class="n">_new_text</span><span class="p">}</span></div>
+
+    <span class="k">def</span> <span class="nf">_do_load_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Node</span><span class="p">,</span>
+                     <span class="n">row</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeIter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeIter</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Determine which type of row to load and loads the data.</span>
+
+<span class="sd">        :param node: the usage profile treelib Node() whose data is to be</span>
+<span class="sd">            loaded.</span>
+<span class="sd">        :param row: the parent row for the row to be loaded.</span>
+<span class="sd">        :return: _new_row; the row that was just added to the usage profile</span>
+<span class="sd">            treeview.</span>
+<span class="sd">        :rtype: :class:`Gtk.TreeIter`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_new_row</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># The root node will have no data package, so this indicates the need</span>
+        <span class="c1"># to clear the tree in preparation for the load.</span>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_module</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">do_clear_tree</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_row_loader</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
+            <span class="c1"># noinspection PyArgumentList</span>
+            <span class="n">_new_row</span> <span class="o">=</span> <span class="n">_method</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_new_row</span>
+
+    <span class="k">def</span> <span class="nf">_do_load_treerow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Node</span><span class="p">,</span>
+                         <span class="n">row</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeIter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeIter</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load a row into the RAMSTKTreeView().</span>
+
+<span class="sd">        :param node: the treelib Node() with the data to load.</span>
+<span class="sd">        :param row: the parent row of the row to load.</span>
+<span class="sd">        :return: _new_row; the row that was just populated with data.</span>
+<span class="sd">        :rtype: :class:`Gtk.TreeIter`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_new_row</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">_data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="p">[[</span><span class="n">__</span><span class="p">,</span> <span class="n">_entity</span><span class="p">]]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>  <span class="c1"># pylint: disable=unused-variable</span>
+        <span class="n">_attributes</span> <span class="o">=</span> <span class="n">_entity</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">()</span>
+
+        <span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">_col</span><span class="p">,</span> <span class="n">_attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">korder</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="n">_col</span><span class="p">]</span>
+            <span class="n">_data</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">_pos</span><span class="p">,</span> <span class="n">_attributes</span><span class="p">[</span><span class="n">_attr</span><span class="p">])</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_new_row</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">_data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">_error</span><span class="p">:</span>
+            <span class="n">_method_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
+            <span class="n">_error_msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dic_error_messages</span><span class="p">[</span><span class="s1">&#39;load_row&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">identifier</span><span class="p">),</span> <span class="n">_data</span><span class="p">,</span> <span class="n">_error</span><span class="p">,</span> <span class="n">_method_name</span><span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;do_log_warning_msg&#39;</span><span class="p">,</span>
+                <span class="n">logger_name</span><span class="o">=</span><span class="s1">&#39;WARNING&#39;</span><span class="p">,</span>
+                <span class="n">message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">_new_row</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">_new_row</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__do_read_text</span><span class="p">(</span><span class="n">entry</span><span class="p">:</span> <span class="n">RAMSTKEntry</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Read the text in a RAMSTKEntry() or Gtk.TextBuffer().</span>
+
+<span class="sd">        :param entry: the RAMSTKEntry() or Gtk.TextBuffer() to read.</span>
+<span class="sd">        :param keys: the list containing the key and data type for the entry to</span>
+<span class="sd">            be read.</span>
+<span class="sd">        :return: {_key, _new_text}; a dict containing the attribute key and</span>
+<span class="sd">            the new value (text) for that key.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">_new_text</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">keys</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="s1">&#39;float&#39;</span><span class="p">:</span>
+                <span class="n">_new_text</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">do_get_text</span><span class="p">())</span>
+            <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">keys</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="s1">&#39;integer&#39;</span><span class="p">:</span>
+                <span class="n">_new_text</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">do_get_text</span><span class="p">())</span>
+            <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">keys</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span><span class="p">:</span>
+                <span class="n">_new_text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">do_get_text</span><span class="p">())</span>
+
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="n">_key</span><span class="p">:</span> <span class="n">_new_text</span><span class="p">}</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

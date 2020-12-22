@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.widgets.plot &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.widgets.plot</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.views.gtk3.widgets.plot.py is part of the RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2020 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="c1"># isort:skip_file</span>
+<span class="sd">&quot;&quot;&quot;RAMSTK GTK3 Plot Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3</span> <span class="kn">import</span> <span class="n">Gdk</span><span class="p">,</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">_</span>
+
+<span class="c1"># type: ignore</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># noinspection PyPackageRequirements</span>
+    <span class="c1"># Third Party Imports</span>
+    <span class="kn">import</span> <span class="nn">matplotlib</span>
+    <span class="c1"># noinspection PyPackageRequirements</span>
+    <span class="kn">from</span> <span class="nn">matplotlib.backends.backend_gtk3cairo</span> <span class="kn">import</span> <span class="p">(</span><span class="n">FigureCanvasGTK3Cairo</span> <span class="k">as</span>
+                                                       <span class="n">FigureCanvas</span><span class="p">)</span>
+    <span class="c1"># noinspection PyPackageRequirements</span>
+    <span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="kn">import</span> <span class="n">Figure</span>
+    <span class="c1"># noinspection PyPackageRequirements</span>
+    <span class="kn">from</span> <span class="nn">matplotlib.lines</span> <span class="kn">import</span> <span class="n">Line2D</span>
+<span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+    <span class="c1"># This is necessary to have the tests pass on headless servers.</span>
+    <span class="k">pass</span>
+
+
+<div class="viewcode-block" id="RAMSTKPlot"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.plot.RAMSTKPlot">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKPlot</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;The RAMSTKPlot class.</span>
+
+<span class="sd">    This module contains RAMSTK plot class.  This class is derived from</span>
+<span class="sd">    the applicable pyGTK widgets and matplotlib plots, but are provided</span>
+<span class="sd">    with RAMSTK specific property values and methods.  This ensures a</span>
+<span class="sd">    consistent look and feel to widgets in the RAMSTK application.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the RAMSTKPlot.&quot;&quot;&quot;</span>
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_max</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_min</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="p">:</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">Figure</span> <span class="o">=</span> <span class="n">Figure</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span> <span class="o">=</span> <span class="n">FigureCanvas</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RAMSTKPlot.do_load_plot"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.plot.RAMSTKPlot.do_load_plot">[docs]</a>    <span class="k">def</span> <span class="nf">do_load_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">y_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+                     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the RAMSTKPlot.</span>
+
+<span class="sd">        Plots can be one of the following types:</span>
+
+<span class="sd">            * &#39;date&#39;</span>
+<span class="sd">            * &#39;histogram&#39;</span>
+<span class="sd">            * &#39;scatter&#39; (default)</span>
+<span class="sd">            * &#39;step&#39;</span>
+
+<span class="sd">        Pass the keyword plot_type to select.  Markers can be set using the</span>
+<span class="sd">        marker keyword.  The default marker is &#39;g-&#39; or a solid green line.  See</span>
+<span class="sd">        matplotlib documentation for other options.</span>
+
+<span class="sd">        :param x_values: list of the x-values to plot.</span>
+<span class="sd">        :param y_values: list of the y-values to plot or list of bin edges if</span>
+<span class="sd">            plotting a histogram.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_plot_type</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;plot_type&#39;</span><span class="p">,</span> <span class="s1">&#39;scatter&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">_plot_type</span> <span class="o">==</span> <span class="s1">&#39;step&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_make_step_plot</span><span class="p">(</span><span class="n">x_values</span><span class="p">,</span> <span class="n">y_values</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">_plot_type</span> <span class="o">==</span> <span class="s1">&#39;scatter&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_make_scatter_plot</span><span class="p">(</span><span class="n">x_values</span><span class="p">,</span> <span class="n">y_values</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">_plot_type</span> <span class="o">==</span> <span class="s1">&#39;histogram&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_make_histogram</span><span class="p">(</span><span class="n">x_values</span><span class="p">,</span> <span class="n">y_values</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">_plot_type</span> <span class="o">==</span> <span class="s1">&#39;date&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_make_date_plot</span><span class="p">(</span><span class="n">x_values</span><span class="p">,</span> <span class="n">y_values</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">_min</span><span class="p">,</span> <span class="n">_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_minimax_ordinates</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">set_ybound</span><span class="p">(</span><span class="n">_min</span><span class="p">,</span> <span class="mf">1.05</span> <span class="o">*</span> <span class="n">_max</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RAMSTKPlot.do_add_line"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.plot.RAMSTKPlot.do_add_line">[docs]</a>    <span class="k">def</span> <span class="nf">do_add_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">x_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+                    <span class="n">y_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="n">color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span>
+                    <span class="n">marker</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;^&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the RAMSTKPlot.</span>
+
+<span class="sd">        :param x_values: list of the x-values to plot.</span>
+<span class="sd">        :param y_values: list of the y-values to plot or list of bin edges if</span>
+<span class="sd">            plotting a histogram.</span>
+<span class="sd">        :param color: the color of the line to add to the plot.  Black is the</span>
+<span class="sd">            default.  See matplotlib documentation for options.</span>
+<span class="sd">        :param marker: the marker to use on the plot. Default is &#39;^&#39; or an</span>
+<span class="sd">            upward pointing triangle.  See matplotlib documentation for other</span>
+<span class="sd">            options.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_line</span> <span class="o">=</span> <span class="n">Line2D</span><span class="p">(</span><span class="n">x_values</span><span class="p">,</span>
+                       <span class="n">y_values</span><span class="p">,</span>
+                       <span class="n">lw</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                       <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+                       <span class="n">marker</span><span class="o">=</span><span class="n">marker</span><span class="p">,</span>
+                       <span class="n">markersize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">add_line</span><span class="p">(</span><span class="n">_line</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKPlot.do_close_plot"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.plot.RAMSTKPlot.do_close_plot">[docs]</a>    <span class="k">def</span> <span class="nf">do_close_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__window</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Window</span><span class="p">,</span> <span class="n">__event</span><span class="p">:</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span>
+                      <span class="n">parent</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Widget</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return the plot to the Work Book page it is part of.</span>
+
+<span class="sd">        :param __window: the Gtk.Window() that is being destroyed.</span>
+<span class="sd">        :type __window: :class:`Gtk.Window`</span>
+<span class="sd">        :param __event: the Gdk.Event() that called this method.</span>
+<span class="sd">        :type __event: :class:`Gdk.Event`</span>
+<span class="sd">        :param parent: the original parent Gtk.Widget() for the plot.</span>
+<span class="sd">        :type parent: :class:`Gtk.Widget`</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">reparent</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span></div>
+
+    <span class="c1"># noinspection PyUnresolvedReferences</span>
+<div class="viewcode-block" id="RAMSTKPlot.do_expand_plot"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.plot.RAMSTKPlot.do_expand_plot">[docs]</a>    <span class="k">def</span> <span class="nf">do_expand_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                       <span class="n">event</span><span class="p">:</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">backend_bases</span><span class="o">.</span><span class="n">MouseEvent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Display a plot in it&#39;s own window.</span>
+
+<span class="sd">        :param event: the matplotlib.backend_bases.MouseEvent() that called</span>
+<span class="sd">            this method.</span>
+<span class="sd">        :type event: :class:`matplotlib.backend_bases.MouseEvent`</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">canvas</span>
+        <span class="n">_parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">get_parent</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># Right click.</span>
+            <span class="n">_window</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Window</span><span class="p">()</span>
+            <span class="n">_window</span><span class="o">.</span><span class="n">set_skip_pager_hint</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">_window</span><span class="o">.</span><span class="n">set_skip_taskbar_hint</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">_window</span><span class="o">.</span><span class="n">set_default_size</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+            <span class="n">_window</span><span class="o">.</span><span class="n">set_border_width</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+            <span class="n">_window</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">WindowPosition</span><span class="o">.</span><span class="n">NONE</span><span class="p">)</span>
+            <span class="n">_window</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="sa">u</span><span class="s2">&quot;RAMSTK Plot&quot;</span><span class="p">))</span>
+
+            <span class="n">_window</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;delete_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_close_plot</span><span class="p">,</span> <span class="n">_parent</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">reparent</span><span class="p">(</span><span class="n">_window</span><span class="p">)</span>
+
+            <span class="n">_window</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span></div>
+
+    <span class="c1"># noinspection PyUnresolvedReferences</span>
+<div class="viewcode-block" id="RAMSTKPlot.do_make_labels"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.plot.RAMSTKPlot.do_make_labels">[docs]</a>    <span class="k">def</span> <span class="nf">do_make_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                       <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">Text</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Make the abscissa or ordinate label.</span>
+
+<span class="sd">        Accepts keyword arguments:</span>
+<span class="sd">            * *fontsize* -- the size of the font to use for the axis label.</span>
+<span class="sd">            * *fontweight* -- the weight of the font to use for the axis label.</span>
+<span class="sd">            * *set_x* -- whether to set the abscissa (default) or ordinate</span>
+<span class="sd">                label.</span>
+<span class="sd">            * *x_pos* -- the position along the abscissa to place the label.</span>
+<span class="sd">            * *y_pos* -- the position along the ordinate to place the label.</span>
+
+<span class="sd">        :param label: the text to display as the abscissa or ordinate</span>
+<span class="sd">            label.</span>
+<span class="sd">        :return: matplotlib text instance representing the label.</span>
+<span class="sd">        :rtype: :class:`matplotlib.text.Text`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_fontsize</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fontsize&#39;</span><span class="p">,</span> <span class="mi">14</span><span class="p">)</span>
+        <span class="n">_fontweight</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fontweight&#39;</span><span class="p">,</span> <span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+        <span class="n">_set_x</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;set_x&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">_x_pos</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;x_pos&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">_y_pos</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;y_pos&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">_label</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">_set_x</span><span class="p">:</span>
+            <span class="n">_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span>
+                <span class="n">label</span><span class="p">,</span> <span class="p">{</span>
+                    <span class="s1">&#39;fontsize&#39;</span><span class="p">:</span> <span class="n">_fontsize</span><span class="p">,</span>
+                    <span class="s1">&#39;fontweight&#39;</span><span class="p">:</span> <span class="n">_fontweight</span><span class="p">,</span>
+                    <span class="s1">&#39;verticalalignment&#39;</span><span class="p">:</span> <span class="s1">&#39;center&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;horizontalalignment&#39;</span><span class="p">:</span> <span class="s1">&#39;center&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">_x_pos</span><span class="p">,</span>
+                    <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">_y_pos</span>
+                <span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span>
+                <span class="n">label</span><span class="p">,</span> <span class="p">{</span>
+                    <span class="s1">&#39;fontsize&#39;</span><span class="p">:</span> <span class="n">_fontsize</span><span class="p">,</span>
+                    <span class="s1">&#39;fontweight&#39;</span><span class="p">:</span> <span class="n">_fontweight</span><span class="p">,</span>
+                    <span class="s1">&#39;verticalalignment&#39;</span><span class="p">:</span> <span class="s1">&#39;center&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;horizontalalignment&#39;</span><span class="p">:</span> <span class="s1">&#39;center&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;rotation&#39;</span><span class="p">:</span> <span class="s1">&#39;vertical&#39;</span>
+                <span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">_label</span></div>
+
+    <span class="c1"># pylint: disable=too-many-arguments</span>
+<div class="viewcode-block" id="RAMSTKPlot.do_make_legend"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.plot.RAMSTKPlot.do_make_legend">[docs]</a>    <span class="k">def</span> <span class="nf">do_make_legend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Make a legend on the RAMSTKPlot.</span>
+
+<span class="sd">        Accepts keyword arguments:</span>
+<span class="sd">            * *fontsize* (str) -- the size of the font to use for the legend.</span>
+<span class="sd">                Options are:</span>
+<span class="sd">                    - xx-small</span>
+<span class="sd">                    - x-small</span>
+<span class="sd">                    - small (default)</span>
+<span class="sd">                    - medium</span>
+<span class="sd">                    - large</span>
+<span class="sd">                    - x-large</span>
+<span class="sd">                    - xx-large</span>
+<span class="sd">            * *frameon* (bool) -- whether or not there is a frame around the</span>
+<span class="sd">                legend.</span>
+<span class="sd">            * *location* (str) -- the location of the legend on the plot.</span>
+<span class="sd">                Options are:</span>
+<span class="sd">                    - best</span>
+<span class="sd">                    - upper right (default)</span>
+<span class="sd">                    - upper left</span>
+<span class="sd">                    - lower left</span>
+<span class="sd">                    - lower right</span>
+<span class="sd">                    - right</span>
+<span class="sd">                    - center left</span>
+<span class="sd">                    - center right</span>
+<span class="sd">                    - lower center</span>
+<span class="sd">                    - upper center</span>
+<span class="sd">                    - center</span>
+<span class="sd">            * *ncol* (int) -- the number columns in the legend.  Default is 1.</span>
+<span class="sd">            * *shadow* (bool) -- whether or not to display a shadow behind the</span>
+<span class="sd">                legend block.  Default is True.</span>
+<span class="sd">            * *title* (str) -- the title of the legend.  Default is an empty</span>
+<span class="sd">                string.</span>
+<span class="sd">            * *lwd* (float) -- the linewidth of the box around the legend.</span>
+
+<span class="sd">        :param tuple text: the text to display in the legend.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_fontsize</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fontsize&#39;</span><span class="p">,</span> <span class="s1">&#39;small&#39;</span><span class="p">)</span>
+        <span class="n">_frameon</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;frameon&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">_location</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;location&#39;</span><span class="p">,</span> <span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
+        <span class="n">_lwd</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lwd&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">_ncol</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ncol&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_shadow</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;shadow&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">_title</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="n">_legend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">text</span><span class="p">,</span>
+                                   <span class="n">frameon</span><span class="o">=</span><span class="n">_frameon</span><span class="p">,</span>
+                                   <span class="n">loc</span><span class="o">=</span><span class="n">_location</span><span class="p">,</span>
+                                   <span class="n">ncol</span><span class="o">=</span><span class="n">_ncol</span><span class="p">,</span>
+                                   <span class="n">shadow</span><span class="o">=</span><span class="n">_shadow</span><span class="p">,</span>
+                                   <span class="n">title</span><span class="o">=</span><span class="n">_title</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">_text</span> <span class="ow">in</span> <span class="n">_legend</span><span class="o">.</span><span class="n">get_texts</span><span class="p">():</span>
+            <span class="n">_text</span><span class="o">.</span><span class="n">set_fontsize</span><span class="p">(</span><span class="n">_fontsize</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">_line</span> <span class="ow">in</span> <span class="n">_legend</span><span class="o">.</span><span class="n">get_lines</span><span class="p">():</span>
+            <span class="n">_line</span><span class="o">.</span><span class="n">set_linewidth</span><span class="p">(</span><span class="n">_lwd</span><span class="p">)</span></div>
+
+    <span class="c1"># noinspection PyUnresolvedReferences</span>
+<div class="viewcode-block" id="RAMSTKPlot.do_make_title"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.plot.RAMSTKPlot.do_make_title">[docs]</a>    <span class="k">def</span> <span class="nf">do_make_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                      <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                      <span class="n">fontsize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
+                      <span class="n">fontweight</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;bold&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">Text</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Make the plot title.</span>
+
+<span class="sd">        :param title: the text to display as the title.</span>
+<span class="sd">        :param fontsize: the size of the font to use for the title.</span>
+<span class="sd">        :param fontweight: the weight of the font to use for the title.</span>
+<span class="sd">        :return: matplotlib text instance representing the title.</span>
+<span class="sd">        :rtype: :class:`matplotlib.text.Text`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+            <span class="n">title</span><span class="p">,</span> <span class="p">{</span>
+                <span class="s1">&#39;fontsize&#39;</span><span class="p">:</span> <span class="n">fontsize</span><span class="p">,</span>
+                <span class="s1">&#39;fontweight&#39;</span><span class="p">:</span> <span class="n">fontweight</span><span class="p">,</span>
+                <span class="s1">&#39;verticalalignment&#39;</span><span class="p">:</span> <span class="s1">&#39;baseline&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;horizontalalignment&#39;</span><span class="p">:</span> <span class="s1">&#39;center&#39;</span>
+            <span class="p">})</span></div>
+
+    <span class="k">def</span> <span class="nf">_do_make_date_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">y_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+                           <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Make a date plot.</span>
+
+<span class="sd">        Use the keyword marker to set the type and color of marker to use</span>
+<span class="sd">        for the plot.  Default is &#39;g-&#39; or a solid green line.</span>
+
+<span class="sd">        :param x_values: the list of x-values (dates) for the plot.</span>
+<span class="sd">        :param y_values: the list of y-values for the plot.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_marker</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;marker&#39;</span><span class="p">,</span> <span class="s1">&#39;g-&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">y_values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">plot_date</span><span class="p">(</span><span class="n">x_values</span><span class="p">,</span>
+                                <span class="n">y_values</span><span class="p">,</span>
+                                <span class="n">_marker</span><span class="p">,</span>
+                                <span class="n">xdate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lst_min</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">y_values</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lst_max</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">y_values</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_do_make_histogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">y_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+                           <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Make a histogram.</span>
+
+<span class="sd">        Use the keyword marker to set the color of the bars used for the plot.</span>
+<span class="sd">        Default is &#39;g&#39; or green.</span>
+
+<span class="sd">        :param list x_values: the list of x-values for the plot.</span>
+<span class="sd">        :param list y_values: the list of bin edges for the plot.</span>
+<span class="sd">        :keyword str marker: the color of bars to use for the histogram.</span>
+<span class="sd">            Default is green.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_marker</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;marker&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">y_values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">)</span>
+            <span class="c1"># pylint: disable=unused-variable</span>
+            <span class="n">_values</span><span class="p">,</span> <span class="n">_edges</span><span class="p">,</span> <span class="n">__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">x_values</span><span class="p">,</span>
+                                                 <span class="n">bins</span><span class="o">=</span><span class="n">y_values</span><span class="p">,</span>
+                                                 <span class="n">color</span><span class="o">=</span><span class="n">_marker</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lst_min</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">_values</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lst_max</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">_values</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_make_scatter_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+                              <span class="n">y_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+                              <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Make a scatter plot.</span>
+
+<span class="sd">        Use the keyword marker to set the type and color of marker to use</span>
+<span class="sd">        for the plot.  Default is &#39;go&#39; or open green circles.</span>
+
+<span class="sd">        :param x_values: the list of x-values for the plot.</span>
+<span class="sd">        :param y_values: the list of y-values for the plot.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_marker</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;marker&#39;</span><span class="p">,</span> <span class="s1">&#39;go&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">y_values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_line</span><span class="p">,</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_values</span><span class="p">,</span> <span class="n">y_values</span><span class="p">,</span> <span class="n">_marker</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">_line</span><span class="o">.</span><span class="n">set_ydata</span><span class="p">(</span><span class="n">y_values</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lst_min</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">y_values</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lst_max</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">y_values</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_do_make_step_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">y_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+                           <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Make a step plot.</span>
+
+<span class="sd">        Use the keyword marker to set the type and color of marker to use</span>
+<span class="sd">        for the plot.  Default is &#39;g-&#39; or a solid green line.</span>
+
+<span class="sd">        :param list x_values: the list of x-values for the plot.</span>
+<span class="sd">        :param list y_values: the list of y-values for the plot.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_marker</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;marker&#39;</span><span class="p">,</span> <span class="s1">&#39;g-&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">y_values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_line</span><span class="p">,</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">x_values</span><span class="p">,</span> <span class="n">y_values</span><span class="p">,</span> <span class="n">_marker</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">)</span>
+            <span class="n">_line</span><span class="o">.</span><span class="n">set_ydata</span><span class="p">(</span><span class="n">y_values</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lst_min</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">y_values</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lst_max</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">y_values</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_get_minimax_ordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Get minimum and maximum y-values to set the axis bounds.</span>
+
+<span class="sd">        If the maximum value is infinity, use the next largest value and so</span>
+<span class="sd">        forth.</span>
+
+<span class="sd">        :return: _min, _max; tuple containing the minimum and maximum ordinate</span>
+<span class="sd">            values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_min</span><span class="p">)</span>
+        <span class="n">_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_max</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_max</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">_max</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_max</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">):</span>
+                <span class="n">_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_max</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">_min</span><span class="p">,</span> <span class="n">_max</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.controllers.hardware.matrixmanager &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.controllers.hardware.matrixmanager</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.controllers.hardware.MatrixManager.py is part of The RAMSTK</span>
+<span class="c1">#       Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2019 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;Hardware Controller Package matrix manager.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">import</span> <span class="nn">treelib</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.controllers</span> <span class="kn">import</span> <span class="n">RAMSTKMatrixManager</span>
+<span class="kn">from</span> <span class="nn">ramstk.models.programdb</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RAMSTKHardware</span><span class="p">,</span> <span class="n">RAMSTKRequirement</span><span class="p">,</span> <span class="n">RAMSTKValidation</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="MatrixManager"><a class="viewcode-back" href="../../../../api/ramstk.controllers.hardware.html#ramstk.controllers.hardware.matrixmanager.MatrixManager">[docs]</a><span class="k">class</span> <span class="nc">MatrixManager</span><span class="p">(</span><span class="n">RAMSTKMatrixManager</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Contain the attributes and methods of the Hardware matrix manager.</span>
+
+<span class="sd">    This class manages the hardware matrices for Requirements and Validation.</span>
+<span class="sd">    Attributes of the hardware Matrix Manager are:</span>
+
+<span class="sd">    :ivar dict _attributes: the dict used to hold the aggregate attributes for</span>
+<span class="sd">        the hardware item being analyzed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="c1"># noinspection PyUnusedLocal</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the hardware matrix manager.&quot;&quot;&quot;</span>
+        <span class="n">RAMSTKMatrixManager</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">column_tables</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;hrdwr_rqrmnt&#39;</span><span class="p">:</span>
+                <span class="p">[</span><span class="n">RAMSTKRequirement</span><span class="p">,</span> <span class="s1">&#39;requirement_id&#39;</span><span class="p">,</span> <span class="s1">&#39;requirement_code&#39;</span><span class="p">],</span>
+                <span class="s1">&#39;hrdwr_vldtn&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">RAMSTKValidation</span><span class="p">,</span> <span class="s1">&#39;validation_id&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="p">},</span>
+            <span class="n">row_table</span><span class="o">=</span><span class="n">RAMSTKHardware</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_create_rows</span><span class="p">,</span> <span class="s1">&#39;succeed_retrieve_hardware&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_create_hardware_matrix_columns</span><span class="p">,</span>
+                      <span class="s1">&#39;succeed_retrieve_requirements&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_create_hardware_matrix_columns</span><span class="p">,</span>
+                      <span class="s1">&#39;succeed_retrieve_validations&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_delete_hardware</span><span class="p">,</span> <span class="s1">&#39;succeed_delete_hardware&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_delete_requirement</span><span class="p">,</span>
+                      <span class="s1">&#39;succeed_delete_requirement&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_delete_validation</span><span class="p">,</span> <span class="s1">&#39;succeed_delete_validation&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_insert_hardware</span><span class="p">,</span> <span class="s1">&#39;succeed_insert_hardware&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_insert_requirement</span><span class="p">,</span>
+                      <span class="s1">&#39;succeed_insert_requirement&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_insert_validation</span><span class="p">,</span> <span class="s1">&#39;succeed_insert_validation&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_create_hardware_matrix_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create the Hardware data matrix columns.</span>
+
+<span class="sd">        :param tree: the treelib Tree() containing the correlated workflow</span>
+<span class="sd">            module&#39;s data.</span>
+<span class="sd">        :type tree: :class:`treelib.Tree`</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If the row tree has already been loaded, we can build the matrix.</span>
+        <span class="c1"># Otherwise the matrix will be built when the row tree is loaded.</span>
+        <span class="k">if</span> <span class="n">tree</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="s1">&#39;requirement&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_col_tree</span><span class="p">[</span><span class="s1">&#39;hrdwr_rqrmnt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tree</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_row_tree</span><span class="o">.</span><span class="n">all_nodes</span><span class="p">():</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_create_columns</span><span class="p">(</span><span class="s1">&#39;hrdwr_rqrmnt&#39;</span><span class="p">)</span>
+                <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_select_matrix&#39;</span><span class="p">,</span>
+                                <span class="n">matrix_type</span><span class="o">=</span><span class="s1">&#39;hrdwr_rqrmnt&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">tree</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="s1">&#39;validation&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_col_tree</span><span class="p">[</span><span class="s1">&#39;hrdwr_vldtn&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tree</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_row_tree</span><span class="o">.</span><span class="n">all_nodes</span><span class="p">():</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_create_columns</span><span class="p">(</span><span class="s1">&#39;hrdwr_vldtn&#39;</span><span class="p">)</span>
+                <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_select_matrix&#39;</span><span class="p">,</span>
+                                <span class="n">matrix_type</span><span class="o">=</span><span class="s1">&#39;hrdwr_vldtn&#39;</span><span class="p">)</span>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="c1"># noinspection PyUnusedLocal</span>
+    <span class="k">def</span> <span class="nf">_on_delete_hardware</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Delete the matrix row associated with the deleted hardware.</span>
+
+<span class="sd">        :param node_id: the treelib Tree() node ID associated with the</span>
+<span class="sd">            deleted hardware.</span>
+<span class="sd">        :param tree: the treelib Tree() containing the remaining hardware data.</span>
+<span class="sd">        :type tree: :class:`treelib.Tree`</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_delete_row</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_on_delete_requirement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Delete the node ID column from the Hardware::Requirement matrix.</span>
+
+<span class="sd">        :param node_id: the requirement treelib Node ID that was deleted.</span>
+<span class="sd">            Note that node ID = requirement ID = matrix row ID.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_col_tree</span><span class="p">[</span><span class="s1">&#39;hrdwr_rqrmnt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_delete_column</span><span class="p">(</span><span class="n">_tag</span><span class="p">,</span> <span class="s1">&#39;hrdwr_rqrmnt&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_on_delete_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Delete the node ID column from the Hardware::Validation matrix.</span>
+
+<span class="sd">        :param node_id: the validation treelib Node ID that was deleted.</span>
+<span class="sd">            Note that node ID = validation ID = matrix row ID.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_col_tree</span><span class="p">[</span><span class="s1">&#39;hrdwr_vldtn&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_delete_column</span><span class="p">(</span><span class="n">_tag</span><span class="p">,</span> <span class="s1">&#39;hrdwr_vldtn&#39;</span><span class="p">)</span>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="c1"># noinspection PyUnusedLocal</span>
+    <span class="k">def</span> <span class="nf">_on_insert_hardware</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Insert a matrix row associated with the inserted hardware.</span>
+
+<span class="sd">        :param node_id: the treelib Tree() node ID associated with the</span>
+<span class="sd">            inserted hardware.</span>
+<span class="sd">        :param tree: the treelib Tree() containing the remaining hardware data.</span>
+<span class="sd">        :type tree: :class:`treelib.Tree`</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_insert_row</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_on_insert_requirement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Insert the node ID column to the Hardware::Requirement matrix.</span>
+
+<span class="sd">        :param node_id: the requirement treelib Node ID that is to be</span>
+<span class="sd">            inserted.  Note that node ID = requirement ID = matrix row ID.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_col_tree</span><span class="p">[</span><span class="s1">&#39;hrdwr_rqrmnt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_insert_column</span><span class="p">(</span><span class="n">_tag</span><span class="p">,</span> <span class="s1">&#39;hrdwr_rqrmnt&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_on_insert_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Insert the node ID column to the Hardware::Validation matrix.</span>
+
+<span class="sd">        :param node_id: the validation treelib Node ID that is to be</span>
+<span class="sd">            inserted.  Note that node ID = validation ID = matrix row ID.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_col_tree</span><span class="p">[</span><span class="s1">&#39;hrdwr_vldtn&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span><span class="o">.</span><span class="n">tag</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_insert_column</span><span class="p">(</span><span class="n">_tag</span><span class="p">,</span> <span class="s1">&#39;hrdwr_vldtn&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

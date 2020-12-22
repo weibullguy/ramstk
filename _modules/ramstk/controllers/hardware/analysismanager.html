@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.controllers.hardware.analysismanager &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.controllers.hardware.analysismanager</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.controllers.hardware.AnalysisManager.py is part of The RAMSTK</span>
+<span class="c1">#       Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2020 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;Hardware Controller Package analysis manager.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">exp</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.analyses</span> <span class="kn">import</span> <span class="n">allocation</span><span class="p">,</span> <span class="n">derating</span><span class="p">,</span> <span class="n">dormancy</span><span class="p">,</span> <span class="n">similaritem</span><span class="p">,</span> <span class="n">stress</span>
+<span class="kn">from</span> <span class="nn">ramstk.analyses.milhdbk217f</span> <span class="kn">import</span> <span class="n">milhdbk217f</span>
+<span class="kn">from</span> <span class="nn">ramstk.configuration</span> <span class="kn">import</span> <span class="n">RAMSTKUserConfiguration</span>
+<span class="kn">from</span> <span class="nn">ramstk.controllers</span> <span class="kn">import</span> <span class="n">RAMSTKAnalysisManager</span>
+
+
+<div class="viewcode-block" id="AnalysisManager"><a class="viewcode-back" href="../../../../api/ramstk.controllers.hardware.html#ramstk.controllers.hardware.analysismanager.AnalysisManager">[docs]</a><span class="k">class</span> <span class="nc">AnalysisManager</span><span class="p">(</span><span class="n">RAMSTKAnalysisManager</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Contain the attributes and methods of the Hardware analysis manager.</span>
+
+<span class="sd">    This class manages the hardware analysis for allocation, MIL-HDBK-217F,</span>
+<span class="sd">    NSWC, and Similar Item.  Attributes of the hardware Analysis Manager are:</span>
+
+<span class="sd">    :ivar dict _attributes: the dict used to hold the aggregate attributes for</span>
+<span class="sd">        the hardware item being analyzed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="n">RAMSTKUserConfiguration</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the hardware analysis manager.</span>
+
+<span class="sd">        :param configuration: the RAMSTKUserConfiguration instance associated</span>
+<span class="sd">            with the current instance of the RAMSTK application.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_get_all_attributes</span><span class="p">,</span>
+                      <span class="s1">&#39;succeed_get_all_hardware_attributes&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_get_tree</span><span class="p">,</span> <span class="s1">&#39;succeed_get_hardware_tree&#39;</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_allocation</span><span class="p">,</span>
+                      <span class="s1">&#39;request_allocate_reliability&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_allocation_goals</span><span class="p">,</span>
+                      <span class="s1">&#39;request_calculate_allocation_goals&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_hardware</span><span class="p">,</span>
+                      <span class="s1">&#39;request_calculate_hardware&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_similar_item</span><span class="p">,</span>
+                      <span class="s1">&#39;request_calculate_similar_item&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_derating_analysis</span><span class="p">,</span> <span class="s1">&#39;request_derate_hardware&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_roll_up_change_descriptions</span><span class="p">,</span>
+                      <span class="s1">&#39;request_roll_up_change_descriptions&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_allocate_reliability</span><span class="p">,</span>
+                      <span class="s1">&#39;succeed_allocate_reliability&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_predict_reliability</span><span class="p">,</span>
+                      <span class="s1">&#39;succeed_predict_reliability&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_request_do_calculate_all_hardware</span><span class="p">,</span>
+                      <span class="s1">&#39;request_calculate_all_hardware&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_calculate_agree_total_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the total number of elements for the AGREE method.</span>
+
+<span class="sd">        :param node_id: the node (hardware) ID of the hardware item whose</span>
+<span class="sd">            goal is to be allocated.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;n_sub_systems&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">children</span><span class="p">(</span><span class="n">node_id</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;n_sub_systems&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">_node</span><span class="o">.</span><span class="n">data</span><span class="p">[</span>
+                <span class="s1">&#39;allocation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">()[</span><span class="s1">&#39;n_sub_elements&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_do_calculate_all_hardware</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate all items in the system.</span>
+
+<span class="sd">        :return: _cum_results; the list of cumulative results.  The list order</span>
+<span class="sd">            is:</span>
+<span class="sd">                * 0 - active hazard rate</span>
+<span class="sd">                * 1 - dormant hazard rate</span>
+<span class="sd">                * 2 - software hazard rate</span>
+<span class="sd">                * 3 - total cost</span>
+<span class="sd">                * 4 - part count</span>
+<span class="sd">                * 5 - power dissipation</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_cum_results</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+
+        <span class="c1"># Check if there are children nodes of the node passed.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span><span class="o">.</span><span class="n">fpointer</span><span class="p">:</span>
+            <span class="c1"># If there are children, calculate each of them first.</span>
+            <span class="k">for</span> <span class="n">_subnode_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span><span class="o">.</span><span class="n">fpointer</span><span class="p">:</span>
+                <span class="n">_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_all_hardware</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">_subnode_id</span><span class="p">)</span>
+                <span class="n">_cum_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">_cum_results</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">_results</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">_cum_results</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">_results</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">_cum_results</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="n">_results</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+                <span class="n">_cum_results</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_results</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+                <span class="n">_cum_results</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">+=</span> <span class="n">_results</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+            <span class="c1"># Then calculate the parent node.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_hardware</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="n">system</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">_cum_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span>
+                <span class="n">_cum_results</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_dormant&#39;</span><span class="p">]</span>
+                <span class="n">_cum_results</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_software&#39;</span><span class="p">]</span>
+                <span class="n">_cum_results</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;total_cost&#39;</span><span class="p">]</span>
+                <span class="n">_cum_results</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;total_part_count&#39;</span><span class="p">])</span>
+                <span class="n">_cum_results</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;total_power_dissipation&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_hardware</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="n">system</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">_cum_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span>
+                <span class="n">_cum_results</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_dormant&#39;</span><span class="p">]</span>
+                <span class="n">_cum_results</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_software&#39;</span><span class="p">]</span>
+                <span class="n">_cum_results</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;total_cost&#39;</span><span class="p">]</span>
+                <span class="n">_cum_results</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;total_part_count&#39;</span><span class="p">])</span>
+                <span class="n">_cum_results</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;total_power_dissipation&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;part&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_cum_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_dormant&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_cum_results</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_software&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_cum_results</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;total_cost&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_cum_results</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;total_part_count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_cum_results</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;total_power_dissipation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_cum_results</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">_cum_results</span>
+
+    <span class="k">def</span> <span class="nf">_do_calculate_allocation_goals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the allocation goals.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">allocation</span><span class="o">.</span><span class="n">do_calculate_goals</span><span class="p">(</span>
+            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_calculate_allocation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Allocate a parent reliability goal to it&#39;s children.</span>
+
+<span class="sd">        :param node_id: the node (hardware) ID of the hardware item whose</span>
+<span class="sd">            goal is to be allocated.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_parent_goal</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">_cum_weight</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="c1"># Retrieve all the attributes from all the RAMSTK data tables for the</span>
+        <span class="c1"># requested hardware item.  We need to build a comprehensive dict of</span>
+        <span class="c1"># attributes to pass to the various analysis methods/functions.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_get_all_hardware_attributes&#39;</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_allocation_goals</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;n_sub_systems&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">children</span><span class="p">(</span><span class="n">node_id</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">children</span><span class="p">(</span><span class="n">node_id</span><span class="p">):</span>
+            <span class="n">_method_old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;allocation_method_id&#39;</span><span class="p">]</span>
+            <span class="n">_mission_time_old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;mission_time&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;allocation_method_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Equal</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;weight_factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;n_sub_systems&#39;</span><span class="p">])</span>
+                <span class="n">_parent_goal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;reliability_goal&#39;</span><span class="p">]</span>
+                <span class="n">_cum_weight</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;allocation_method_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># AGREE</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_agree_total_elements</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span>
+                <span class="n">_parent_goal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;reliability_goal&#39;</span><span class="p">]</span>
+                <span class="n">_cum_weight</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;allocation_method_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># ARINC</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_arinc_weight_factor</span><span class="p">(</span><span class="n">_node</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>
+                <span class="n">_parent_goal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_goal&#39;</span><span class="p">]</span>
+                <span class="n">_cum_weight</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;allocation_method_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>  <span class="c1"># FOO</span>
+                <span class="n">_parent_goal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_goal&#39;</span><span class="p">]</span>
+                <span class="n">_cum_weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_foo_cumulative_weight</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span>
+
+            <span class="n">allocation</span><span class="o">.</span><span class="n">do_allocate_reliability</span><span class="p">(</span><span class="n">_parent_goal</span><span class="p">,</span> <span class="n">_cum_weight</span><span class="p">,</span>
+                                               <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;allocation_method_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_method_old</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;mission_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_mission_time_old</span>
+
+    <span class="k">def</span> <span class="nf">_do_calculate_arinc_weight_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the weight factor for the hardware at node ID.</span>
+
+<span class="sd">        The ARINC weight factor is the quotient of the hardware item&#39;s hazard</span>
+<span class="sd">        rate and the overall system hazard rate.</span>
+
+<span class="sd">        :param node_id: the node (hardware) ID of the hardware item whose</span>
+<span class="sd">            weight factor is being allocated.</span>
+<span class="sd">        :raise: ZeroDivisionError if the parent hardware item&#39;s hazard rate is</span>
+<span class="sd">            zero.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span>
+        <span class="n">_parent_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">parent</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;weight_factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">_node</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;reliability&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">()</span>
+                <span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span>
+                <span class="o">/</span> <span class="n">_parent_node</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;reliability&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">()</span>
+                <span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;weight_factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;fail_calculate_arinc_weight_factor&#39;</span><span class="p">,</span>
+                <span class="n">error_message</span><span class="o">=</span><span class="p">(</span>
+                    <span class="s2">&quot;Failed to allocate the reliability for hardware &quot;</span>
+                    <span class="s2">&quot;ID </span><span class="si">{0:s}</span><span class="s2">; zero hazard rate.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">node_id</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">_do_calculate_cost_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the cost related metrics.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;total_cost&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;cost&#39;</span><span class="p">]</span>
+                                          <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;cost_hour&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;total_cost&#39;</span><span class="p">]</span>
+            <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_mission&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;part&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;total_part_count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;total_power_dissipation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;power_operating&#39;</span><span class="p">]</span>
+                <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;total_part_count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;total_part_count&#39;</span><span class="p">]</span>
+                <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_do_calculate_current_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the current ratio.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;current_ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stress</span><span class="o">.</span><span class="n">calculate_stress_ratio</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;current_operating&#39;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;current_rated&#39;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;fail_stress_analysis&#39;</span><span class="p">,</span>
+                <span class="n">error_message</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Failed to calculate current ratio for &quot;</span>
+                               <span class="s2">&quot;hardware ID </span><span class="si">{0:s}</span><span class="s2">; rated current is &quot;</span>
+                               <span class="s2">&quot;zero.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                   <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hardware_id&#39;</span><span class="p">])))</span>
+
+    <span class="k">def</span> <span class="nf">_do_calculate_foo_cumulative_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the cumulative weight for the FOO method.</span>
+
+<span class="sd">        :param node_id: the node (hardware) ID of the hardware item whose goal</span>
+<span class="sd">            is to be allocated.</span>
+<span class="sd">        :return: _cum_weight; the cumulative weighting factor for the hardware</span>
+<span class="sd">            item to be allocated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_cum_weight</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">children</span><span class="p">(</span><span class="n">node_id</span><span class="p">):</span>
+            <span class="n">_attributes</span> <span class="o">=</span> <span class="n">_node</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;allocation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">()</span>
+            <span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;weight_factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;int_factor&#39;</span><span class="p">]</span>
+                                            <span class="o">*</span> <span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;soa_factor&#39;</span><span class="p">]</span>
+                                            <span class="o">*</span> <span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;op_time_factor&#39;</span><span class="p">]</span>
+                                            <span class="o">*</span> <span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;env_factor&#39;</span><span class="p">])</span>
+            <span class="n">_cum_weight</span> <span class="o">+=</span> <span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;weight_factor&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">_cum_weight</span>
+
+    <span class="k">def</span> <span class="nf">_do_calculate_hardware</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                               <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                               <span class="n">system</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate all metrics for the hardware associated with node ID.</span>
+
+<span class="sd">        :param node_id: the node (hardware) ID to calculate metrics.</span>
+<span class="sd">        :param system: indicates whether a single item (default) or the</span>
+<span class="sd">            entire system is being calculated.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_hr_multiplier</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_HR_MULTIPLIER</span><span class="p">)</span>
+
+        <span class="c1"># Retrieve all the attributes from all the RAMSTK data tables for the</span>
+        <span class="c1"># requested hardware item.  We need to build a comprehensive dict of</span>
+        <span class="c1"># attributes to pass to the various analysis methods/functions.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_get_all_hardware_attributes&#39;</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">)</span>
+
+        <span class="c1"># If the assembly is to be calculated, set the attributes that are the</span>
+        <span class="c1"># sum of the child attributes to zero.  Without doing this, they will</span>
+        <span class="c1"># increment each time the system is calculated.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># For h(t) type ID: 1=assessed</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_type_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_dormant&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_software&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;total_part_count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;total_power_dissipation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+            <span class="c1"># For cost type ID: 2=calculated</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;cost_type_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;total_cost&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_request_do_stress_analysis</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_request_do_predict_active_hazard_rate</span><span class="p">()</span>
+            <span class="c1"># noinspection PyTypeChecker</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_dormant&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">dormancy</span><span class="o">.</span><span class="n">do_calculate_dormant_hazard_rate</span><span class="p">(</span>
+                    <span class="n">hw_info</span><span class="o">=</span><span class="p">[</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span>
+                    <span class="p">],</span>
+                    <span class="n">env_info</span><span class="o">=</span><span class="p">[</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;environment_active_id&#39;</span><span class="p">],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;environment_dormant_id&#39;</span><span class="p">]</span>
+                    <span class="p">]))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;add_adj_factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;add_adj_factor&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">_hr_multiplier</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_specified&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_specified&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">_hr_multiplier</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">_hr_multiplier</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_dormant&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_dormant&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">_hr_multiplier</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_software&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_software&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">_hr_multiplier</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_reliability_metrics</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_cost_metrics</span><span class="p">()</span>
+
+        <span class="c1"># If we&#39;re only calculating a single component/piece part, we send the</span>
+        <span class="c1"># success message and a request to update that part in the database.</span>
+        <span class="c1"># If we&#39;re calculating the entire system, we suppress this and make the</span>
+        <span class="c1"># equivalent *all* calls.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">system</span><span class="p">:</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_calculate_hardware_2&#39;</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_calculate_hardware&#39;</span><span class="p">,</span>
+                            <span class="n">attributes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_update_hardware&#39;</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_calculate_hazard_rate_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the hazard rate related metrics.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_type_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span>
+                <span class="s1">&#39;hazard_rate_specified&#39;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_type_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;mtbf_specified&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;add_adj_factor&#39;</span><span class="p">]</span>
+        <span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;mult_adj_factor&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_logistics&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_dormant&#39;</span><span class="p">]</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_software&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_mission&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_software&#39;</span><span class="p">])</span>
+
+        <span class="c1">#// TODO: Add s-Distribution Support for R(t) Predictions</span>
+        <span class="c1">#//</span>
+        <span class="c1">#// As an analyst, I want to be able to use s-distributions for</span>
+        <span class="c1">#// hardware reliability analysis so that I can use field data results</span>
+        <span class="c1">#// when modeling systems.</span>
+        <span class="c1">#//</span>
+        <span class="c1">#// I&#39;d like to be able to select a distribution, enter it&#39;s</span>
+        <span class="c1">#// parameter(s), and have the reliability at time (t) calculated and</span>
+        <span class="c1">#// used in a system prediction.  The hazard rate will also have to be</span>
+        <span class="c1">#// calculated to be used in a prediction with other methods such as</span>
+        <span class="c1">#// MIL-HDBK-217.</span>
+        <span class="c1">#//</span>
+        <span class="c1">#// The following, minimum, s-distributions should be available:</span>
+        <span class="c1">#//</span>
+        <span class="c1">#// * 1-parameter Exponential</span>
+        <span class="c1">#// * 2-parameter Exponential</span>
+        <span class="c1">#// * 2-parameter Weibull</span>
+        <span class="c1">#// * 3-parameter Weibull</span>
+        <span class="c1">#// * Lognormal</span>
+        <span class="c1">#// * Normal</span>
+
+        <span class="c1"># If calculating using an s-distribution, the appropriate s-function</span>
+        <span class="c1"># will estimate the variances.  Otherwise, assume an EXP distribution.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_type_id&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hr_specified_variance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span>
+                <span class="s1">&#39;hazard_rate_specified&#39;</span><span class="p">]</span><span class="o">**</span><span class="mf">2.0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hr_logistics_variance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span>
+                <span class="s1">&#39;hazard_rate_logistics&#39;</span><span class="p">]</span><span class="o">**</span><span class="mf">2.0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hr_mission_variance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span>
+                <span class="s1">&#39;hazard_rate_mission&#39;</span><span class="p">]</span><span class="o">**</span><span class="mf">2.0</span>
+
+    <span class="k">def</span> <span class="nf">_do_calculate_mtbf_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the MTBF related metrics.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        :raise: ZeroDivisionError if the logistics or mission hazard rate or</span>
+<span class="sd">            their variances are zero.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;mtbf_logistics&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_logistics&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;mtbf_mission&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_mission&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_type_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;mtbf_specified_variance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;mtbf_specified&#39;</span><span class="p">])</span><span class="o">**</span><span class="mf">2.0</span><span class="p">)</span>
+
+        <span class="c1"># If calculating using an s-distribution, the appropriate s-function</span>
+        <span class="c1"># will estimate the variances.  Otherwise, assume an EXP distribution.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_type_id&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;mtbf_logistics_variance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hr_logistics_variance&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;mtbf_mission_variance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hr_mission_variance&#39;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_do_calculate_power_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the power ratio.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;power_ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stress</span><span class="o">.</span><span class="n">calculate_stress_ratio</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;power_operating&#39;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;power_rated&#39;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;fail_stress_analysis&#39;</span><span class="p">,</span>
+                <span class="n">error_message</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Failed to calculate power ratio for &quot;</span>
+                               <span class="s2">&quot;hardware ID </span><span class="si">{0:s}</span><span class="s2">; rated power is &quot;</span>
+                               <span class="s2">&quot;zero.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                   <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hardware_id&#39;</span><span class="p">])))</span>
+
+    <span class="k">def</span> <span class="nf">_do_calculate_reliability_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the reliability related metrics.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_hazard_rate_metrics</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_mtbf_metrics</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;reliability_logistics&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">exp</span><span class="p">(</span>
+                <span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_logistics&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="mf">1000000.0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;reliability_mission&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">exp</span><span class="p">(</span>
+                <span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_mission&#39;</span><span class="p">])</span>
+                <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;mission_time&#39;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;fail_calculate_hardware&#39;</span><span class="p">,</span>
+                <span class="n">error_message</span><span class="o">=</span><span class="p">(</span>
+                    <span class="s2">&quot;Failed to calculate hazard rate and/or MTBF &quot;</span>
+                    <span class="s2">&quot;metrics for hardware ID </span><span class="si">{0:s}</span><span class="s2">; too many inputs &quot;</span>
+                    <span class="s2">&quot;equal to zero.  Specified MTBF=</span><span class="si">{1:f}</span><span class="s2">, active &quot;</span>
+                    <span class="s2">&quot;h(t)=</span><span class="si">{2:f}</span><span class="s2">, dormant h(t)=</span><span class="si">{3:f}</span><span class="s2">, and software &quot;</span>
+                    <span class="s2">&quot;h(t)=</span><span class="si">{4:f}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hardware_id&#39;</span><span class="p">]),</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;mtbf_specified&#39;</span><span class="p">],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_dormant&#39;</span><span class="p">],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_software&#39;</span><span class="p">]))</span>
+
+    <span class="k">def</span> <span class="nf">_do_calculate_similar_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Perform a similar item calculates for currently selected item.</span>
+
+<span class="sd">        :param node_id: the node (hardware) ID to calculate.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Retrieve all the attributes from all the RAMSTK data tables for the</span>
+        <span class="c1"># requested hardware item.  We need to build a comprehensive dict of</span>
+        <span class="c1"># attributes to pass to the various analysis methods/functions.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_get_all_hardware_attributes&#39;</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;similar_item_method_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_topic_633</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;similar_item_method_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_user_defined</span><span class="p">()</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_calculate_hardware&#39;</span><span class="p">,</span>
+                        <span class="n">attributes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_update_hardware&#39;</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_calculate_topic_633</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the similar item hazard rate per topic 6.3.3.</span>
+
+<span class="sd">        .. note:: this analysis uses the adjustment factors from RAC/RiAC&#39;s The</span>
+<span class="sd">            Reliability Tookkit, Commercial Practices Edition, section 6.3.3.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_environment</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;environment_from_id&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;environment_to_id&#39;</span><span class="p">]</span>
+        <span class="p">}</span>
+        <span class="n">_quality</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;quality_from_id&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;quality_to_id&#39;</span><span class="p">]</span>
+        <span class="p">}</span>
+        <span class="n">_temperature</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;temperature_from&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;temperature_to&#39;</span><span class="p">]</span>
+        <span class="p">}</span>
+
+        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_factor_1&#39;</span><span class="p">],</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_factor_2&#39;</span><span class="p">],</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_factor_3&#39;</span><span class="p">],</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;result_1&#39;</span><span class="p">])</span> <span class="o">=</span> <span class="n">similaritem</span><span class="o">.</span><span class="n">calculate_topic_633</span><span class="p">(</span>
+             <span class="n">_environment</span><span class="p">,</span> <span class="n">_quality</span><span class="p">,</span> <span class="n">_temperature</span><span class="p">,</span>
+             <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_do_calculate_user_defined</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the user-defined similar item hazard rate.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_sia</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">({</span>
+            <span class="n">_key</span><span class="p">:</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">_key</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s1">&#39;hr&#39;</span><span class="p">,</span> <span class="s1">&#39;pi1&#39;</span><span class="p">,</span> <span class="s1">&#39;pi2&#39;</span><span class="p">,</span> <span class="s1">&#39;pi3&#39;</span><span class="p">,</span> <span class="s1">&#39;pi3&#39;</span><span class="p">,</span> <span class="s1">&#39;pi4&#39;</span><span class="p">,</span> <span class="s1">&#39;pi5&#39;</span><span class="p">,</span> <span class="s1">&#39;pi6&#39;</span><span class="p">,</span> <span class="s1">&#39;pi7&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;pi8&#39;</span><span class="p">,</span> <span class="s1">&#39;pi9&#39;</span><span class="p">,</span> <span class="s1">&#39;pi10&#39;</span><span class="p">,</span> <span class="s1">&#39;uf1&#39;</span><span class="p">,</span> <span class="s1">&#39;uf2&#39;</span><span class="p">,</span> <span class="s1">&#39;uf3&#39;</span><span class="p">,</span> <span class="s1">&#39;uf4&#39;</span><span class="p">,</span> <span class="s1">&#39;uf5&#39;</span><span class="p">,</span> <span class="s1">&#39;ui1&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;ui2&#39;</span><span class="p">,</span> <span class="s1">&#39;ui3&#39;</span><span class="p">,</span> <span class="s1">&#39;ui4&#39;</span><span class="p">,</span> <span class="s1">&#39;ui5&#39;</span><span class="p">,</span> <span class="s1">&#39;equation1&#39;</span><span class="p">,</span> <span class="s1">&#39;equation2&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;equation3&#39;</span><span class="p">,</span> <span class="s1">&#39;equation4&#39;</span><span class="p">,</span> <span class="s1">&#39;equation5&#39;</span><span class="p">,</span> <span class="s1">&#39;res1&#39;</span><span class="p">,</span> <span class="s1">&#39;res2&#39;</span><span class="p">,</span> <span class="s1">&#39;res3&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;res4&#39;</span><span class="p">,</span> <span class="s1">&#39;res5&#39;</span>
+            <span class="p">]</span>
+        <span class="p">})</span>
+
+        <span class="n">_sia</span><span class="p">[</span><span class="s1">&#39;hr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span>
+
+        <span class="n">_sia</span> <span class="o">=</span> <span class="n">similaritem</span><span class="o">.</span><span class="n">set_user_defined_change_factors</span><span class="p">(</span>
+            <span class="n">_sia</span><span class="p">,</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_factor_1&#39;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_factor_2&#39;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_factor_3&#39;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_factor_4&#39;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_factor_5&#39;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_factor_6&#39;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_factor_7&#39;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_factor_8&#39;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_factor_9&#39;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_factor_10&#39;</span><span class="p">]</span>
+            <span class="p">])</span>
+
+        <span class="n">_sia</span> <span class="o">=</span> <span class="n">similaritem</span><span class="o">.</span><span class="n">set_user_defined_floats</span><span class="p">(</span><span class="n">_sia</span><span class="p">,</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;user_float_1&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;user_float_2&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;user_float_3&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;user_float_4&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;user_float_5&#39;</span><span class="p">]</span>
+        <span class="p">])</span>
+
+        <span class="n">_sia</span> <span class="o">=</span> <span class="n">similaritem</span><span class="o">.</span><span class="n">set_user_defined_ints</span><span class="p">(</span><span class="n">_sia</span><span class="p">,</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;user_int_1&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;user_int_2&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;user_int_3&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;user_int_4&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;user_int_5&#39;</span><span class="p">]</span>
+        <span class="p">])</span>
+
+        <span class="n">_sia</span> <span class="o">=</span> <span class="n">similaritem</span><span class="o">.</span><span class="n">set_user_defined_functions</span><span class="p">(</span><span class="n">_sia</span><span class="p">,</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;function_1&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;function_2&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;function_3&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;function_4&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;function_5&#39;</span><span class="p">]</span>
+        <span class="p">])</span>
+
+        <span class="n">_sia</span> <span class="o">=</span> <span class="n">similaritem</span><span class="o">.</span><span class="n">set_user_defined_results</span><span class="p">(</span><span class="n">_sia</span><span class="p">,</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;result_1&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;result_2&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;result_3&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;result_4&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;result_5&#39;</span><span class="p">]</span>
+        <span class="p">])</span>
+
+        <span class="n">_sia</span> <span class="o">=</span> <span class="n">similaritem</span><span class="o">.</span><span class="n">calculate_user_defined</span><span class="p">(</span><span class="n">_sia</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;result_1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_sia</span><span class="p">[</span><span class="s1">&#39;res1&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;result_2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_sia</span><span class="p">[</span><span class="s1">&#39;res2&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;result_3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_sia</span><span class="p">[</span><span class="s1">&#39;res3&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;result_4&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_sia</span><span class="p">[</span><span class="s1">&#39;res4&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;result_5&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_sia</span><span class="p">[</span><span class="s1">&#39;res5&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_do_calculate_voltage_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the voltage ratio.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_voltage_operating</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;voltage_ac_operating&#39;</span><span class="p">]</span>
+                              <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;voltage_dc_operating&#39;</span><span class="p">])</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;voltage_ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stress</span><span class="o">.</span><span class="n">calculate_stress_ratio</span><span class="p">(</span>
+                <span class="n">_voltage_operating</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;voltage_rated&#39;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;fail_stress_analysis&#39;</span><span class="p">,</span>
+                <span class="n">error_message</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Failed to calculate voltage ratio for &quot;</span>
+                               <span class="s2">&quot;hardware ID </span><span class="si">{0:s}</span><span class="s2">; rated voltage is &quot;</span>
+                               <span class="s2">&quot;zero.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                   <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hardware_id&#39;</span><span class="p">])))</span>
+
+    <span class="k">def</span> <span class="nf">_do_derating_analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Perform a derating analysis.</span>
+
+<span class="sd">        :param node_id: the node (hardware) ID to derate.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;reason&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;overstress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">def</span> <span class="nf">_do_check</span><span class="p">(</span><span class="n">overstress</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+                      <span class="n">stress_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="sd">&quot;&quot;&quot;Check the overstress condition and build a reason message.</span>
+
+<span class="sd">            :param overstress: the dict containing the results of the</span>
+<span class="sd">                overstress analysis.</span>
+<span class="sd">            :param stress_type: the overstress type being checked.</span>
+<span class="sd">            :return: None</span>
+<span class="sd">            :rtype: None</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">overstress</span><span class="p">[</span><span class="s1">&#39;harsh&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;overstress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;reason&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;reason&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span>
+                    <span class="s2">&quot;Operating </span><span class="si">{0:s}</span><span class="s2"> is less than limit in a &quot;</span>
+                    <span class="s2">&quot;harsh environment.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stress_type</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="n">overstress</span><span class="p">[</span><span class="s1">&#39;harsh&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;overstress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;reason&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;reason&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span>
+                    <span class="s2">&quot;Operating </span><span class="si">{0:s}</span><span class="s2"> is greater than limit &quot;</span>
+                    <span class="s2">&quot;in a harsh environment.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stress_type</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="n">overstress</span><span class="p">[</span><span class="s1">&#39;mild&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;overstress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;reason&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;reason&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span>
+                    <span class="s2">&quot;Operating </span><span class="si">{0:s}</span><span class="s2"> is less than limit in a &quot;</span>
+                    <span class="s2">&quot;mild environment.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stress_type</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="n">overstress</span><span class="p">[</span><span class="s1">&#39;mild&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;overstress&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;reason&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;reason&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span>
+                    <span class="s2">&quot;Operating </span><span class="si">{0:s}</span><span class="s2"> is greater than limit &quot;</span>
+                    <span class="s2">&quot;in a mild environment.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stress_type</span><span class="p">)))</span>
+
+        <span class="c1"># Retrieve all the attributes from all the RAMSTK data tables for the</span>
+        <span class="c1"># requested hardware item.  We need to build a comprehensive dict of</span>
+        <span class="c1"># attributes to pass to the various analysis methods/functions.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_get_all_hardware_attributes&#39;</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">)</span>
+
+        <span class="n">_limits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_STRESS_LIMITS</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">]]</span>
+        <span class="n">_current_limits</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;harsh&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">_limits</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+            <span class="s1">&#39;mild&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">_limits</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="p">}</span>
+        <span class="n">_power_limits</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;harsh&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">_limits</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span> <span class="s1">&#39;mild&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">_limits</span><span class="p">[</span><span class="mi">3</span><span class="p">]]}</span>
+        <span class="n">_voltage_limits</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;harsh&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">_limits</span><span class="p">[</span><span class="mi">4</span><span class="p">]],</span>
+            <span class="s1">&#39;mild&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">_limits</span><span class="p">[</span><span class="mi">5</span><span class="p">]]</span>
+        <span class="p">}</span>
+        <span class="c1">#// TODO: Implement temperture stress limits in _do_check().</span>
+        <span class="c1">#//</span>
+        <span class="c1">#// In the method _do_check() and _do_derating_analysis() in the</span>
+        <span class="c1">#// Hardware module analysis manager, there is no check for excessive</span>
+        <span class="c1">#// delta temperature or high temperature limits.  These either need</span>
+        <span class="c1">#// to be removed because no hardware item has temperature limits or</span>
+        <span class="c1">#// the checks need to be implemented.  This will require new tests.</span>
+        <span class="c1"># _deltat_limits = {</span>
+        <span class="c1">#    &#39;harsh&#39;: [0.0, _limits[6]],</span>
+        <span class="c1">#    &#39;mild&#39;: [0.0, _limits[7]]</span>
+        <span class="c1"># }</span>
+        <span class="c1"># _maxt_limits = {&#39;harsh&#39;: [0.0, _limits[8]], &#39;mild&#39;: [0.0, _limits[</span>
+        <span class="c1"># 9]]}</span>
+
+        <span class="n">_overstress</span> <span class="o">=</span> <span class="n">derating</span><span class="o">.</span><span class="n">check_overstress</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;current_ratio&#39;</span><span class="p">],</span> <span class="n">_current_limits</span><span class="p">)</span>
+        <span class="n">_do_check</span><span class="p">(</span><span class="n">_overstress</span><span class="p">,</span> <span class="s2">&quot;current&quot;</span><span class="p">)</span>
+        <span class="n">_overstress</span> <span class="o">=</span> <span class="n">derating</span><span class="o">.</span><span class="n">check_overstress</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;power_ratio&#39;</span><span class="p">],</span> <span class="n">_power_limits</span><span class="p">)</span>
+        <span class="n">_do_check</span><span class="p">(</span><span class="n">_overstress</span><span class="p">,</span> <span class="s2">&quot;power&quot;</span><span class="p">)</span>
+        <span class="n">_overstress</span> <span class="o">=</span> <span class="n">derating</span><span class="o">.</span><span class="n">check_overstress</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;voltage_ratio&#39;</span><span class="p">],</span> <span class="n">_voltage_limits</span><span class="p">)</span>
+        <span class="n">_do_check</span><span class="p">(</span><span class="n">_overstress</span><span class="p">,</span> <span class="s2">&quot;voltage&quot;</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_derate_hardware&#39;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_get_allocation_goal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve the proper allocation goal.</span>
+
+<span class="sd">        :return: _goal; the allocation goal measure.</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">allocation</span><span class="o">.</span><span class="n">get_allocation_goal</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_roll_up_change_descriptions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Concatenate all child change descriptions for the node ID hardware.</span>
+
+<span class="sd">        :param node_id: the node (hardware) ID to &quot;roll-up.&quot;</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_change_description_1</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">_change_description_2</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">_change_description_3</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">_change_description_4</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">_change_description_5</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">_change_description_6</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">_change_description_7</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">_change_description_8</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">_change_description_9</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">_change_description_10</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="k">for</span> <span class="n">_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">children</span><span class="p">(</span><span class="n">node_id</span><span class="p">):</span>
+            <span class="n">_name</span> <span class="o">=</span> <span class="n">_node</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;hardware&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">()[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="n">_attributes</span> <span class="o">=</span> <span class="n">_node</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;similar_item&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">()</span>
+
+            <span class="n">_change_description_1</span> <span class="o">+=</span> <span class="n">_name</span> <span class="o">+</span> <span class="s1">&#39;:</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">_attributes</span><span class="p">[</span>
+                <span class="s1">&#39;change_description_1&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+            <span class="n">_change_description_2</span> <span class="o">+=</span> <span class="n">_name</span> <span class="o">+</span> <span class="s1">&#39;:</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">_attributes</span><span class="p">[</span>
+                <span class="s1">&#39;change_description_2&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+            <span class="n">_change_description_3</span> <span class="o">+=</span> <span class="n">_name</span> <span class="o">+</span> <span class="s1">&#39;:</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">_attributes</span><span class="p">[</span>
+                <span class="s1">&#39;change_description_3&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+            <span class="n">_change_description_4</span> <span class="o">+=</span> <span class="n">_name</span> <span class="o">+</span> <span class="s1">&#39;:</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">_attributes</span><span class="p">[</span>
+                <span class="s1">&#39;change_description_4&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+            <span class="n">_change_description_5</span> <span class="o">+=</span> <span class="n">_name</span> <span class="o">+</span> <span class="s1">&#39;:</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">_attributes</span><span class="p">[</span>
+                <span class="s1">&#39;change_description_5&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+            <span class="n">_change_description_6</span> <span class="o">+=</span> <span class="n">_name</span> <span class="o">+</span> <span class="s1">&#39;:</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">_attributes</span><span class="p">[</span>
+                <span class="s1">&#39;change_description_6&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+            <span class="n">_change_description_7</span> <span class="o">+=</span> <span class="n">_name</span> <span class="o">+</span> <span class="s1">&#39;:</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">_attributes</span><span class="p">[</span>
+                <span class="s1">&#39;change_description_7&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+            <span class="n">_change_description_8</span> <span class="o">+=</span> <span class="n">_name</span> <span class="o">+</span> <span class="s1">&#39;:</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">_attributes</span><span class="p">[</span>
+                <span class="s1">&#39;change_description_8&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+            <span class="n">_change_description_9</span> <span class="o">+=</span> <span class="n">_name</span> <span class="o">+</span> <span class="s1">&#39;:</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">_attributes</span><span class="p">[</span>
+                <span class="s1">&#39;change_description_9&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+            <span class="n">_change_description_10</span> <span class="o">+=</span> <span class="n">_name</span> <span class="o">+</span> <span class="s1">&#39;:</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">_attributes</span><span class="p">[</span>
+                <span class="s1">&#39;change_description_10&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_description_1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_change_description_1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_description_2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_change_description_2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_description_3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_change_description_3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_description_4&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_change_description_4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_description_5&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_change_description_5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_description_6&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_change_description_6</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_description_7&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_change_description_7</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_description_8&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_change_description_8</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_description_9&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_change_description_9</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;change_description_10&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_change_description_10</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_roll_up_change_descriptions&#39;</span><span class="p">,</span>
+                        <span class="n">attributes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_on_allocate_reliability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Respond to a successful reliability allocation message.</span>
+
+<span class="sd">        :param attributes: the aggregate attributes dict updated with predicted</span>
+<span class="sd">            values.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_attributes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hardware_id&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;allocation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">()</span>
+
+        <span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_alloc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_alloc&#39;</span><span class="p">]</span>
+        <span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;mtbf_alloc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;mtbf_alloc&#39;</span><span class="p">]</span>
+        <span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;reliability_alloc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;reliability_alloc&#39;</span><span class="p">]</span>
+
+        <span class="n">_attributes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;revision_id&#39;</span><span class="p">)</span>
+        <span class="n">_attributes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;hardware_id&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hardware_id&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;allocation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span>
+                <span class="n">_attributes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_on_predict_reliability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Respond to a successful reliability prediction message.</span>
+
+<span class="sd">        :param attributes: the aggregate attributes dict updated with</span>
+<span class="sd">            predicted values.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span> <span class="o">=</span> <span class="n">attributes</span>
+
+    <span class="k">def</span> <span class="nf">_request_do_calculate_all_hardware</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Request that the entire hardware system be calculated.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_get_hardware_tree&#39;</span><span class="p">)</span>
+
+        <span class="n">_cum_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_all_hardware</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># If the sum of the results is greater than zero, SOMETHING got</span>
+        <span class="c1"># calculated.  We&#39;ll assume that was a success and send the message.</span>
+        <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">_cum_results</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_calculate_all_hardware&#39;</span><span class="p">,</span>
+                            <span class="n">module_tree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_update_all_hardware&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_request_do_predict_active_hazard_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Request that the hazard rate prediction be performed.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_method_id&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+            <span class="n">milhdbk217f</span><span class="o">.</span><span class="n">do_predict_active_hazard_rate</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_request_do_stress_analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Perform a stress analysis.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_current_ratio</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_power_ratio</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;category_id&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_voltage_ratio</span><span class="p">()</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

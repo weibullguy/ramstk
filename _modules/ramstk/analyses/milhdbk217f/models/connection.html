@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.analyses.milhdbk217f.models.connection &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.analyses.milhdbk217f.models.connection</h1><div class="highlight"><pre>
+<span></span><span class="c1"># type: ignore</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.analyses.prediction.Connection.py is part of the RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2017 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;Connection MIL-HDBK-217F Constants and Calculations Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">exp</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="n">PART_COUNT_LAMBDA_B</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.011</span><span class="p">,</span> <span class="mf">0.14</span><span class="p">,</span> <span class="mf">0.11</span><span class="p">,</span> <span class="mf">0.069</span><span class="p">,</span> <span class="mf">0.20</span><span class="p">,</span> <span class="mf">0.058</span><span class="p">,</span> <span class="mf">0.098</span><span class="p">,</span> <span class="mf">0.23</span><span class="p">,</span> <span class="mf">0.34</span><span class="p">,</span> <span class="mf">0.37</span><span class="p">,</span>
+            <span class="mf">0.0054</span><span class="p">,</span> <span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.42</span><span class="p">,</span> <span class="mf">6.8</span>
+        <span class="p">],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.012</span><span class="p">,</span> <span class="mf">0.015</span><span class="p">,</span> <span class="mf">0.13</span><span class="p">,</span> <span class="mf">0.075</span><span class="p">,</span> <span class="mf">0.21</span><span class="p">,</span> <span class="mf">0.06</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.22</span><span class="p">,</span> <span class="mf">0.32</span><span class="p">,</span> <span class="mf">0.38</span><span class="p">,</span>
+            <span class="mf">0.0061</span><span class="p">,</span> <span class="mf">0.18</span><span class="p">,</span> <span class="mf">0.54</span><span class="p">,</span> <span class="mf">7.3</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">0.0054</span><span class="p">,</span> <span class="mf">0.021</span><span class="p">,</span> <span class="mf">0.055</span><span class="p">,</span> <span class="mf">0.035</span><span class="p">,</span> <span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.059</span><span class="p">,</span> <span class="mf">0.11</span><span class="p">,</span> <span class="mf">0.085</span><span class="p">,</span> <span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.19</span><span class="p">,</span>
+        <span class="mf">0.0027</span><span class="p">,</span> <span class="mf">0.078</span><span class="p">,</span> <span class="mf">0.21</span><span class="p">,</span> <span class="mf">3.4</span>
+    <span class="p">],</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">0.0019</span><span class="p">,</span> <span class="mf">0.0058</span><span class="p">,</span> <span class="mf">0.027</span><span class="p">,</span> <span class="mf">0.012</span><span class="p">,</span> <span class="mf">0.035</span><span class="p">,</span> <span class="mf">0.015</span><span class="p">,</span> <span class="mf">0.023</span><span class="p">,</span> <span class="mf">0.021</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">,</span> <span class="mf">0.048</span><span class="p">,</span>
+        <span class="mf">0.00097</span><span class="p">,</span> <span class="mf">0.027</span><span class="p">,</span> <span class="mf">0.070</span><span class="p">,</span> <span class="mf">1.3</span>
+    <span class="p">],</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">0.053</span><span class="p">,</span> <span class="mf">0.11</span><span class="p">,</span> <span class="mf">0.37</span><span class="p">,</span> <span class="mf">0.69</span><span class="p">,</span> <span class="mf">0.27</span><span class="p">,</span> <span class="mf">0.27</span><span class="p">,</span> <span class="mf">0.43</span><span class="p">,</span> <span class="mf">0.85</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.027</span><span class="p">,</span> <span class="mf">0.53</span><span class="p">,</span>
+        <span class="mf">1.4</span><span class="p">,</span> <span class="mf">27.0</span>
+    <span class="p">],</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.0026</span><span class="p">,</span> <span class="mf">0.0052</span><span class="p">,</span> <span class="mf">0.018</span><span class="p">,</span> <span class="mf">0.010</span><span class="p">,</span> <span class="mf">0.029</span><span class="p">,</span> <span class="mf">0.010</span><span class="p">,</span> <span class="mf">0.016</span><span class="p">,</span> <span class="mf">0.016</span><span class="p">,</span> <span class="mf">0.021</span><span class="p">,</span>
+            <span class="mf">0.042</span><span class="p">,</span> <span class="mf">0.0013</span><span class="p">,</span> <span class="mf">0.023</span><span class="p">,</span> <span class="mf">0.062</span><span class="p">,</span> <span class="mf">1.1</span>
+        <span class="p">],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.00014</span><span class="p">,</span> <span class="mf">0.00028</span><span class="p">,</span> <span class="mf">0.00096</span><span class="p">,</span> <span class="mf">0.00056</span><span class="p">,</span> <span class="mf">0.0015</span><span class="p">,</span> <span class="mf">0.00056</span><span class="p">,</span> <span class="mf">0.00084</span><span class="p">,</span>
+            <span class="mf">0.00084</span><span class="p">,</span> <span class="mf">0.0011</span><span class="p">,</span> <span class="mf">0.0022</span><span class="p">,</span> <span class="mf">0.00007</span><span class="p">,</span> <span class="mf">0.0013</span><span class="p">,</span> <span class="mf">0.0034</span><span class="p">,</span> <span class="mf">0.059</span>
+        <span class="p">],</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.00026</span><span class="p">,</span> <span class="mf">0.00052</span><span class="p">,</span> <span class="mf">0.0018</span><span class="p">,</span> <span class="mf">0.0010</span><span class="p">,</span> <span class="mf">0.0029</span><span class="p">,</span> <span class="mf">0.0010</span><span class="p">,</span> <span class="mf">0.0016</span><span class="p">,</span> <span class="mf">0.0016</span><span class="p">,</span>
+            <span class="mf">0.0021</span><span class="p">,</span> <span class="mf">0.0042</span><span class="p">,</span> <span class="mf">0.00013</span><span class="p">,</span> <span class="mf">0.0023</span><span class="p">,</span> <span class="mf">0.0062</span><span class="p">,</span> <span class="mf">0.11</span>
+        <span class="p">],</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.000050</span><span class="p">,</span> <span class="mf">0.000100</span><span class="p">,</span> <span class="mf">0.000350</span><span class="p">,</span> <span class="mf">0.000200</span><span class="p">,</span> <span class="mf">0.000550</span><span class="p">,</span> <span class="mf">0.000200</span><span class="p">,</span>
+            <span class="mf">0.000300</span><span class="p">,</span> <span class="mf">0.000300</span><span class="p">,</span> <span class="mf">0.000400</span><span class="p">,</span> <span class="mf">0.000800</span><span class="p">,</span> <span class="mf">0.000025</span><span class="p">,</span> <span class="mf">0.000450</span><span class="p">,</span>
+            <span class="mf">0.001200</span><span class="p">,</span> <span class="mf">0.021000</span>
+        <span class="p">],</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.0000035</span><span class="p">,</span> <span class="mf">0.000007</span><span class="p">,</span> <span class="mf">0.000025</span><span class="p">,</span> <span class="mf">0.000014</span><span class="p">,</span> <span class="mf">0.000039</span><span class="p">,</span> <span class="mf">0.000014</span><span class="p">,</span>
+            <span class="mf">0.000021</span><span class="p">,</span> <span class="mf">0.000021</span><span class="p">,</span> <span class="mf">0.000028</span><span class="p">,</span> <span class="mf">0.000056</span><span class="p">,</span> <span class="mf">0.0000018</span><span class="p">,</span> <span class="mf">0.000031</span><span class="p">,</span>
+            <span class="mf">0.000084</span><span class="p">,</span> <span class="mf">0.0015</span>
+        <span class="p">],</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.00012</span><span class="p">,</span> <span class="mf">0.00024</span><span class="p">,</span> <span class="mf">0.00084</span><span class="p">,</span> <span class="mf">0.00048</span><span class="p">,</span> <span class="mf">0.0013</span><span class="p">,</span> <span class="mf">0.00048</span><span class="p">,</span> <span class="mf">0.00072</span><span class="p">,</span>
+            <span class="mf">0.00072</span><span class="p">,</span> <span class="mf">0.00096</span><span class="p">,</span> <span class="mf">0.0019</span><span class="p">,</span> <span class="mf">0.00005</span><span class="p">,</span> <span class="mf">0.0011</span><span class="p">,</span> <span class="mf">0.0029</span><span class="p">,</span> <span class="mf">0.050</span>
+        <span class="p">],</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.000069</span><span class="p">,</span> <span class="mf">0.000138</span><span class="p">,</span> <span class="mf">0.000483</span><span class="p">,</span> <span class="mf">0.000276</span><span class="p">,</span> <span class="mf">0.000759</span><span class="p">,</span> <span class="mf">0.000276</span><span class="p">,</span>
+            <span class="mf">0.000414</span><span class="p">,</span> <span class="mf">0.000414</span><span class="p">,</span> <span class="mf">0.000552</span><span class="p">,</span> <span class="mf">0.001104</span><span class="p">,</span> <span class="mf">0.000035</span><span class="p">,</span> <span class="mf">0.000621</span><span class="p">,</span>
+            <span class="mf">0.001656</span><span class="p">,</span> <span class="mf">0.02898</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">PART_COUNT_PI_Q</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]</span>
+<span class="n">PART_STRESS_LAMBDA_B</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.000041</span><span class="p">,</span> <span class="mf">0.00026</span><span class="p">],</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0026</span><span class="p">,</span> <span class="mf">0.00014</span><span class="p">,</span> <span class="mf">0.00026</span><span class="p">,</span> <span class="mf">0.00005</span><span class="p">,</span> <span class="mf">0.0000035</span><span class="p">,</span> <span class="mf">0.00012</span><span class="p">,</span> <span class="mf">0.000069</span><span class="p">]</span>
+<span class="p">}</span>
+<span class="n">PART_STRESS_PI_Q</span> <span class="o">=</span> <span class="p">{</span><span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">]}</span>
+<span class="n">PI_E</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">13.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">19.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span>
+            <span class="mf">27.0</span><span class="p">,</span> <span class="mf">490.0</span>
+        <span class="p">],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">2.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">21.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">27.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">18.0</span><span class="p">,</span> <span class="mf">17.0</span><span class="p">,</span> <span class="mf">25.0</span><span class="p">,</span> <span class="mf">37.0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span>
+            <span class="mf">20.0</span><span class="p">,</span> <span class="mf">54.0</span><span class="p">,</span> <span class="mf">970.0</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">13.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">11.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">11.0</span><span class="p">,</span> <span class="mf">19.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span>
+            <span class="mf">27.0</span><span class="p">,</span> <span class="mf">490.0</span>
+        <span class="p">],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">2.0</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mf">17.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">26.0</span><span class="p">,</span> <span class="mf">14.0</span><span class="p">,</span> <span class="mf">22.0</span><span class="p">,</span> <span class="mf">14.0</span><span class="p">,</span> <span class="mf">22.0</span><span class="p">,</span> <span class="mf">37.0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span>
+            <span class="mf">20.0</span><span class="p">,</span> <span class="mf">54.0</span><span class="p">,</span> <span class="mf">970.0</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">14.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">18.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">11.0</span><span class="p">,</span> <span class="mf">13.0</span><span class="p">,</span> <span class="mf">25.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">14.0</span><span class="p">,</span>
+        <span class="mf">36.0</span><span class="p">,</span> <span class="mf">650.0</span>
+    <span class="p">],</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">13.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">16.0</span><span class="p">,</span> <span class="mf">28.0</span><span class="p">,</span> <span class="mf">19.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">27.0</span><span class="p">,</span>
+        <span class="mf">500.0</span>
+    <span class="p">],</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">11.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">16.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">9.0</span><span class="p">,</span> <span class="mf">24.0</span><span class="p">,</span>
+        <span class="mf">420.0</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+<span class="n">PI_K</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]</span>
+<span class="n">REF_TEMPS</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mf">473.0</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mf">423.0</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">373.0</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="mf">358.0</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="mf">423.0</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="calculate_active_pins_factor"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.connection.calculate_active_pins_factor">[docs]</a><span class="k">def</span> <span class="nf">calculate_active_pins_factor</span><span class="p">(</span><span class="n">n_active_pins</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the active pins factor (piP).</span>
+
+<span class="sd">    :param n_active_pins: the number of active pins in the connector.</span>
+<span class="sd">    :return: _pi_p; the calculated value of piP.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">exp</span><span class="p">(((</span><span class="n">n_active_pins</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">10.0</span><span class="p">)</span><span class="o">**</span><span class="mf">0.51064</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="calculate_complexity_factor"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.connection.calculate_complexity_factor">[docs]</a><span class="k">def</span> <span class="nf">calculate_complexity_factor</span><span class="p">(</span><span class="n">n_circuit_planes</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the complexity factor (piC).</span>
+
+<span class="sd">    :param n_circuit_planes: the number of planes in the PCB/PWA.</span>
+<span class="sd">    :return: _pi_c; the calculated value of the complexity factor.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">n_circuit_planes</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">_pi_c</span> <span class="o">=</span> <span class="mf">0.65</span> <span class="o">*</span> <span class="n">n_circuit_planes</span><span class="o">**</span><span class="mf">0.63</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_pi_c</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+    <span class="k">return</span> <span class="n">_pi_c</span></div>
+
+
+<div class="viewcode-block" id="calculate_insert_temperature"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.connection.calculate_insert_temperature">[docs]</a><span class="k">def</span> <span class="nf">calculate_insert_temperature</span><span class="p">(</span><span class="n">contact_gauge</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                 <span class="n">current_operating</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the insert temperature.</span>
+
+<span class="sd">    Operating current can be passed as float or integer:</span>
+<span class="sd">    &gt;&gt;&gt; calculate_insert_temperature(1, 16, 0.05)</span>
+<span class="sd">    0.0010736063482992093</span>
+<span class="sd">    &gt;&gt;&gt; calculate_insert_temperature(1, 16, 5)</span>
+<span class="sd">    5.380777957087587</span>
+
+<span class="sd">    A KeyError is raised if the contact gauge are unknown:</span>
+<span class="sd">    &gt;&gt;&gt; calculate_insert_temperature(1, 6, 0.05)</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">    KeyError: 6</span>
+
+<span class="sd">    A TypeError is raised if the operating current is passed as a string:</span>
+<span class="sd">    &gt;&gt;&gt; calculate_insert_temperature(1, 16, &#39;0.05&#39;)</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">    TypeError: unsupported operand type(s) for ** or pow(): &#39;str&#39; and &#39;float&#39;</span>
+
+<span class="sd">    :param contact_gauge: the standard gauge of the connection contact.</span>
+<span class="sd">    :param current_operating: the nominal current carried by each</span>
+<span class="sd">        connection contact.</span>
+<span class="sd">    :return: _temperature_rise; the calculated temperature of the connection&#39;s</span>
+<span class="sd">        insert.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: KeyError when an unknown contact gauge is passed.</span>
+<span class="sd">    :raise: TypeError when the operating current is passed as a string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_dic_factors</span> <span class="o">=</span> <span class="p">{</span><span class="mi">12</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">16</span><span class="p">:</span> <span class="mf">0.274</span><span class="p">,</span> <span class="mi">20</span><span class="p">:</span> <span class="mf">0.64</span><span class="p">,</span> <span class="mi">22</span><span class="p">:</span> <span class="mf">0.989</span><span class="p">,</span> <span class="mi">26</span><span class="p">:</span> <span class="mf">2.1</span><span class="p">}</span>
+
+    <span class="n">_fo</span> <span class="o">=</span> <span class="n">_dic_factors</span><span class="p">[</span><span class="n">contact_gauge</span><span class="p">]</span>
+    <span class="n">_temperature_rise</span> <span class="o">=</span> <span class="p">(</span><span class="n">_fo</span> <span class="o">*</span> <span class="n">current_operating</span><span class="o">**</span><span class="mf">1.85</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_temperature_rise</span></div>
+
+
+<div class="viewcode-block" id="calculate_part_count"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.connection.calculate_part_count">[docs]</a><span class="k">def</span> <span class="nf">calculate_part_count</span><span class="p">(</span><span class="o">**</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Wrap get_part_count_lambda_b().</span>
+
+<span class="sd">    This wrapper allows us to pass an attributes dict from a generic parts</span>
+<span class="sd">    count function.</span>
+
+<span class="sd">    :param attributes: the attributes for the connection being calculated.</span>
+<span class="sd">    :return: _base_hr; the parts count base hazard rates.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">get_part_count_lambda_b</span><span class="p">(</span>
+        <span class="n">subcategory_id</span><span class="o">=</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">],</span>
+        <span class="n">environment_active_id</span><span class="o">=</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;environment_active_id&#39;</span><span class="p">],</span>
+        <span class="n">type_id</span><span class="o">=</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;type_id&#39;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="calculate_part_stress"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.connection.calculate_part_stress">[docs]</a><span class="k">def</span> <span class="nf">calculate_part_stress</span><span class="p">(</span><span class="o">**</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the part stress active hazard rate for a connection.</span>
+
+<span class="sd">    This function calculates the MIL-HDBK-217F hazard rate using the part</span>
+<span class="sd">    stress method.</span>
+
+<span class="sd">    :param attributes: the attributes for the connection being calculated.</span>
+<span class="sd">    :return: attributes; the keyword argument (hardware attribute)</span>
+<span class="sd">        dictionary with updated values.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;temperature_rise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calculate_insert_temperature</span><span class="p">(</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;contact_gauge&#39;</span><span class="p">],</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;current_operating&#39;</span><span class="p">])</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piC&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calculate_complexity_factor</span><span class="p">(</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;n_circuit_planes&#39;</span><span class="p">])</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piP&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calculate_active_pins_factor</span><span class="p">(</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;n_active_pins&#39;</span><span class="p">])</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piK&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_mate_unmate_factor</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;n_cycles&#39;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">_factor_key</span> <span class="o">=</span> <span class="n">get_factor_key</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;type_id&#39;</span><span class="p">],</span>
+                                     <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;specification_id&#39;</span><span class="p">],</span>
+                                     <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;insert_id&#39;</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_factor_key</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">_contact_temp</span> <span class="o">=</span> <span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;temperature_active&#39;</span><span class="p">]</span>
+                     <span class="o">+</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;temperature_rise&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mf">273.0</span><span class="p">)</span>
+
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;lambda_b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calculate_part_stress_lambda_b</span><span class="p">(</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">],</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;type_id&#39;</span><span class="p">],</span> <span class="n">_contact_temp</span><span class="p">,</span>
+        <span class="n">_factor_key</span><span class="p">)</span>
+
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;lambda_b&#39;</span><span class="p">]</span>
+                                        <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piE&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span>
+                                            <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piP&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span> <span class="o">*</span>
+            <span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;n_wave_soldered&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piC&#39;</span><span class="p">]</span>
+             <span class="o">+</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;n_hand_soldered&#39;</span><span class="p">]</span> <span class="o">*</span>
+             <span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piC&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mf">13.0</span><span class="p">))</span> <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piQ&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span>
+                                            <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piQ&#39;</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span>
+                                            <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piK&#39;</span><span class="p">]</span>
+                                            <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piP&#39;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">attributes</span></div>
+
+
+<div class="viewcode-block" id="calculate_part_stress_lambda_b"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.connection.calculate_part_stress_lambda_b">[docs]</a><span class="k">def</span> <span class="nf">calculate_part_stress_lambda_b</span><span class="p">(</span><span class="n">subcategory_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">type_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                   <span class="n">contact_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                   <span class="n">factor_key</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate part stress base hazard rate (lambda b) from MIL-HDBK-217F.</span>
+
+<span class="sd">    This function calculates the MIL-HDBK-217F base hazard rate for the parts</span>
+<span class="sd">    stress method.</span>
+
+<span class="sd">    .. important:: the contact temperature must be calculated by the calling</span>
+<span class="sd">        function as it is not an attribute of a Connection.</span>
+
+<span class="sd">    :param subcategory_id: the subcategory identifier.</span>
+<span class="sd">    :param type_id: the connection type identifier.</span>
+<span class="sd">    :param contact_temperature: the operating temperature of the</span>
+<span class="sd">        contacts.</span>
+<span class="sd">    :return: _base_hr; the calculates base hazard rate.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: IndexError if passed an unknown type ID.</span>
+<span class="sd">    :raise: ZeroDivisionError if passed contact temperature = 0.0.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Factors are used to calculate base hazard rate for circular/rack and</span>
+    <span class="c1"># panel connectors.  Key is from dictionary above (1 - 4) or contact</span>
+    <span class="c1"># gauge (22 - 12).</span>
+    <span class="n">_dic_factors</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="o">-</span><span class="mf">1592.0</span><span class="p">,</span> <span class="mf">5.36</span><span class="p">],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.431</span><span class="p">,</span> <span class="o">-</span><span class="mf">2073.6</span><span class="p">,</span> <span class="mf">4.66</span><span class="p">],</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.19</span><span class="p">,</span> <span class="o">-</span><span class="mf">1298.0</span><span class="p">,</span> <span class="mf">4.25</span><span class="p">],</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.77</span><span class="p">,</span> <span class="o">-</span><span class="mf">1528.8</span><span class="p">,</span> <span class="mf">4.72</span><span class="p">],</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.216</span><span class="p">,</span> <span class="o">-</span><span class="mf">2073.6</span><span class="p">,</span> <span class="mf">4.66</span><span class="p">],</span>
+    <span class="p">}</span>
+
+    <span class="n">_ref_temp</span> <span class="o">=</span> <span class="n">REF_TEMPS</span><span class="p">[</span><span class="n">factor_key</span><span class="p">]</span>
+    <span class="n">_f0</span> <span class="o">=</span> <span class="n">_dic_factors</span><span class="p">[</span><span class="n">factor_key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">_f1</span> <span class="o">=</span> <span class="n">_dic_factors</span><span class="p">[</span><span class="n">factor_key</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">_f2</span> <span class="o">=</span> <span class="n">_dic_factors</span><span class="p">[</span><span class="n">factor_key</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]:</span>
+        <span class="n">_lambda_b</span> <span class="o">=</span> <span class="n">PART_STRESS_LAMBDA_B</span><span class="p">[</span><span class="n">subcategory_id</span><span class="p">][</span><span class="n">type_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">subcategory_id</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">_lambda_b</span> <span class="o">=</span> <span class="mf">0.00042</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_lambda_b</span> <span class="o">=</span> <span class="n">_f0</span> <span class="o">*</span> <span class="n">exp</span><span class="p">((</span><span class="n">_f1</span> <span class="o">/</span> <span class="n">contact_temperature</span><span class="p">)</span>
+                              <span class="o">+</span> <span class="p">(</span><span class="n">contact_temperature</span> <span class="o">/</span> <span class="n">_ref_temp</span><span class="p">)</span><span class="o">**</span><span class="n">_f2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_lambda_b</span></div>
+
+
+<div class="viewcode-block" id="get_factor_key"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.connection.get_factor_key">[docs]</a><span class="k">def</span> <span class="nf">get_factor_key</span><span class="p">(</span><span class="n">type_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">specification_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">insert_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Retrieve the reference temperature key for the connection.</span>
+
+<span class="sd">    :param subcategory_id: the subcategory identifier.</span>
+<span class="sd">    :param type_id: the connection type identifier.</span>
+<span class="sd">    :param specification_id: the connection governing specification</span>
+<span class="sd">        identifier.</span>
+<span class="sd">    :param insert_id: the insert material identifier.</span>
+<span class="sd">    :return: _key; the key to use to select the reference temperature and other</span>
+<span class="sd">        factors.</span>
+<span class="sd">    :rtype: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Reference temperature is used to calculate base hazard rate for</span>
+    <span class="c1"># circular/rack and panel connectors.  To get the reference temperature</span>
+    <span class="c1"># dictionary key, we quesry the key dictionary in which the first key is</span>
+    <span class="c1"># the connector type ID, second key is the specification ID.  The insert</span>
+    <span class="c1"># material ID is the index in the list returned.</span>
+    <span class="n">_dic_keys</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="p">},</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="p">},</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+        <span class="p">},</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+            <span class="mi">7</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+            <span class="mi">8</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="p">},</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">_dic_keys</span><span class="p">[</span><span class="n">type_id</span><span class="p">][</span><span class="n">specification_id</span><span class="p">][</span><span class="n">insert_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_mate_unmate_factor"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.connection.get_mate_unmate_factor">[docs]</a><span class="k">def</span> <span class="nf">get_mate_unmate_factor</span><span class="p">(</span><span class="n">n_cycles</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Retrieve the mating/unmating factor (piK).</span>
+
+<span class="sd">    :param n_cycles: the average number of mate/unmate cycles expected</span>
+<span class="sd">        per hour of operation.</span>
+<span class="sd">    :return: _pi_k; the mate_unmate_factor.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">n_cycles</span> <span class="o">&lt;=</span> <span class="mf">0.05</span><span class="p">:</span>
+        <span class="n">_pi_k</span> <span class="o">=</span> <span class="n">PI_K</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="mf">0.05</span> <span class="o">&lt;</span> <span class="n">n_cycles</span> <span class="o">&lt;=</span> <span class="mf">0.5</span><span class="p">:</span>
+        <span class="n">_pi_k</span> <span class="o">=</span> <span class="n">PI_K</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="mf">0.5</span> <span class="o">&lt;</span> <span class="n">n_cycles</span> <span class="o">&lt;=</span> <span class="mf">5.0</span><span class="p">:</span>
+        <span class="n">_pi_k</span> <span class="o">=</span> <span class="n">PI_K</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="mf">5.0</span> <span class="o">&lt;</span> <span class="n">n_cycles</span> <span class="o">&lt;=</span> <span class="mf">50.0</span><span class="p">:</span>
+        <span class="n">_pi_k</span> <span class="o">=</span> <span class="n">PI_K</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_pi_k</span> <span class="o">=</span> <span class="n">PI_K</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">_pi_k</span></div>
+
+
+<div class="viewcode-block" id="get_part_count_lambda_b"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.connection.get_part_count_lambda_b">[docs]</a><span class="k">def</span> <span class="nf">get_part_count_lambda_b</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Retrieve the parts count base hazard rate (lambda b) from MIL-HDBK-217F.</span>
+
+<span class="sd">    This function retrieves the MIL-HDBK-217F parts count base hazard rate.</span>
+<span class="sd">    The dictionary PART_COUNT_LAMBDA_B contains the MIL-HDBK-217F parts count</span>
+<span class="sd">    base hazard rates.  Keys are for PART_COUNT_LAMBDA_B are:</span>
+
+<span class="sd">        #. subcategory_id</span>
+<span class="sd">        #. environment_active_id</span>
+<span class="sd">        #. type id; if the connection subcategory is NOT type dependent, then</span>
+<span class="sd">            the second key will be zero.</span>
+
+<span class="sd">    Current subcategory IDs are:</span>
+
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    | Subcategory    |           Connection          | MIL-HDBK-217F   |</span>
+<span class="sd">    |       ID       |              Style            |    Section      |</span>
+<span class="sd">    +================+===============================+=================+</span>
+<span class="sd">    |        1       | Circular, Rack and Panel,     |       15.1      |</span>
+<span class="sd">    |                | Coaxial, Triaxial             |                 |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    |        2       | PCB/PWA Edge                  |       15.2      |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    |        3       | IC Socket                     |       15.3      |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    |        4       | Plated Through Hole (PTH)     |       16.1      |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    |        5       | Non-PTH                       |       17.1      |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+
+<span class="sd">    :param id_keys: the ID&#39;s used as keys when selecting</span>
+<span class="sd">        the base hazard rate.  The keys are subcategory_id,</span>
+<span class="sd">        environment_active_id, and type_id.</span>
+<span class="sd">    :return: _base_hr; the parts count base hazard rate.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: KeyError if passed an unknown subcategory ID or type ID.</span>
+<span class="sd">    :raise: IndexError if passed an unknown active environment ID.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_subcategory_id</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">_type_id</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type_id&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">_environment_active_id</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;environment_active_id&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">_subcategory_id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">]:</span>
+        <span class="n">_base_hr</span> <span class="o">=</span> <span class="n">PART_COUNT_LAMBDA_B</span><span class="p">[</span><span class="n">_subcategory_id</span><span class="p">][</span><span class="n">_type_id</span><span class="p">][</span>
+            <span class="n">_environment_active_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_base_hr</span> <span class="o">=</span> <span class="n">PART_COUNT_LAMBDA_B</span><span class="p">[</span><span class="n">_subcategory_id</span><span class="p">][</span><span class="n">_environment_active_id</span>
+                                                        <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">_base_hr</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

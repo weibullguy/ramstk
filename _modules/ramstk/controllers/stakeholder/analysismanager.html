@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.controllers.stakeholder.analysismanager &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.controllers.stakeholder.analysismanager</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.controllers.function.analysismanager.py is part of The RAMSTK</span>
+<span class="c1">#       Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2019 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;Function Controller Package analysis manager.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.analyses</span> <span class="kn">import</span> <span class="n">improvementfactor</span>
+<span class="kn">from</span> <span class="nn">ramstk.configuration</span> <span class="kn">import</span> <span class="n">RAMSTKUserConfiguration</span>
+<span class="kn">from</span> <span class="nn">ramstk.controllers</span> <span class="kn">import</span> <span class="n">RAMSTKAnalysisManager</span>
+
+
+<div class="viewcode-block" id="AnalysisManager"><a class="viewcode-back" href="../../../../api/ramstk.controllers.stakeholder.html#ramstk.controllers.stakeholder.analysismanager.AnalysisManager">[docs]</a><span class="k">class</span> <span class="nc">AnalysisManager</span><span class="p">(</span><span class="n">RAMSTKAnalysisManager</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Contain the attributes and methods of the Function analysis manager.</span>
+
+<span class="sd">    This class manages the functional analysis for functional hazards</span>
+<span class="sd">    analysis (FHA).  Attributes of the function Analysis Manager are:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="n">RAMSTKUserConfiguration</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the function analysis manager.</span>
+
+<span class="sd">        :param configuration: the Configuration instance associated with the</span>
+<span class="sd">            current instance of the RAMSTK application.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_get_all_attributes</span><span class="p">,</span>
+                      <span class="s1">&#39;succeed_get_stakeholder_attributes&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_get_tree</span><span class="p">,</span> <span class="s1">&#39;succeed_get_stakeholder_tree&#39;</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_calculate_stakeholder</span><span class="p">,</span>
+                      <span class="s1">&#39;request_calculate_stakeholder&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AnalysisManager.do_calculate_stakeholder"><a class="viewcode-back" href="../../../../api/ramstk.controllers.stakeholder.html#ramstk.controllers.stakeholder.analysismanager.AnalysisManager.do_calculate_stakeholder">[docs]</a>    <span class="k">def</span> <span class="nf">do_calculate_stakeholder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate improvement factor and weight for currently selected item.</span>
+
+<span class="sd">        :param node_id: the node (stakeholder) ID to calculate.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Retrieve all the attributes from all the RAMSTK data tables for the</span>
+        <span class="c1"># requested stakeholder.  We need to build a comprehensive dict of</span>
+        <span class="c1"># attributes to pass to the various analysis methods/functions.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_get_all_stakeholder_attributes&#39;</span><span class="p">,</span>
+                        <span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_calculate_improvement</span><span class="p">()</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+            <span class="s1">&#39;succeed_calculate_stakeholder&#39;</span><span class="p">,</span>
+            <span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span>
+            <span class="n">package</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;improvement&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;improvement&#39;</span><span class="p">]})</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+            <span class="s1">&#39;succeed_calculate_stakeholder&#39;</span><span class="p">,</span>
+            <span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span>
+            <span class="n">package</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;overall_weight&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;overall_weight&#39;</span><span class="p">]})</span></div>
+
+    <span class="k">def</span> <span class="nf">_do_calculate_improvement</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate improvement factor and weight for currently selected item.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;improvement&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;overall_weight&#39;</span><span class="p">]</span>
+         <span class="p">)</span> <span class="o">=</span> <span class="n">improvementfactor</span><span class="o">.</span><span class="n">calculate_improvement</span><span class="p">(</span>
+             <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;planned_rank&#39;</span><span class="p">],</span>
+             <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;customer_rank&#39;</span><span class="p">],</span>
+             <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;priority&#39;</span><span class="p">],</span>
+             <span class="n">user_float_1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;user_float_1&#39;</span><span class="p">],</span>
+             <span class="n">user_float_2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;user_float_2&#39;</span><span class="p">],</span>
+             <span class="n">user_float_3</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;user_float_3&#39;</span><span class="p">],</span>
+             <span class="n">user_float_4</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;user_float_4&#39;</span><span class="p">],</span>
+             <span class="n">user_float_5</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;user_float_5&#39;</span><span class="p">])</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

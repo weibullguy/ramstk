@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.assistants.similaritem &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.assistants.similaritem</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.views.gtk3.assistants.similaritem.py is part of The RAMSTK</span>
+<span class="c1">#       Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2019 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;The RASMTK Similar Item Analysis Assistants Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3</span> <span class="kn">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.widgets</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RAMSTKCheckButton</span><span class="p">,</span> <span class="n">RAMSTKDialog</span><span class="p">,</span> <span class="n">RAMSTKEntry</span><span class="p">,</span> <span class="n">RAMSTKLabel</span><span class="p">,</span> <span class="n">RAMSTKTreeView</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="EditFunction"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.assistants.html#ramstk.views.gtk3.assistants.similaritem.EditFunction">[docs]</a><span class="k">class</span> <span class="nc">EditFunction</span><span class="p">(</span><span class="n">RAMSTKDialog</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Assistant for editing similar item functions.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">treeview</span><span class="p">:</span> <span class="n">RAMSTKTreeView</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize instance of the Similar Item Function Editor Assistant.</span>
+
+<span class="sd">        :param treeview: the Similar Item Work View RAMSTKTreeView().</span>
+<span class="sd">        :type treeview: :class:`ramstk.views.gtk3.RAMSTKTreeView`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_dlgparent</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;dlgparent&#39;</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;RAMSTK Similar Item Analysis User Function Editing Assistant&quot;</span><span class="p">),</span>
+            <span class="n">dlgparent</span><span class="o">=</span><span class="n">_dlgparent</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkApplyAll</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Apply to all assemblies.&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtFunction1</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtFunction2</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtFunction3</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtFunction4</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtFunction5</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__make_ui</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_load_functions</span><span class="p">(</span><span class="n">treeview</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__make_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Build the user interface.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_default_size</span><span class="p">(</span><span class="mi">610</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">_label1</span><span class="p">:</span> <span class="n">RAMSTKLabel</span> <span class="o">=</span> <span class="n">RAMSTKLabel</span><span class="p">(</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;You can define up to five functions.  &quot;</span>
+              <span class="s2">&quot;You can use the system failure rate, &quot;</span>
+              <span class="s2">&quot;selected assembly failure rate, the &quot;</span>
+              <span class="s2">&quot;change factor, the user float, the &quot;</span>
+              <span class="s2">&quot;user integer values, and results of &quot;</span>
+              <span class="s2">&quot;other functions.</span><span class="se">\n\n</span><span class="s2"> </span><span class="se">\</span>
+<span class="s2">        System hazard rate is hr_sys</span><span class="se">\n</span><span class="s2"> </span><span class="se">\</span>
+<span class="s2">        Assembly hazard rate is hr</span><span class="se">\n</span><span class="s2"> </span><span class="se">\</span>
+<span class="s2">        Change factor is pi[1-8]</span><span class="se">\n</span><span class="s2"> </span><span class="se">\</span>
+<span class="s2">        User float is uf[1-3]</span><span class="se">\n</span><span class="s2"> </span><span class="se">\</span>
+<span class="s2">        User integer is ui[1-3]</span><span class="se">\n</span><span class="s2"> </span><span class="se">\</span>
+<span class="s2">        Function result is res[1-5]</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">))</span>
+        <span class="n">_label1</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">height</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">_height1</span> <span class="o">=</span> <span class="n">_label1</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s1">&#39;height&#39;</span><span class="p">)</span>
+
+        <span class="n">_label2</span><span class="p">:</span> <span class="n">RAMSTKLabel</span> <span class="o">=</span> <span class="n">RAMSTKLabel</span><span class="p">(</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;For example, pi1*pi2+pi3, multiplies &quot;</span>
+              <span class="s2">&quot;the first two change factors and &quot;</span>
+              <span class="s2">&quot;adds the value to the third change &quot;</span>
+              <span class="s2">&quot;factor.</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">))</span>
+        <span class="n">_label2</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">height</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">_height2</span> <span class="o">=</span> <span class="n">_label2</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s1">&#39;height&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Build the dialog assistant.</span>
+        <span class="n">_fixed</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Fixed</span><span class="p">()</span>
+
+        <span class="n">_y_pos</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">_label1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+        <span class="n">_y_pos</span> <span class="o">+=</span> <span class="p">(</span><span class="n">_height1</span> <span class="o">+</span> <span class="mi">50</span><span class="p">)</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">_label2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+        <span class="n">_y_pos</span> <span class="o">+=</span> <span class="p">(</span><span class="n">_height2</span> <span class="o">+</span> <span class="mi">30</span><span class="p">)</span>
+
+        <span class="n">_separator</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">HSeparator</span><span class="p">()</span>
+        <span class="n">_separator</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">width_request</span> <span class="o">=</span> <span class="mi">600</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">_separator</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+        <span class="n">_y_pos</span> <span class="o">+=</span> <span class="mi">20</span>
+
+        <span class="n">_label</span> <span class="o">=</span> <span class="n">RAMSTKLabel</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;User function 1:&quot;</span><span class="p">))</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">_label</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">txtFunction1</span><span class="p">,</span> <span class="mi">195</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+        <span class="n">_y_pos</span> <span class="o">+=</span> <span class="mi">30</span>
+
+        <span class="n">_label</span> <span class="o">=</span> <span class="n">RAMSTKLabel</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;User function 2:&quot;</span><span class="p">))</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">_label</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">txtFunction2</span><span class="p">,</span> <span class="mi">195</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+        <span class="n">_y_pos</span> <span class="o">+=</span> <span class="mi">30</span>
+
+        <span class="n">_label</span> <span class="o">=</span> <span class="n">RAMSTKLabel</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;User function 3:&quot;</span><span class="p">))</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">_label</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">txtFunction3</span><span class="p">,</span> <span class="mi">195</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+        <span class="n">_y_pos</span> <span class="o">+=</span> <span class="mi">30</span>
+
+        <span class="n">_label</span> <span class="o">=</span> <span class="n">RAMSTKLabel</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;User function 4:&quot;</span><span class="p">))</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">_label</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">txtFunction4</span><span class="p">,</span> <span class="mi">195</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+        <span class="n">_y_pos</span> <span class="o">+=</span> <span class="mi">30</span>
+
+        <span class="n">_label</span> <span class="o">=</span> <span class="n">RAMSTKLabel</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;User function 5:&quot;</span><span class="p">))</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">_label</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">txtFunction5</span><span class="p">,</span> <span class="mi">195</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+        <span class="n">_y_pos</span> <span class="o">+=</span> <span class="mi">30</span>
+
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chkApplyAll</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vbox</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">_fixed</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__button</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Button</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Destroy the assistant when the &#39;Cancel&#39; button is pressed.</span>
+
+<span class="sd">        :param Gtk.Button __button: the Gtk.Button() that called this method.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_do_load_functions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">treeview</span><span class="p">:</span> <span class="n">RAMSTKTreeView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load any existing user-defined functions.</span>
+
+<span class="sd">        :param treeview: the Similar Item Work View RAMSTKTreeView().</span>
+<span class="sd">        :type treeview: :class:`ramstk.gui.gtk.TreeView.RAMSTKTreeView`</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="p">(</span><span class="n">_model</span><span class="p">,</span> <span class="n">_row</span><span class="p">)</span> <span class="o">=</span> <span class="n">treeview</span><span class="o">.</span><span class="n">get_selection</span><span class="p">()</span><span class="o">.</span><span class="n">get_selected</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtFunction1</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">_row</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtFunction1</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtFunction2</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">_row</span><span class="p">,</span> <span class="mi">31</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtFunction2</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtFunction3</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">_row</span><span class="p">,</span> <span class="mi">32</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtFunction3</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtFunction4</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">_row</span><span class="p">,</span> <span class="mi">33</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtFunction4</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtFunction5</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">_row</span><span class="p">,</span> <span class="mi">34</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtFunction5</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_on_set_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hardware_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Send PyPubSub messages to update the similar item attributes.</span>
+
+<span class="sd">        :param hardware_id: the Hardware ID for the Similar Item to update.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+            <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">,</span>
+            <span class="n">node_id</span><span class="o">=</span><span class="p">[</span><span class="n">hardware_id</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">package</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;function_1&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">txtFunction1</span><span class="o">.</span><span class="n">get_text</span><span class="p">())})</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+            <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">,</span>
+            <span class="n">node_id</span><span class="o">=</span><span class="p">[</span><span class="n">hardware_id</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">package</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;function_2&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">txtFunction2</span><span class="o">.</span><span class="n">get_text</span><span class="p">())})</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+            <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">,</span>
+            <span class="n">node_id</span><span class="o">=</span><span class="p">[</span><span class="n">hardware_id</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">package</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;function_3&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">txtFunction3</span><span class="o">.</span><span class="n">get_text</span><span class="p">())})</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+            <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">,</span>
+            <span class="n">node_id</span><span class="o">=</span><span class="p">[</span><span class="n">hardware_id</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">package</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;function_4&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">txtFunction4</span><span class="o">.</span><span class="n">get_text</span><span class="p">())})</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+            <span class="s1">&#39;wvw_editing_hardware&#39;</span><span class="p">,</span>
+            <span class="n">node_id</span><span class="o">=</span><span class="p">[</span><span class="n">hardware_id</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">package</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;function_5&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">txtFunction5</span><span class="o">.</span><span class="n">get_text</span><span class="p">())})</span>
+
+<div class="viewcode-block" id="EditFunction.do_set_functions"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.assistants.html#ramstk.views.gtk3.assistants.similaritem.EditFunction.do_set_functions">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_functions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">treeview</span><span class="p">:</span> <span class="n">RAMSTKTreeView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Set the user-defined functions.</span>
+
+<span class="sd">        :return: functions; a tuple of the five user-defined functions.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="p">(</span><span class="n">_model</span><span class="p">,</span> <span class="n">_row</span><span class="p">)</span> <span class="o">=</span> <span class="n">treeview</span><span class="o">.</span><span class="n">get_selection</span><span class="p">()</span><span class="o">.</span><span class="n">get_selected</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chkApplyAll</span><span class="o">.</span><span class="n">get_active</span><span class="p">():</span>
+            <span class="n">_row</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_iter_first</span><span class="p">()</span>
+            <span class="k">while</span> <span class="n">_row</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">_hardware_id</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">_row</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_on_set_function</span><span class="p">(</span><span class="n">_hardware_id</span><span class="p">)</span>
+                <span class="n">_row</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">iter_next</span><span class="p">(</span><span class="n">_row</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_hardware_id</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">_row</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_on_set_function</span><span class="p">(</span><span class="n">_hardware_id</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">txtFunction1</span><span class="o">.</span><span class="n">get_text</span><span class="p">()),</span>
+            <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">txtFunction2</span><span class="o">.</span><span class="n">get_text</span><span class="p">()),</span>
+            <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">txtFunction3</span><span class="o">.</span><span class="n">get_text</span><span class="p">()),</span>
+            <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">txtFunction4</span><span class="o">.</span><span class="n">get_text</span><span class="p">()),</span>
+            <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">txtFunction5</span><span class="o">.</span><span class="n">get_text</span><span class="p">())</span>
+        <span class="p">]</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

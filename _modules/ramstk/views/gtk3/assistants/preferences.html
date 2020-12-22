@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.assistants.preferences &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.assistants.preferences</h1><div class="highlight"><pre>
+<span></span><span class="c1"># pylint: disable=non-parent-init-called</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.views.gtk3.assistants.preferences.py is part of The RAMSTK</span>
+<span class="c1">#       Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2020 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;The RAMSTK Configuration Preferences Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="n">copyfile</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="c1"># noinspection PyPackageRequirements</span>
+<span class="kn">import</span> <span class="nn">toml</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.configuration</span> <span class="kn">import</span> <span class="n">RAMSTKUserConfiguration</span>
+<span class="kn">from</span> <span class="nn">ramstk.logger</span> <span class="kn">import</span> <span class="n">RAMSTKLogManager</span>
+<span class="kn">from</span> <span class="nn">ramstk.utilities</span> <span class="kn">import</span> <span class="n">integer_to_boolean</span><span class="p">,</span> <span class="n">string_to_boolean</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3</span> <span class="kn">import</span> <span class="n">Gdk</span><span class="p">,</span> <span class="n">GObject</span><span class="p">,</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.widgets</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RAMSTKBaseView</span><span class="p">,</span> <span class="n">RAMSTKComboBox</span><span class="p">,</span> <span class="n">RAMSTKEntry</span><span class="p">,</span> <span class="n">RAMSTKFrame</span><span class="p">,</span>
+    <span class="n">RAMSTKLabel</span><span class="p">,</span> <span class="n">RAMSTKScrolledWindow</span><span class="p">,</span> <span class="n">do_make_buttonbox</span><span class="p">,</span>
+    <span class="n">do_make_column</span><span class="p">,</span> <span class="n">do_make_label_group</span><span class="p">,</span> <span class="n">do_make_text_cell</span><span class="p">,</span>
+    <span class="n">do_make_toggle_cell</span><span class="p">,</span> <span class="n">do_set_cell_properties</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="EditPreferences"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.assistants.html#ramstk.views.gtk3.assistants.preferences.EditPreferences">[docs]</a><span class="k">class</span> <span class="nc">EditPreferences</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Window</span><span class="p">,</span> <span class="n">RAMSTKBaseView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Assistant to provide a GUI to set various RAMSTK config preferences.</span>
+
+<span class="sd">    RAMSTK preferences are stored in the RAMSTK Site database and the</span>
+<span class="sd">    user&#39;s Site configuration file and Program configuration file.</span>
+<span class="sd">    Configurations preferences are stored in Site.conf or RAMSTK.conf in</span>
+<span class="sd">    each user&#39;s $HOME/.config/RAMSTK directory and are applicable only</span>
+<span class="sd">    to that specific user.  Configuration preferences are edited with</span>
+<span class="sd">    the Preferences assistant.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Define private list class attributes.</span>
+    <span class="n">_lst_labels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Module Book tab position:&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Work Book tab position:&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;List Book tab position:&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Report size:&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Failure rate multiplier:&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Decimal places:&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Reliability estimation time:&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Path to RAMSTK configuration files:&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Path to RAMSTK data files:&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Path to RAMSTK log files:&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Select format file to edit:&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Revision Tree Background Color:&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Revision Tree Foreground Color:&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Function Tree Background Color:&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Function Tree Foreground Color:&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Requirements Tree Background Color:&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Requirements Tree Foreground Color:&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Hardware Tree Background Color:&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Hardware Tree Foreground Color:&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Validation  Tree Background Color:&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Validation Tree Foreground Color:&quot;</span><span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__widget</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ImageMenuItem</span><span class="p">,</span>
+                 <span class="n">configuration</span><span class="p">:</span> <span class="n">RAMSTKUserConfiguration</span><span class="p">,</span>
+                 <span class="n">logger</span><span class="p">:</span> <span class="n">RAMSTKLogManager</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the Preferences assistant.</span>
+
+<span class="sd">        :param __widget: the Gtk.ImageMenuItem() that called this assistant.</span>
+<span class="sd">        :param configuration: the RAMSTKUserConfiguration class instance.</span>
+<span class="sd">        :param logger: the RAMSTKLogManager class instance.</span>
+<span class="sd">        :param parent: the RAMSTKDesktop from which this assistant was</span>
+<span class="sd">            launched.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">GObject</span><span class="o">.</span><span class="n">GObject</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">RAMSTKBaseView</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_callbacks</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_quit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_request_update</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_icons</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;cancel&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Quit the RAMSTK preferences assistant without saving.&quot;</span><span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fmt_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_notebook</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Notebook</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="n">parent</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+
+        <span class="c1"># What are the general user preferences?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnConfDir</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">FileChooserButton</span><span class="p">(</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;RAMSTK Configuration File Directory&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnDataDir</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">FileChooserButton</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;RAMSTK Data Directory&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnIconDir</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">FileChooserButton</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;RAMSTK Icon Directory&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnLogDir</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">FileChooserButton</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;RAMSTK Log Directory&quot;</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbModuleBookTabPosition</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">(</span><span class="n">simple</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbWorkBookTabPosition</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">(</span><span class="n">simple</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbListBookTabPosition</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">(</span><span class="n">simple</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbReportSize</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">(</span><span class="n">simple</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtFRMultiplier</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtDecimalPlaces</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtMissionTime</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+
+        <span class="c1"># What are the names and, optionally, paths to the format files and the</span>
+        <span class="c1"># layout of each one?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbFormatFiles</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">(</span><span class="n">simple</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tvwFormatFile</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeView</span><span class="p">()</span>
+
+        <span class="c1"># What are the desired background and foreground colors for the</span>
+        <span class="c1"># various RAMSTK TreeView()?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnRevisionBGColor</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ColorButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnRevisionFGColor</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ColorButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnFunctionBGColor</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ColorButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnFunctionFGColor</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ColorButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnRequirementsBGColor</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ColorButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnRequirementsFGColor</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ColorButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnHardwareBGColor</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ColorButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnHardwareFGColor</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ColorButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnSoftwareBGColor</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ColorButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnSoftwareFGColor</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ColorButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnValidationBGColor</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ColorButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnValidationFGColor</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ColorButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnIncidentBGColor</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ColorButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnIncidentFGColor</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ColorButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnTestingBGColor</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ColorButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnTestingFGColor</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ColorButton</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbModuleBookTabPosition</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbWorkBookTabPosition</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbListBookTabPosition</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbReportSize</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtFRMultiplier</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtDecimalPlaces</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtMissionTime</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btnConfDir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">btnDataDir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">btnLogDir</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbFormatFiles</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">btnRevisionBGColor</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btnRevisionFGColor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">btnFunctionBGColor</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btnFunctionFGColor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">btnRequirementsBGColor</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btnRequirementsFGColor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">btnHardwareBGColor</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btnHardwareFGColor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">btnValidationBGColor</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btnValidationFGColor</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_properties</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__make_ui</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__load_comboboxes</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_callbacks</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_load_page</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__load_comboboxes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the RAMSTKComboBoxes() with their data.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbModuleBookTabPosition</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">([[</span><span class="s2">&quot;Bottom&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Left&quot;</span><span class="p">],</span>
+                                                     <span class="p">[</span><span class="s2">&quot;Right&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Top&quot;</span><span class="p">]])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbWorkBookTabPosition</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">([[</span><span class="s2">&quot;Bottom&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Left&quot;</span><span class="p">],</span>
+                                                   <span class="p">[</span><span class="s2">&quot;Right&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Top&quot;</span><span class="p">]])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbListBookTabPosition</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">([[</span><span class="s2">&quot;Bottom&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Left&quot;</span><span class="p">],</span>
+                                                   <span class="p">[</span><span class="s2">&quot;Right&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Top&quot;</span><span class="p">]])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbReportSize</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">([[</span><span class="s2">&quot;A4&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Letter&quot;</span><span class="p">]])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbFormatFiles</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">([</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Allocation&quot;</span><span class="p">),</span> <span class="s1">&#39;allocation&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;(D)FME(C)A&quot;</span><span class="p">),</span> <span class="s1">&#39;fmea&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Failure Definition&quot;</span><span class="p">),</span> <span class="s1">&#39;failure_definition&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Function&quot;</span><span class="p">),</span> <span class="s1">&#39;function&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Hardware&quot;</span><span class="p">),</span> <span class="s1">&#39;hardware&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Hazards Analysis&quot;</span><span class="p">),</span> <span class="s1">&#39;hazard&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Physics of Failure Analysis&quot;</span><span class="p">),</span> <span class="s1">&#39;pof&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Requirement&quot;</span><span class="p">),</span> <span class="s1">&#39;requirement&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Revision&quot;</span><span class="p">),</span> <span class="s1">&#39;revision&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Similar Item Analysis&quot;</span><span class="p">),</span> <span class="s1">&#39;similar_item&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Stakeholder Input&quot;</span><span class="p">),</span> <span class="s1">&#39;stakeholder&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Validation&quot;</span><span class="p">),</span> <span class="s1">&#39;validation&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">],</span>
+        <span class="p">],</span>
+                                          <span class="n">simple</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># noqa</span>
+
+    <span class="k">def</span> <span class="nf">__make_format_treeview</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Make the format file editing Gtk.Treeview().</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_bg_color</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;light gray&#39;</span><span class="p">,</span> <span class="s1">&#39;#FFFFFF&#39;</span><span class="p">,</span> <span class="s1">&#39;#FFFFFF&#39;</span><span class="p">,</span> <span class="s1">&#39;#FFFFFF&#39;</span><span class="p">,</span> <span class="s1">&#39;#FFFFFF&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;light gray&#39;</span><span class="p">,</span> <span class="s1">&#39;light gray&#39;</span><span class="p">,</span> <span class="s1">&#39;light gray&#39;</span><span class="p">,</span> <span class="s1">&#39;light gray&#39;</span>
+        <span class="p">]</span>
+        <span class="n">_editable</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+        <span class="n">_visible</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+        <span class="n">_model</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ListStore</span><span class="p">(</span><span class="n">GObject</span><span class="o">.</span><span class="n">TYPE_STRING</span><span class="p">,</span> <span class="n">GObject</span><span class="o">.</span><span class="n">TYPE_STRING</span><span class="p">,</span>
+                               <span class="n">GObject</span><span class="o">.</span><span class="n">TYPE_INT</span><span class="p">,</span> <span class="n">GObject</span><span class="o">.</span><span class="n">TYPE_INT</span><span class="p">,</span>
+                               <span class="n">GObject</span><span class="o">.</span><span class="n">TYPE_INT</span><span class="p">,</span> <span class="n">GObject</span><span class="o">.</span><span class="n">TYPE_STRING</span><span class="p">,</span>
+                               <span class="n">GObject</span><span class="o">.</span><span class="n">TYPE_STRING</span><span class="p">,</span> <span class="n">GObject</span><span class="o">.</span><span class="n">TYPE_STRING</span><span class="p">,</span>
+                               <span class="n">GObject</span><span class="o">.</span><span class="n">TYPE_STRING</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tvwFormatFile</span><span class="o">.</span><span class="n">set_model</span><span class="p">(</span><span class="n">_model</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">_idx</span><span class="p">,</span> <span class="n">_text</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span>
+                <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Default</span><span class="se">\n</span><span class="s2">Title&quot;</span><span class="p">),</span>
+                <span class="n">_</span><span class="p">(</span><span class="s2">&quot;User</span><span class="se">\n</span><span class="s2">Title&quot;</span><span class="p">),</span>
+                <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Column</span><span class="se">\n</span><span class="s2">Position&quot;</span><span class="p">),</span>
+                <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Can</span><span class="se">\n</span><span class="s2">Edit?&quot;</span><span class="p">),</span>
+                <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Is</span><span class="se">\n</span><span class="s2">Visible?&quot;</span><span class="p">)</span>
+        <span class="p">]):</span>
+            <span class="k">if</span> <span class="n">_idx</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]:</span>
+                <span class="n">_cell</span> <span class="o">=</span> <span class="n">do_make_toggle_cell</span><span class="p">()</span>
+                <span class="n">_cell</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_toggle_cell</span><span class="p">,</span> <span class="n">_idx</span><span class="p">,</span> <span class="n">_model</span><span class="p">)</span>
+                <span class="n">_column</span> <span class="o">=</span> <span class="n">do_make_column</span><span class="p">([</span><span class="n">_cell</span><span class="p">],</span>
+                                         <span class="n">heading</span><span class="o">=</span><span class="n">_text</span><span class="p">,</span>
+                                         <span class="n">visible</span><span class="o">=</span><span class="n">_visible</span><span class="p">[</span><span class="n">_idx</span><span class="p">])</span>
+                <span class="n">_column</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">_cell</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="n">_idx</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_cell</span> <span class="o">=</span> <span class="n">do_make_text_cell</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">_cell</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_edit_cell</span><span class="p">,</span> <span class="n">_idx</span><span class="p">,</span> <span class="n">_model</span><span class="p">)</span>
+                <span class="n">_column</span> <span class="o">=</span> <span class="n">do_make_column</span><span class="p">([</span><span class="n">_cell</span><span class="p">],</span>
+                                         <span class="n">heading</span><span class="o">=</span><span class="n">_text</span><span class="p">,</span>
+                                         <span class="n">visible</span><span class="o">=</span><span class="n">_visible</span><span class="p">[</span><span class="n">_idx</span><span class="p">])</span>
+                <span class="n">_column</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">_cell</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">_idx</span><span class="p">)</span>
+
+            <span class="n">do_set_cell_properties</span><span class="p">(</span><span class="n">_cell</span><span class="p">,</span>
+                                   <span class="n">bg_color</span><span class="o">=</span><span class="n">_bg_color</span><span class="p">[</span><span class="n">_idx</span><span class="p">],</span>
+                                   <span class="n">editable</span><span class="o">=</span><span class="n">_editable</span><span class="p">[</span><span class="n">_idx</span><span class="p">],</span>
+                                   <span class="n">fg_color</span><span class="o">=</span><span class="s1">&#39;#000000&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">tvwFormatFile</span><span class="o">.</span><span class="n">append_column</span><span class="p">(</span><span class="n">_column</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__make_general_preferences_page</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Make the Preferences class Gtk.Notebook() general preferences page.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_fixed</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Fixed</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Fixed</span><span class="p">()</span>
+        <span class="n">_scrollwindow</span><span class="p">:</span> <span class="n">RAMSTKScrolledWindow</span> <span class="o">=</span> <span class="n">RAMSTKScrolledWindow</span><span class="p">(</span><span class="n">_fixed</span><span class="p">)</span>
+        <span class="n">_frame</span><span class="p">:</span> <span class="n">RAMSTKFrame</span> <span class="o">=</span> <span class="n">RAMSTKFrame</span><span class="p">()</span>
+        <span class="n">_frame</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;General Preferences and Directory &quot;</span>
+                                 <span class="s2">&quot;Paths&quot;</span><span class="p">)</span>
+        <span class="n">_frame</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_scrollwindow</span><span class="p">)</span>
+
+        <span class="c1"># Create and place the labels.  Place the associated widget.</span>
+        <span class="n">_y_pos</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="n">_x_pos</span><span class="p">,</span> <span class="n">_lst_labels</span> <span class="o">=</span> <span class="n">do_make_label_group</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_labels</span><span class="p">[:</span><span class="mi">10</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">_idx</span><span class="p">,</span> <span class="n">_label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">_lst_labels</span><span class="p">):</span>
+            <span class="n">_minimum</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Requisition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span><span class="p">[</span>
+                <span class="n">_idx</span><span class="p">]</span><span class="o">.</span><span class="n">get_preferred_size</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">_minimum</span><span class="o">.</span><span class="n">height</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">_minimum</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span><span class="p">[</span><span class="n">_idx</span><span class="p">]</span><span class="o">.</span><span class="n">height</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="n">_minimum</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">35</span>
+
+            <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">_label</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+            <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span><span class="p">[</span><span class="n">_idx</span><span class="p">],</span> <span class="n">_x_pos</span> <span class="o">+</span> <span class="mi">5</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+            <span class="n">_y_pos</span> <span class="o">+=</span> <span class="n">_minimum</span><span class="o">.</span><span class="n">height</span> <span class="o">+</span> <span class="mi">5</span>
+
+        <span class="n">_label</span> <span class="o">=</span> <span class="n">RAMSTKLabel</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;General</span><span class="se">\n</span><span class="s2">Preferences&quot;</span><span class="p">))</span>
+        <span class="n">_label</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span>
+            <span class="n">height</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">justify</span><span class="o">=</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Justification</span><span class="o">.</span><span class="n">CENTER</span><span class="p">,</span>
+            <span class="n">tooltip</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Allows setting general user preferences for RAMSTK.&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_notebook</span><span class="o">.</span><span class="n">insert_page</span><span class="p">(</span><span class="n">_frame</span><span class="p">,</span> <span class="n">tab_label</span><span class="o">=</span><span class="n">_label</span><span class="p">,</span> <span class="n">position</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__make_look_and_feel_page</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Make the Preferences class Gtk.Notebook() look and feel page.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_hpaned</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">HPaned</span><span class="p">()</span>
+
+        <span class="n">_fixed</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Fixed</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Fixed</span><span class="p">()</span>
+        <span class="n">_scrollwindow</span><span class="p">:</span> <span class="n">RAMSTKScrolledWindow</span> <span class="o">=</span> <span class="n">RAMSTKScrolledWindow</span><span class="p">(</span><span class="n">_fixed</span><span class="p">)</span>
+        <span class="n">_frame</span><span class="p">:</span> <span class="n">RAMSTKFrame</span> <span class="o">=</span> <span class="n">RAMSTKFrame</span><span class="p">()</span>
+        <span class="n">_frame</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Module View Background &amp;amp; &quot;</span>
+                                 <span class="s2">&quot;Foreground Colors&quot;</span><span class="p">)</span>
+        <span class="n">_frame</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_scrollwindow</span><span class="p">)</span>
+        <span class="n">_hpaned</span><span class="o">.</span><span class="n">pack1</span><span class="p">(</span><span class="n">_frame</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Create and place the labels.  Place the associated widget.</span>
+        <span class="n">_y_pos</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="n">_x_pos</span><span class="p">,</span> <span class="n">_lst_labels</span> <span class="o">=</span> <span class="n">do_make_label_group</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_labels</span><span class="p">[</span><span class="mi">10</span><span class="p">:])</span>
+        <span class="k">for</span> <span class="n">_idx</span><span class="p">,</span> <span class="n">_label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">_lst_labels</span><span class="p">):</span>
+            <span class="n">_minimum</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Requisition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span><span class="p">[</span>
+                <span class="n">_idx</span> <span class="o">+</span> <span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">get_preferred_size</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">_minimum</span><span class="o">.</span><span class="n">height</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">_minimum</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span><span class="p">[</span><span class="n">_idx</span> <span class="o">+</span> <span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">height</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="n">_minimum</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">35</span>
+
+            <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">_label</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+            <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span><span class="p">[</span><span class="n">_idx</span> <span class="o">+</span> <span class="mi">10</span><span class="p">],</span> <span class="n">_x_pos</span> <span class="o">+</span> <span class="mi">5</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+            <span class="n">_y_pos</span> <span class="o">+=</span> <span class="n">_minimum</span><span class="o">.</span><span class="n">height</span> <span class="o">+</span> <span class="mi">5</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__make_format_treeview</span><span class="p">()</span>
+
+        <span class="n">_scrollwindow</span> <span class="o">=</span> <span class="n">RAMSTKScrolledWindow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tvwFormatFile</span><span class="p">)</span>
+        <span class="n">_frame</span> <span class="o">=</span> <span class="n">RAMSTKFrame</span><span class="p">()</span>
+        <span class="n">_frame</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Module View Column Layout&quot;</span><span class="p">)</span>
+        <span class="n">_frame</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_scrollwindow</span><span class="p">)</span>
+        <span class="n">_hpaned</span><span class="o">.</span><span class="n">pack2</span><span class="p">(</span><span class="n">_frame</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">_label</span> <span class="o">=</span> <span class="n">RAMSTKLabel</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Look &amp;amp; Feel&quot;</span><span class="p">))</span>
+        <span class="n">_label</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span>
+            <span class="n">height</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">justify</span><span class="o">=</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Justification</span><span class="o">.</span><span class="n">CENTER</span><span class="p">,</span>
+            <span class="n">tooltip</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Allows setting user interface preferences for RAMSTK.&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_notebook</span><span class="o">.</span><span class="n">insert_page</span><span class="p">(</span><span class="n">_hpaned</span><span class="p">,</span> <span class="n">tab_label</span><span class="o">=</span><span class="n">_label</span><span class="p">,</span> <span class="n">position</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__make_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Build the user interface.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_vbox</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">VBox</span><span class="p">()</span>
+        <span class="n">_vbox</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_notebook</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_vbox</span><span class="p">)</span>
+
+        <span class="n">_scrolledwindow</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ScrolledWindow</span><span class="p">()</span>
+        <span class="n">_scrolledwindow</span><span class="o">.</span><span class="n">set_policy</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">PolicyType</span><span class="o">.</span><span class="n">NEVER</span><span class="p">,</span>
+                                   <span class="n">Gtk</span><span class="o">.</span><span class="n">PolicyType</span><span class="o">.</span><span class="n">AUTOMATIC</span><span class="p">)</span>
+        <span class="n">_scrolledwindow</span><span class="o">.</span><span class="n">add_with_viewport</span><span class="p">(</span>
+            <span class="n">do_make_buttonbox</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                              <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_callbacks</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+                              <span class="n">icons</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_icons</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+                              <span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span>
+                              <span class="n">tooltips</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">[</span><span class="mi">0</span><span class="p">]]))</span>
+        <span class="n">_vbox</span><span class="o">.</span><span class="n">pack_end</span><span class="p">(</span><span class="n">_scrolledwindow</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">_n_screens</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">Screen</span><span class="o">.</span><span class="n">get_default</span><span class="p">()</span><span class="o">.</span><span class="n">get_n_monitors</span><span class="p">()</span>
+        <span class="n">_width</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">Screen</span><span class="o">.</span><span class="n">width</span><span class="p">()</span> <span class="o">/</span> <span class="n">_n_screens</span>
+        <span class="n">_height</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">Screen</span><span class="o">.</span><span class="n">height</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_border_width</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_default_size</span><span class="p">(</span><span class="n">_width</span> <span class="o">-</span> <span class="mi">450</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">_height</span> <span class="o">/</span> <span class="mi">7</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_modal</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">WindowPosition</span><span class="o">.</span><span class="n">CENTER</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_resizable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_transient_for</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__make_general_preferences_page</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__make_look_and_feel_page</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__set_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the callback functions/methods for each of the widgets.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># ----- BUTTONS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnConfDir</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;file-set&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_select_path</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnDataDir</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;file-set&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_select_path</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnIconDir</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;file-set&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_select_path</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnLogDir</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;file-set&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_select_path</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnRevisionBGColor</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;color-set&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_set_color</span><span class="p">,</span>
+                                        <span class="s1">&#39;revisionbg&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnRevisionFGColor</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;color-set&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_set_color</span><span class="p">,</span>
+                                        <span class="s1">&#39;revisionfg&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnFunctionBGColor</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;color-set&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_set_color</span><span class="p">,</span>
+                                        <span class="s1">&#39;functionbg&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnFunctionFGColor</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;color-set&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_set_color</span><span class="p">,</span>
+                                        <span class="s1">&#39;functionfg&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnRequirementsBGColor</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;color-set&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_set_color</span><span class="p">,</span>
+                                            <span class="s1">&#39;requirementbg&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnRequirementsFGColor</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;color-set&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_set_color</span><span class="p">,</span>
+                                            <span class="s1">&#39;requirementfg&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnHardwareBGColor</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;color-set&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_set_color</span><span class="p">,</span>
+                                        <span class="s1">&#39;hardwarebg&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnHardwareFGColor</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;color-set&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_set_color</span><span class="p">,</span>
+                                        <span class="s1">&#39;hardwarefg&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnSoftwareBGColor</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;color-set&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_set_color</span><span class="p">,</span>
+                                        <span class="s1">&#39;softwarebg&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnSoftwareFGColor</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;color-set&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_set_color</span><span class="p">,</span>
+                                        <span class="s1">&#39;softwarefg&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnValidationBGColor</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;color-set&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_set_color</span><span class="p">,</span>
+                                          <span class="s1">&#39;validationbg&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnValidationFGColor</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;color-set&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_set_color</span><span class="p">,</span>
+                                          <span class="s1">&#39;validationfg&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnIncidentBGColor</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;color-set&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_set_color</span><span class="p">,</span>
+                                        <span class="s1">&#39;incidentbg&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnIncidentFGColor</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;color-set&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_set_color</span><span class="p">,</span>
+                                        <span class="s1">&#39;incidentfg&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnTestingBGColor</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;color-set&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_set_color</span><span class="p">,</span>
+                                       <span class="s1">&#39;testingbg&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnTestingFGColor</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;color-set&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_set_color</span><span class="p">,</span>
+                                       <span class="s1">&#39;testingfg&#39;</span><span class="p">)</span>
+
+        <span class="c1"># ----- COMBOBOXES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbFormatFiles</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbFormatFiles</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+                                                     <span class="bp">self</span><span class="o">.</span><span class="n">_on_combo_changed</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbModuleBookTabPosition</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbModuleBookTabPosition</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_combo_changed</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbWorkBookTabPosition</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbWorkBookTabPosition</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_combo_changed</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbListBookTabPosition</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbListBookTabPosition</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_combo_changed</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbReportSize</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbReportSize</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">_on_combo_changed</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__set_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the properties of the Preferences assistance widgets.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># ----- BUTTONS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnConfDir</span><span class="o">.</span><span class="n">set_action</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">FileChooserAction</span><span class="o">.</span><span class="n">SELECT_FOLDER</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnDataDir</span><span class="o">.</span><span class="n">set_action</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">FileChooserAction</span><span class="o">.</span><span class="n">SELECT_FOLDER</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnIconDir</span><span class="o">.</span><span class="n">set_action</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">FileChooserAction</span><span class="o">.</span><span class="n">SELECT_FOLDER</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnLogDir</span><span class="o">.</span><span class="n">set_action</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">FileChooserAction</span><span class="o">.</span><span class="n">SELECT_FOLDER</span><span class="p">)</span>
+
+        <span class="c1"># ----- COMBOBOXES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbFormatFiles</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span>
+            <span class="n">tooltip</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Select the Module View layout to edit.&quot;</span><span class="p">))</span>
+
+        <span class="c1"># ----- ENTRIES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtFRMultiplier</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">75</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtDecimalPlaces</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">75</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_do_edit_cell</span><span class="p">(</span><span class="n">__cell</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">new_text</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Handle Gtk.CellRenderer() edits.</span>
+
+<span class="sd">        :param __cell: the Gtk.CellRenderer() that was edited.</span>
+<span class="sd">        :type __cell: :class:`Gtk.CellRenderer`</span>
+<span class="sd">        :param path: the Gtk.TreeView() path of the Gtk.CellRenderer()</span>
+<span class="sd">            that was edited.</span>
+<span class="sd">        :param new_text: the new text in the edited Gtk.CellRenderer().</span>
+<span class="sd">        :param position: the column position of the edited</span>
+<span class="sd">            Gtk.CellRenderer().</span>
+<span class="sd">        :param model: the Gtk.TreeModel() the Gtk.CellRenderer() belongs to.</span>
+<span class="sd">        :type model: :class:`Gtk.TreeModel`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_type</span> <span class="o">=</span> <span class="n">GObject</span><span class="o">.</span><span class="n">type_name</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">get_column_type</span><span class="p">(</span><span class="n">position</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">_type</span> <span class="o">==</span> <span class="s1">&#39;gchararray&#39;</span><span class="p">:</span>
+            <span class="n">model</span><span class="p">[</span><span class="n">path</span><span class="p">][</span><span class="n">position</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">new_text</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">_type</span> <span class="o">==</span> <span class="s1">&#39;gint&#39;</span><span class="p">:</span>
+            <span class="n">model</span><span class="p">[</span><span class="n">path</span><span class="p">][</span><span class="n">position</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_text</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">_type</span> <span class="o">==</span> <span class="s1">&#39;gfloat&#39;</span><span class="p">:</span>
+            <span class="n">model</span><span class="p">[</span><span class="n">path</span><span class="p">][</span><span class="n">position</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">new_text</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_load_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the selected Module View format file for editing.</span>
+
+<span class="sd">        :param module: the name of the RAMSTK workstream module whose</span>
+<span class="sd">            Module View layout is to be edited.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fmt_file</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">+</span> <span class="s1">&#39;/layouts/&#39;</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_FORMAT_FILE</span><span class="p">[</span><span class="n">module</span><span class="p">])</span>
+
+        <span class="n">_format</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fmt_file</span><span class="p">)</span>
+
+        <span class="n">_datatypes</span> <span class="o">=</span> <span class="n">_format</span><span class="p">[</span><span class="s1">&#39;datatype&#39;</span><span class="p">]</span>
+        <span class="n">_default</span> <span class="o">=</span> <span class="n">_format</span><span class="p">[</span><span class="s1">&#39;defaulttitle&#39;</span><span class="p">]</span>
+        <span class="n">_editable</span> <span class="o">=</span> <span class="n">_format</span><span class="p">[</span><span class="s1">&#39;editable&#39;</span><span class="p">]</span>
+        <span class="n">_user</span> <span class="o">=</span> <span class="n">_format</span><span class="p">[</span><span class="s1">&#39;usertitle&#39;</span><span class="p">]</span>
+        <span class="n">_keys</span> <span class="o">=</span> <span class="n">_format</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">]</span>
+        <span class="n">_position</span> <span class="o">=</span> <span class="n">_format</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
+        <span class="n">_visible</span> <span class="o">=</span> <span class="n">_format</span><span class="p">[</span><span class="s1">&#39;visible&#39;</span><span class="p">]</span>
+        <span class="n">_widgets</span> <span class="o">=</span> <span class="n">_format</span><span class="p">[</span><span class="s1">&#39;widget&#39;</span><span class="p">]</span>
+
+        <span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwFormatFile</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+        <span class="n">_model</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="c1"># pylint: disable=unused-variable</span>
+        <span class="k">for</span> <span class="n">_key</span> <span class="ow">in</span> <span class="n">_default</span><span class="p">:</span>
+            <span class="n">_data</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">_default</span><span class="p">[</span><span class="n">_key</span><span class="p">],</span> <span class="n">_user</span><span class="p">[</span><span class="n">_key</span><span class="p">],</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">_position</span><span class="p">[</span><span class="n">_key</span><span class="p">]),</span>
+                <span class="n">string_to_boolean</span><span class="p">(</span><span class="n">_editable</span><span class="p">[</span><span class="n">_key</span><span class="p">]),</span>
+                <span class="n">string_to_boolean</span><span class="p">(</span><span class="n">_visible</span><span class="p">[</span><span class="n">_key</span><span class="p">]),</span> <span class="n">_datatypes</span><span class="p">[</span><span class="n">_key</span><span class="p">],</span>
+                <span class="n">_widgets</span><span class="p">[</span><span class="n">_key</span><span class="p">],</span> <span class="n">_keys</span><span class="p">[</span><span class="n">_key</span><span class="p">],</span> <span class="n">_key</span>
+            <span class="p">]</span>
+            <span class="n">_model</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_data</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_load_page</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the current preference values.</span>
+
+<span class="sd">        :return: (_error_code, _user_msg, _debug_msg); the error code, message</span>
+<span class="sd">                 to be displayed to the user, and the message to be written to</span>
+<span class="sd">                 the debug log.</span>
+<span class="sd">        :rtype: (int, str, str)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_positions</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;bottom&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;left&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;top&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
+        <span class="n">_papersize</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a4&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;letter&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbModuleBookTabPosition</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span>
+            <span class="n">_positions</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span>
+                       <span class="n">RAMSTK_TABPOS</span><span class="p">[</span><span class="s1">&#39;modulebook&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbWorkBookTabPosition</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="n">_positions</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_TABPOS</span><span class="p">[</span><span class="s1">&#39;workbook&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbListBookTabPosition</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="n">_positions</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_TABPOS</span><span class="p">[</span><span class="s1">&#39;listbook&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbReportSize</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="n">_papersize</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_REPORT_SIZE</span><span class="o">.</span><span class="n">lower</span><span class="p">()])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtFRMultiplier</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_HR_MULTIPLIER</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtDecimalPlaces</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_DEC_PLACES</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtMissionTime</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_MTIME</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnConfDir</span><span class="o">.</span><span class="n">set_current_folder</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnDataDir</span><span class="o">.</span><span class="n">set_current_folder</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_DATA_DIR</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnIconDir</span><span class="o">.</span><span class="n">set_current_folder</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnLogDir</span><span class="o">.</span><span class="n">set_current_folder</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_LOG_DIR</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnRevisionBGColor</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">color_parse</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;revisionbg&#39;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnRevisionFGColor</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">color_parse</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;revisionfg&#39;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnFunctionBGColor</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">color_parse</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;functionbg&#39;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnFunctionFGColor</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">color_parse</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;functionfg&#39;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnRequirementsBGColor</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">color_parse</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;requirementbg&#39;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnRequirementsFGColor</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">color_parse</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;requirementfg&#39;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnHardwareBGColor</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">color_parse</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;hardwarebg&#39;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnHardwareFGColor</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">color_parse</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;hardwarefg&#39;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnValidationBGColor</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">color_parse</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;validationbg&#39;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnValidationFGColor</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">color_parse</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;validationfg&#39;</span><span class="p">]))</span>
+
+    <span class="k">def</span> <span class="nf">_do_quit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__button</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Button</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Quit the preferences Gtk.Assistant().</span>
+
+<span class="sd">        :param __button: the Gtk.Button() that called this method.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_do_request_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__button</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Button</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Request to update the user and program preferences.</span>
+
+<span class="sd">        :param __button: the Gtk.Button() that called this method.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_conf_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">+</span> \
+            <span class="s1">&#39;/RAMSTK.toml&#39;</span>
+        <span class="n">copyfile</span><span class="p">(</span><span class="n">_conf_file</span><span class="p">,</span> <span class="n">_conf_file</span> <span class="o">+</span> <span class="s1">&#39;_bak&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">set_user_configuration</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">copyfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fmt_file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmt_file</span> <span class="o">+</span> <span class="s1">&#39;_bak&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_save_tree_layout</span><span class="p">()</span>
+        <span class="c1"># This happens when no format file was edited.</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_do_request_update_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">button</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Button</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Wrap method _do_request_update().</span>
+
+<span class="sd">        :param button: the Gtk.Button() that called this method.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_request_update</span><span class="p">(</span><span class="n">button</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_save_tree_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Save the Module View RAMSTKTreeView() layout file.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_layout</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;pixbuf&#39;</span><span class="p">:</span> <span class="s1">&#39;False&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;defaulttitle&#39;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s1">&#39;usertitle&#39;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s1">&#39;datatype&#39;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s1">&#39;position&#39;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s1">&#39;widget&#39;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s1">&#39;editable&#39;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s1">&#39;visible&#39;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Get the format file for the Gtk.TreeView to be edited.  Make a</span>
+        <span class="c1"># backup copy by appending the current date.</span>
+        <span class="n">_now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">_bak_file</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0:s}</span><span class="s1">_bak_</span><span class="si">{1:s}</span><span class="s1">.toml&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fmt_file</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">],</span> <span class="n">_now</span><span class="p">)</span>
+        <span class="n">copyfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fmt_file</span><span class="p">,</span> <span class="n">_bak_file</span><span class="p">)</span>
+
+        <span class="c1"># Open the format file for writing.</span>
+        <span class="n">_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fmt_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+
+        <span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwFormatFile</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+        <span class="n">_row</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_iter_first</span><span class="p">()</span>
+        <span class="k">while</span> <span class="n">_row</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_key</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">_row</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+            <span class="n">_layout</span><span class="p">[</span><span class="s1">&#39;defaulttitle&#39;</span><span class="p">][</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">_row</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">_layout</span><span class="p">[</span><span class="s1">&#39;usertitle&#39;</span><span class="p">][</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">_row</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">_layout</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">][</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">_row</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">_layout</span><span class="p">[</span><span class="s1">&#39;editable&#39;</span><span class="p">][</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">integer_to_boolean</span><span class="p">(</span>
+                <span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">_row</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+            <span class="n">_layout</span><span class="p">[</span><span class="s1">&#39;visible&#39;</span><span class="p">][</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">integer_to_boolean</span><span class="p">(</span>
+                <span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">_row</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+            <span class="n">_layout</span><span class="p">[</span><span class="s1">&#39;datatype&#39;</span><span class="p">][</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">_row</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+            <span class="n">_layout</span><span class="p">[</span><span class="s1">&#39;widget&#39;</span><span class="p">][</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">_row</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+            <span class="n">_layout</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">][</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">_row</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+
+            <span class="n">_row</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">iter_next</span><span class="p">(</span><span class="n">_row</span><span class="p">)</span>
+
+        <span class="n">toml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">_layout</span><span class="p">,</span> <span class="n">_file</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_select_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">button</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">FileChooserButton</span><span class="p">,</span>
+                        <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Select the path from the file chooser.</span>
+
+<span class="sd">        :param button: the Gtk.FileChooserButton() that called this method.</span>
+<span class="sd">        :type button: :class:`Gtk.FileChooserButton`</span>
+<span class="sd">        :param index: the index of the Gtk.FileChooserButton() that called</span>
+<span class="sd">            this method.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtyp: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">=</span> \
+                <span class="n">button</span><span class="o">.</span><span class="n">get_current_folder</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_DATA_DIR</span> <span class="o">=</span> \
+                <span class="n">button</span><span class="o">.</span><span class="n">get_current_folder</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span> <span class="o">=</span> \
+                <span class="n">button</span><span class="o">.</span><span class="n">get_current_folder</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_LOG_DIR</span> <span class="o">=</span> \
+                <span class="n">button</span><span class="o">.</span><span class="n">get_current_folder</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_do_set_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colorbutton</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ColorButton</span><span class="p">,</span>
+                      <span class="n">ramstk_color</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the selected color.</span>
+
+<span class="sd">        :param colorbutton: the Gtk.ColorButton() that called this method.</span>
+<span class="sd">        :type colorbutton: :class:`Gtk.ColorButton`</span>
+<span class="sd">        :param ramstk_color: the name of the color to set.</span>
+<span class="sd">        :return: False if successful or True if an error is encountered.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Retrieve the six digit hexidecimal version of the selected color.</span>
+        <span class="n">_color</span> <span class="o">=</span> <span class="n">colorbutton</span><span class="o">.</span><span class="n">get_color</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_red</span> <span class="o">=</span> <span class="s2">&quot;{0:#0</span><span class="si">{1}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%X</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">_color</span><span class="o">.</span><span class="n">red</span> <span class="o">/</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">_red</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%X</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">_color</span><span class="o">.</span><span class="n">red</span> <span class="o">/</span> <span class="mi">255</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_green</span> <span class="o">=</span> <span class="s2">&quot;{0:#0</span><span class="si">{1}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%X</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">_color</span><span class="o">.</span><span class="n">green</span> <span class="o">/</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">_green</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%X</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">_color</span><span class="o">.</span><span class="n">green</span> <span class="o">/</span> <span class="mi">255</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_blue</span> <span class="o">=</span> <span class="s2">&quot;{0:#0</span><span class="si">{1}</span><span class="s2">}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%X</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">_color</span><span class="o">.</span><span class="n">blue</span> <span class="o">/</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">_blue</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%X</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">_color</span><span class="o">.</span><span class="n">blue</span> <span class="o">/</span> <span class="mi">255</span><span class="p">)</span>
+        <span class="n">_color</span> <span class="o">=</span> <span class="s1">&#39;#</span><span class="si">%s%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">_red</span><span class="p">,</span> <span class="n">_green</span><span class="p">,</span> <span class="n">_blue</span><span class="p">)</span>
+
+        <span class="c1"># Set the color variable.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="n">ramstk_color</span><span class="p">]</span> <span class="o">=</span> <span class="n">_color</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_do_toggle_cell</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Handle Gtk.CellRendererToggle() edits.</span>
+
+<span class="sd">        :param cell: the Gtk.CellRenderer() that was edited.</span>
+<span class="sd">        :param path: the Gtk.TreeView() path of the Gtk.CellRenderer() that</span>
+<span class="sd">                     was edited.</span>
+<span class="sd">        :param position: the column position of the edited Gtk.CellRenderer().</span>
+<span class="sd">        :param model: the Gtk.TreeModel() the Gtk.CellRenderer() belongs to.</span>
+<span class="sd">        :return: False if successful or True if an error is encountered.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">model</span><span class="p">[</span><span class="n">path</span><span class="p">][</span><span class="n">position</span><span class="p">]</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_active</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_on_combo_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">combo</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Edit RAMSTKTreeView() layouts.</span>
+
+<span class="sd">        :param combo: the RAMSTKComboBox() that called this method.</span>
+<span class="sd">        :type combo: :class:`gui.gtk.RAMSTKComboBox`</span>
+<span class="sd">        :param index: the index in the signal handler list associated with</span>
+<span class="sd">            the RAMSTKComboBox() calling this method.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">combo</span><span class="o">.</span><span class="n">handler_block</span><span class="p">(</span><span class="n">combo</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">_model</span> <span class="o">=</span> <span class="n">combo</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+            <span class="n">_row</span> <span class="o">=</span> <span class="n">combo</span><span class="o">.</span><span class="n">get_active_iter</span><span class="p">()</span>
+            <span class="n">_module</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">_row</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_load_format</span><span class="p">(</span><span class="n">_module</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_TABPOS</span><span class="p">[</span>
+                <span class="s1">&#39;modulebook&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">combo</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_TABPOS</span><span class="p">[</span>
+                <span class="s1">&#39;workbook&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">combo</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_TABPOS</span><span class="p">[</span>
+                <span class="s1">&#39;listbook&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">combo</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_REPORT_SIZE</span> <span class="o">=</span> \
+                <span class="n">combo</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+
+        <span class="n">combo</span><span class="o">.</span><span class="n">handler_unblock</span><span class="p">(</span><span class="n">combo</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">])</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

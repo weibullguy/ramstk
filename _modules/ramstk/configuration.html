@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.configuration &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    
+    <script src="../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.configuration</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.Configuration.py is part of The RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2017 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;Configuration information and methods for RAMSTK.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">import</span> <span class="nn">gettext</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="c1"># pylint: disable=no-name-in-module</span>
+<span class="kn">from</span> <span class="nn">distutils</span> <span class="kn">import</span> <span class="n">dir_util</span><span class="p">,</span> <span class="n">file_util</span>
+<span class="c1"># pylint: disable=no-name-in-module</span>
+<span class="kn">from</span> <span class="nn">distutils.errors</span> <span class="kn">import</span> <span class="n">DistutilsFileError</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span><span class="p">,</span> <span class="n">makedirs</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="c1"># noinspection PyPackageRequirements</span>
+<span class="kn">import</span> <span class="nn">toml</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.utilities</span> <span class="kn">import</span> <span class="n">dir_exists</span><span class="p">,</span> <span class="n">file_exists</span><span class="p">,</span> <span class="n">get_install_prefix</span>
+
+<span class="n">_</span> <span class="o">=</span> <span class="n">gettext</span><span class="o">.</span><span class="n">gettext</span>
+
+<span class="c1"># Define global list constants.</span>
+<span class="n">RAMSTK_ACTIVE_ENVIRONMENTS</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Ground, Benign&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Ground, Fixed&quot;</span><span class="p">)],</span>
+                              <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Ground, Mobile&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Naval, Sheltered&quot;</span><span class="p">)],</span>
+                              <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Naval, Unsheltered&quot;</span><span class="p">)],</span>
+                              <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Airborne, Inhabited, Cargo&quot;</span><span class="p">)],</span>
+                              <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Airborne, Inhabited, Fighter&quot;</span><span class="p">)],</span>
+                              <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Airborne, Uninhabited, Cargo&quot;</span><span class="p">)],</span>
+                              <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Airborne, Uninhabited, Fighter&quot;</span><span class="p">)],</span>
+                              <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Airborne, Rotary Wing&quot;</span><span class="p">)],</span>
+                              <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Space, Flight&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Missile, Flight&quot;</span><span class="p">)],</span>
+                              <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Missile, Launch&quot;</span><span class="p">)]]</span>
+<span class="n">RAMSTK_DORMANT_ENVIRONMENTS</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Airborne&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Ground&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Naval&quot;</span><span class="p">)],</span>
+                               <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Space&quot;</span><span class="p">)]]</span>
+
+<span class="n">RAMSTK_ALLOCATION_MODELS</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;Equal Apportionment&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;ARINC Apportionment&quot;</span><span class="p">],</span>
+                            <span class="p">[</span><span class="s2">&quot;AGREE Apportionment&quot;</span><span class="p">],</span>
+                            <span class="p">[</span><span class="s2">&quot;Feasibility of Objectives&quot;</span><span class="p">],</span>
+                            <span class="p">[</span><span class="s2">&quot;Repairable Systems Apportionment&quot;</span><span class="p">]]</span>
+
+<span class="n">RAMSTK_HR_TYPES</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Assessed&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Defined, Hazard Rate&quot;</span><span class="p">)],</span>
+                   <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Defined, MTBF&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Defined, Distribution&quot;</span><span class="p">)]]</span>
+<span class="n">RAMSTK_HR_MODELS</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-HDBK-217F Parts Count&quot;</span><span class="p">)],</span>
+                    <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;MIL-HDBK-217F Parts Stress&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;NSWC-11&quot;</span><span class="p">)]]</span>
+<span class="n">RAMSTK_HR_DISTRIBUTIONS</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;1P Exponential&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;2P Exponential&quot;</span><span class="p">)],</span>
+                           <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Gaussian&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Lognormal&quot;</span><span class="p">)],</span>
+                           <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;2P Weibull&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;3P Weibull&quot;</span><span class="p">)]]</span>
+
+<span class="n">RAMSTK_CONTROL_TYPES</span> <span class="o">=</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Prevention&quot;</span><span class="p">),</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Detection&quot;</span><span class="p">)]</span>
+<span class="n">RAMSTK_COST_TYPES</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Defined&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Calculated&quot;</span><span class="p">)]]</span>
+<span class="n">RAMSTK_MTTR_TYPES</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Defined&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Calculated&quot;</span><span class="p">)]]</span>
+
+<span class="n">RAMSTK_CRITICALITY</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">[</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Catastrophic&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Could result in death, permanent total disability, loss &quot;</span>
+          <span class="s2">&quot;exceeding $1M, or irreversible severe environmental damage that &quot;</span>
+          <span class="s2">&quot;violates law or regulation.&quot;</span><span class="p">),</span> <span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="mi">4</span>
+    <span class="p">],</span>
+    <span class="p">[</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Critical&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Could result in permanent partial disability, injuries or &quot;</span>
+          <span class="s2">&quot;occupational illness that may result in hospitalization of at &quot;</span>
+          <span class="s2">&quot;least three personnel, loss exceeding $200K but less than $1M, &quot;</span>
+          <span class="s2">&quot;or reversible environmental damage causing a violation of law or &quot;</span>
+          <span class="s2">&quot;regulation.&quot;</span><span class="p">),</span> <span class="s2">&quot;II&quot;</span><span class="p">,</span> <span class="mi">3</span>
+    <span class="p">],</span>
+    <span class="p">[</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Marginal&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Could result in injury or occupational illness resulting in one &quot;</span>
+          <span class="s2">&quot;or more lost work days(s), loss exceeding $10K but less than &quot;</span>
+          <span class="s2">&quot;$200K, or mitigatible environmental damage without violation of &quot;</span>
+          <span class="s2">&quot;law or regulation where restoration activities can be &quot;</span>
+          <span class="s2">&quot;accomplished.&quot;</span><span class="p">),</span> <span class="s2">&quot;III&quot;</span><span class="p">,</span> <span class="mi">2</span>
+    <span class="p">],</span>
+    <span class="p">[</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Negligble&quot;</span><span class="p">),</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Could result in injury or illness not resulting in a lost work &quot;</span>
+          <span class="s2">&quot;day, loss exceeding $2K but less than $10K, or minimal &quot;</span>
+          <span class="s2">&quot;environmental damage not violating law or regulation.&quot;</span><span class="p">),</span> <span class="s2">&quot;IV&quot;</span><span class="p">,</span> <span class="mi">1</span>
+    <span class="p">]</span>
+<span class="p">]</span>
+<span class="n">RAMSTK_FAILURE_PROBABILITY</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Level E - Extremely Unlikely&quot;</span><span class="p">),</span> <span class="mi">1</span><span class="p">],</span>
+                              <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Level D - Remote&quot;</span><span class="p">),</span> <span class="mi">2</span><span class="p">],</span>
+                              <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Level C - Occasional&quot;</span><span class="p">),</span> <span class="mi">3</span><span class="p">],</span>
+                              <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Level B - Reasonably Probable&quot;</span><span class="p">),</span> <span class="mi">4</span><span class="p">],</span>
+                              <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Level A - Frequent&quot;</span><span class="p">),</span> <span class="mi">5</span><span class="p">]]</span>
+
+<span class="n">RAMSTK_SW_DEV_ENVIRONMENTS</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Organic&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.76</span><span class="p">],</span>
+                              <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Semi-Detached&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+                              <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Embedded&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">]]</span>
+<span class="n">RAMSTK_SW_DEV_PHASES</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Concept/Planning (PCP)&quot;</span><span class="p">)],</span>
+                        <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Requirements Analysis (SRA)&quot;</span><span class="p">)],</span>
+                        <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Preliminary Design Review (PDR)&quot;</span><span class="p">)],</span>
+                        <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Critical Design Review (CDR)&quot;</span><span class="p">)],</span>
+                        <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Test Readiness Review (TRR)&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Released&quot;</span><span class="p">)]]</span>
+<span class="n">RAMSTK_SW_LEVELS</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Software System&quot;</span><span class="p">),</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Software Module&quot;</span><span class="p">),</span> <span class="mi">0</span><span class="p">],</span>
+                    <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Software Unit&quot;</span><span class="p">),</span> <span class="mi">0</span><span class="p">]]</span>
+<span class="n">RAMSTK_SW_APPLICATION</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Airborne&quot;</span><span class="p">),</span> <span class="mf">0.0128</span><span class="p">,</span> <span class="mf">6.28</span><span class="p">],</span>
+                         <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Strategic&quot;</span><span class="p">),</span> <span class="mf">0.0092</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">],</span>
+                         <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Tactical&quot;</span><span class="p">),</span> <span class="mf">0.0078</span><span class="p">,</span> <span class="mf">13.8</span><span class="p">],</span>
+                         <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Process Control&quot;</span><span class="p">),</span> <span class="mf">0.0018</span><span class="p">,</span> <span class="mf">3.8</span><span class="p">],</span>
+                         <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Production Center&quot;</span><span class="p">),</span> <span class="mf">0.0085</span><span class="p">,</span> <span class="mf">23.0</span><span class="p">],</span>
+                         <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Developmental&quot;</span><span class="p">),</span> <span class="mf">0.0123</span><span class="p">,</span> <span class="mf">132.6</span><span class="p">]]</span>
+<span class="n">RAMSTK_SW_TEST_METHODS</span> <span class="o">=</span> <span class="p">[[</span>
+    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Code Reviews&quot;</span><span class="p">),</span>
+    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Code review is a systematic examination (often known as peer &quot;</span>
+      <span class="s2">&quot;review) of computer source code.&quot;</span><span class="p">),</span>
+<span class="p">],</span> <span class="p">[</span>
+    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Error/Anomaly Detection&quot;</span><span class="p">),</span>
+    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">),</span>
+<span class="p">],</span> <span class="p">[</span>
+    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Structure Analysis&quot;</span><span class="p">),</span>
+    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">),</span>
+<span class="p">],</span> <span class="p">[</span>
+    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Random Testing&quot;</span><span class="p">),</span>
+    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">),</span>
+<span class="p">],</span> <span class="p">[</span>
+    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Functional Testing&quot;</span><span class="p">),</span>
+    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">),</span>
+<span class="p">],</span> <span class="p">[</span>
+    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Branch Testing&quot;</span><span class="p">),</span>
+    <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">),</span>
+<span class="p">]]</span>
+
+<span class="n">RAMSTK_LIFECYCLE</span> <span class="o">=</span> <span class="p">[[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Design&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Reliability Growth&quot;</span><span class="p">)],</span>
+                    <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Reliability Qualification&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Production&quot;</span><span class="p">)],</span>
+                    <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Storage&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Operation&quot;</span><span class="p">)],</span> <span class="p">[</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Disposal&quot;</span><span class="p">)]]</span>
+<span class="n">RAMSTK_S_DIST</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;Constant Probability&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Exponential&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Gaussian&quot;</span><span class="p">],</span>
+                 <span class="p">[</span><span class="s2">&quot;LogNormal&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Uniform&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Weibull&quot;</span><span class="p">]]</span>
+
+
+<div class="viewcode-block" id="RAMSTKSiteConfiguration"><a class="viewcode-back" href="../../api/ramstk.html#ramstk.configuration.RAMSTKSiteConfiguration">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKSiteConfiguration</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Class for site-wide RAMSTK configuration settings.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the RAMSTK site configuration class.&quot;&quot;&quot;</span>
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_INSTALL_PREFIX</span> <span class="o">=</span> <span class="n">get_install_prefix</span><span class="p">()</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COM_INFO</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_ACTION_CATEGORY</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_ACTION_STATUS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_AFFINITY_GROUPS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># User.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CATEGORIES</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Static.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_DAMAGE_MODELS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># User.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_DETECTION_METHODS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_FAILURE_MODES</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># User.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_HAZARDS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># User.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_INCIDENT_CATEGORY</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span>
+                                                       <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_INCIDENT_STATUS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_INCIDENT_TYPE</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOAD_HISTORY</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># User.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_MANUFACTURERS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span>
+                                                   <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># User.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_MEASURABLE_PARAMETERS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span>
+                                                           <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># User.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_MEASUREMENT_UNITS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span>
+                                                       <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Admin.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_MODULES</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Static.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_REQUIREMENT_TYPE</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_RPN_DETECTION</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># User.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_RPN_OCCURRENCE</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># User.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_RPN_SEVERITY</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># User.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_SEVERITY</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span>
+                                              <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Admin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_STAKEHOLDERS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># User.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_STRESS_LIMITS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span>
+                                                   <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span>
+                                                   <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># User.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_SUBCATEGORIES</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Static.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USERS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span>
+                                           <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Admin.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_VALIDATION_TYPE</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span>
+                                                     <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Admin.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_WORKGROUPS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Admin.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COM_BACKEND</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;linux&quot;</span> <span class="ow">or</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;linux2&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_SITE_DIR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_INSTALL_PREFIX</span> <span class="o">+</span> <span class="s2">&quot;/share/RAMSTK&quot;</span>
+        <span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_SITE_DIR</span> <span class="o">=</span> <span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PYTHONPATH&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;/RAMSTK&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_SITE_CONF</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_SITE_DIR</span> <span class="o">+</span> <span class="s2">&quot;/Site.toml&quot;</span>
+
+<div class="viewcode-block" id="RAMSTKSiteConfiguration.do_create_site_configuration"><a class="viewcode-back" href="../../api/ramstk.html#ramstk.configuration.RAMSTKSiteConfiguration.do_create_site_configuration">[docs]</a>    <span class="k">def</span> <span class="nf">do_create_site_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create the default site configuration file.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_dic_site_configuration</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;RAMSTK Site Configuration&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;backend&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;dialect&quot;</span><span class="p">:</span> <span class="s2">&quot;sqlite&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="s2">&quot;3306&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;database&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_SITE_DIR</span> <span class="o">+</span> <span class="s2">&quot;/ramstk_common.ramstk&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="s2">&quot;ramstk&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;ramstk&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">toml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">_dic_site_configuration</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_SITE_CONF</span><span class="p">,</span>
+                                                    <span class="s2">&quot;w&quot;</span><span class="p">))</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_create_site_configuration&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="n">_error_msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;Failed to write site configuration file </span><span class="si">{0:s}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_SITE_CONF</span><span class="p">))</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;fail_create_site_configuration&#39;</span><span class="p">,</span>
+                            <span class="n">error_message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKSiteConfiguration.get_site_configuration"><a class="viewcode-back" href="../../api/ramstk.html#ramstk.configuration.RAMSTKSiteConfiguration.get_site_configuration">[docs]</a>    <span class="k">def</span> <span class="nf">get_site_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Read the site configuration file.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">file_exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_SITE_CONF</span><span class="p">):</span>
+            <span class="n">_config</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_SITE_CONF</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COM_BACKEND</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s1">&#39;backend&#39;</span><span class="p">][</span><span class="s1">&#39;dialect&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COM_INFO</span><span class="p">[</span><span class="s2">&quot;dialect&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s1">&#39;backend&#39;</span><span class="p">][</span><span class="s1">&#39;dialect&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COM_INFO</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s1">&#39;backend&#39;</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COM_INFO</span><span class="p">[</span><span class="s2">&quot;port&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s1">&#39;backend&#39;</span><span class="p">][</span><span class="s1">&#39;port&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COM_INFO</span><span class="p">[</span><span class="s2">&quot;database&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s1">&#39;backend&#39;</span><span class="p">][</span><span class="s1">&#39;database&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COM_INFO</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s1">&#39;backend&#39;</span><span class="p">][</span><span class="s1">&#39;user&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COM_INFO</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s1">&#39;backend&#39;</span><span class="p">][</span><span class="s1">&#39;password&#39;</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_error_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Failed to read Site configuration file &quot;</span>
+                          <span class="s2">&quot;</span><span class="si">{0:s}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_SITE_CONF</span><span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;fail_get_site_configuration&#39;</span><span class="p">,</span>
+                            <span class="n">error_message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKSiteConfiguration.set_site_directories"><a class="viewcode-back" href="../../api/ramstk.html#ramstk.configuration.RAMSTKSiteConfiguration.set_site_directories">[docs]</a>    <span class="k">def</span> <span class="nf">set_site_directories</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the site-wide RAMSTK directories.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_SITE_DIR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_INSTALL_PREFIX</span> <span class="o">+</span> <span class="s2">&quot;/share/RAMSTK&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_SITE_CONF</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_SITE_DIR</span> <span class="o">+</span> <span class="s2">&quot;/Site.toml&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">file_exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_SITE_CONF</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">do_create_site_configuration</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="RAMSTKUserConfiguration"><a class="viewcode-back" href="../../api/ramstk.html#ramstk.configuration.RAMSTKUserConfiguration">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKUserConfiguration</span><span class="p">:</span>  <span class="c1"># pylint: disable=too-many-instance-attributes</span>
+    <span class="sd">&quot;&quot;&quot;RAMSTK configuration class.</span>
+
+<span class="sd">    Attributes of the Configuration class are:</span>
+
+<span class="sd">    :ivar dict RAMSTK_FORMAT_FILE: Dictionary containing the path to the format</span>
+<span class="sd">        files to use for various widgets.  Keys are the name of the RAMSTK</span>
+<span class="sd">        work stream module, values are the absolute path to the format file</span>
+<span class="sd">        for that work stream module.</span>
+<span class="sd">    :ivar dict RAMSTK_COLORS: Dictionary containing the colors to use for</span>
+<span class="sd">        various widgets.</span>
+<span class="sd">    :ivar dict RAMSTK_COM_INFO: Dictionary for the RAMSTK common database</span>
+<span class="sd">        connection information.  The information contained is:</span>
+
+<span class="sd">            +----------+-------------------------------+</span>
+<span class="sd">            |   Key    | Information                   |</span>
+<span class="sd">            +==========+===============================+</span>
+<span class="sd">            |   host   | Host name                     |</span>
+<span class="sd">            +----------+-------------------------------+</span>
+<span class="sd">            |   port   | Host port                     |</span>
+<span class="sd">            +----------+-------------------------------+</span>
+<span class="sd">            | database | Database name                 |</span>
+<span class="sd">            +----------+-------------------------------+</span>
+<span class="sd">            |   user   | User name                     |</span>
+<span class="sd">            +----------+-------------------------------+</span>
+<span class="sd">            | password | User password                 |</span>
+<span class="sd">            +----------+-------------------------------+</span>
+
+<span class="sd">    :ivar dict RAMSTK_PROG_INFO: Dictionary for RAMSTK Program database</span>
+<span class="sd">        connection information.  The information contained is:</span>
+
+<span class="sd">            +----------+-------------------------------+</span>
+<span class="sd">            |   Key    | Information                   |</span>
+<span class="sd">            +==========+===============================+</span>
+<span class="sd">            |   host   | Host name                     |</span>
+<span class="sd">            +----------+-------------------------------+</span>
+<span class="sd">            |   port   | Host port                     |</span>
+<span class="sd">            +----------+-------------------------------+</span>
+<span class="sd">            | database | Database name                 |</span>
+<span class="sd">            +----------+-------------------------------+</span>
+<span class="sd">            |   user   | User name                     |</span>
+<span class="sd">            +----------+-------------------------------+</span>
+<span class="sd">            | password | User password                 |</span>
+<span class="sd">            +----------+-------------------------------+</span>
+
+<span class="sd">    :ivar dict RAMSTK_TABPOS: Dictionary containing the location of tabs in the</span>
+<span class="sd">        three main Gtk.Notebook() widgets.  Can be one of:</span>
+
+<span class="sd">            * Top</span>
+<span class="sd">            * Bottom</span>
+<span class="sd">            * Left</span>
+<span class="sd">            * Right</span>
+
+<span class="sd">            +------------+---------------+----------+</span>
+<span class="sd">            |    Key     | Notebook      | Default  |</span>
+<span class="sd">            +============+===============+==========+</span>
+<span class="sd">            |  listbook  | Module Book   |  *top*   |</span>
+<span class="sd">            +------------+---------------+----------+</span>
+<span class="sd">            | modulebook | Work Book     | *bottom* |</span>
+<span class="sd">            +------------+---------------+----------+</span>
+<span class="sd">            |  workbook  | List Book     | *bottom* |</span>
+<span class="sd">            +------------+---------------+----------+</span>
+
+<span class="sd">    :ivar dict RAMSTK_SEVERITY: Dictionary for failure severity categories.</span>
+<span class="sd">    :ivar dict RAMSTK_HAZARDS: Dictionary for potential hazards.</span>
+<span class="sd">    :ivar dict RAMSTK_REQUIREMENT_TYPES: Dictionary of requirement types.</span>
+<span class="sd">    :ivar dict RAMSTK_RPN_SEVERITY: Dictionary for RPN Severity categories.</span>
+<span class="sd">    :ivar dict RAMSTK_RPN_OCCURRENCE: Dictionary for RPN Occurrence categories.</span>
+<span class="sd">    :ivar dict RAMSTK_RPN_DETECTION: Dictionary for RPN Detection categories.</span>
+<span class="sd">    :ivar dict RAMSTK_MODULES: Dictionary of active modules in the open RAMSTK</span>
+<span class="sd">        Program database.  Where 1 = active and 0 = inactive.  Keys are:</span>
+
+<span class="sd">            * Function</span>
+<span class="sd">            * Hardware</span>
+<span class="sd">            * Requirements</span>
+<span class="sd">            * Revision</span>
+<span class="sd">            * Validation</span>
+
+<span class="sd">    :ivar list RAMSTK_PAGE_NUMBER: Dictionary indicating which page each RAMSTK</span>
+<span class="sd">        module occupies in the ModuleBook.</span>
+<span class="sd">    :ivar list RAMSTK_RISK_POINTS: List for risk level cutoffs.  Cutoffs are:</span>
+
+<span class="sd">        +-------+---------------------------+</span>
+<span class="sd">        | Index | Risk Level Cutoff Value   |</span>
+<span class="sd">        +=======+===========================+</span>
+<span class="sd">        |   0   | Low to medium             |</span>
+<span class="sd">        +-------+---------------------------+</span>
+<span class="sd">        |   1   | Medium to high            |</span>
+<span class="sd">        +-------+---------------------------+</span>
+
+<span class="sd">    :ivar float RAMSTK_HR_MULTIPLIER: The failure rate multiplier.  All failure</span>
+<span class="sd">        rates will be multiplied by this value for display.  This allows</span>
+<span class="sd">        failure rates to display without using scientific notation.  Set to one</span>
+<span class="sd">        to use scientific notation.  Default value is *1000000.0*.</span>
+<span class="sd">    :ivar float RAMSTK_MTIME: The default mission time for new RAMSTK Programs.</span>
+<span class="sd">    :ivar int RAMSTK_DEC_PLACES: Number of decimal places to show in numerical</span>
+<span class="sd">        results.  Default value is *6*.</span>
+<span class="sd">    :ivar int RAMSTK_MODE_SOURCE: Indicator variable used to determine which</span>
+<span class="sd">        failure mode source to use.  Sources are:</span>
+
+<span class="sd">            1. FMD-97</span>
+<span class="sd">            2. MIL-STD-338</span>
+
+<span class="sd">    :ivar str RAMSTK_CONF_DIR: Path to the directory containing configuration</span>
+<span class="sd">        files used by RAMSTK.</span>
+<span class="sd">    :ivar str RAMSTK_DATA_DIR: Path to the directory containing data files used</span>
+<span class="sd">        by RAMSTK.</span>
+<span class="sd">    :ivar str RAMSTK_ICON_DIR: Path to the directory containing icon files used</span>
+<span class="sd">        by RAMSTK.</span>
+<span class="sd">    :ivar str RAMSTK_LOG_DIR: Path to the directory containing log files used</span>
+<span class="sd">        by RAMSTK.</span>
+<span class="sd">    :ivar str RAMSTK_PROG_DIR: Path to the base directory containing RAMSTK</span>
+<span class="sd">        Program database files.  This is only used when the backend is SQLite3.</span>
+<span class="sd">    :ivar str RAMSTK_GUI_LAYOUT: Layout of the GUI to use.  Possible options</span>
+<span class="sd">        are:</span>
+
+<span class="sd">            * basic - a single window embedded with the Module Book, Work Book,</span>
+<span class="sd">                and List Book.</span>
+<span class="sd">            * advanced - multiple windows; one each for the Module Book, Work</span>
+<span class="sd">                Book, and List Book.</span>
+
+<span class="sd">        Default value is *basic*.</span>
+<span class="sd">    :ivar str RAMSTK_COM_BACKEND: RAMSTK common database backend to use.</span>
+<span class="sd">        Options are:</span>
+
+<span class="sd">            * mysql (future)</span>
+<span class="sd">            * sqlite</span>
+
+<span class="sd">    :ivar str RAMSTK_BACKEND: RAMSTK Program database backend to use.  Options</span>
+<span class="sd">        are:</span>
+
+<span class="sd">            * mysql (future)</span>
+<span class="sd">            * sqlite</span>
+
+<span class="sd">    :ivar str RAMSTK_LOCALE: The language locale to use with RAMSTK.  Default</span>
+<span class="sd">        value is *en_US*.</span>
+<span class="sd">    :ivar str RAMSTK_OS: The operating system RAMSTK is currently running on.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_lst_format_files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">RAMSTK_PROG_DIR</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">RAMSTK_PROG_INFO</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Class for user-specific RAMSTK configuration settings.&quot;&quot;&quot;</span>
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_colors</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;allocationbg&#39;</span><span class="p">,</span> <span class="s1">&#39;allocationfg&#39;</span><span class="p">,</span> <span class="s1">&#39;fmeabg&#39;</span><span class="p">,</span> <span class="s1">&#39;fmeafg&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;failure_definitionbg&#39;</span><span class="p">,</span> <span class="s1">&#39;failure_definitionfg&#39;</span><span class="p">,</span> <span class="s1">&#39;functionbg&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;functionfg&#39;</span><span class="p">,</span> <span class="s1">&#39;hardwarebg&#39;</span><span class="p">,</span> <span class="s1">&#39;hardwarefg&#39;</span><span class="p">,</span> <span class="s1">&#39;hazardbg&#39;</span><span class="p">,</span> <span class="s1">&#39;hazardfg&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pofbg&#39;</span><span class="p">,</span> <span class="s1">&#39;poffg&#39;</span><span class="p">,</span> <span class="s1">&#39;revisionbg&#39;</span><span class="p">,</span> <span class="s1">&#39;revisionfg&#39;</span><span class="p">,</span> <span class="s1">&#39;requirementfg&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;requirementbg&#39;</span><span class="p">,</span> <span class="s1">&#39;validationbg&#39;</span><span class="p">,</span> <span class="s1">&#39;validationfg&#39;</span><span class="p">,</span> <span class="s1">&#39;similar_itembg&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;similar_itemfg&#39;</span><span class="p">,</span> <span class="s1">&#39;stakeholderbg&#39;</span><span class="p">,</span> <span class="s1">&#39;stakeholderfg&#39;</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_format_files</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;allocation&quot;</span><span class="p">,</span> <span class="s2">&quot;failure_definitions&quot;</span><span class="p">,</span> <span class="s2">&quot;fmea&quot;</span><span class="p">,</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;hardware&quot;</span><span class="p">,</span> <span class="s2">&quot;hazard&quot;</span><span class="p">,</span> <span class="s2">&quot;pof&quot;</span><span class="p">,</span> <span class="s2">&quot;requirement&quot;</span><span class="p">,</span> <span class="s2">&quot;revision&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;similar_item&quot;</span><span class="p">,</span> <span class="s2">&quot;stakeholders&quot;</span><span class="p">,</span> <span class="s2">&quot;usage_profile&quot;</span><span class="p">,</span> <span class="s2">&quot;validation&quot;</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_categories</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;integratedcircuit&#39;</span><span class="p">,</span> <span class="s1">&#39;semiconductor&#39;</span><span class="p">,</span> <span class="s1">&#39;resistor&#39;</span><span class="p">,</span> <span class="s1">&#39;capacitor&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;inductor&#39;</span><span class="p">,</span> <span class="s1">&#39;relay&#39;</span><span class="p">,</span> <span class="s1">&#39;switch&#39;</span><span class="p">,</span> <span class="s1">&#39;connection&#39;</span><span class="p">,</span> <span class="s1">&#39;meter&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;miscellaneous&#39;</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_INSTALL_PREFIX</span> <span class="o">=</span> <span class="n">get_install_prefix</span><span class="p">()</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CATEGORIES</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_DAMAGE_MODELS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_FORMAT_FILE</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOAD_HISTORY</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_MANUFACTURERS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_MEASURABLE_PARAMETERS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PAGE_NUMBER</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;revision&#39;</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;function&#39;</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;requirement&#39;</span><span class="p">,</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;hardware&#39;</span><span class="p">,</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;validation&#39;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_REQUIREMENT_TYPE</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_STRESS_LIMITS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_SUBCATEGORIES</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_TABPOS</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;listbook&quot;</span><span class="p">:</span> <span class="s2">&quot;top&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;modulebook&quot;</span><span class="p">:</span> <span class="s2">&quot;bottom&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;workbook&quot;</span><span class="p">:</span> <span class="s2">&quot;bottom&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_WORKGROUPS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_RISK_POINTS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_MODE</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_MODE_SOURCE</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># 1=FMD-97</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_BACKEND</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_REPORT_SIZE</span> <span class="o">=</span> <span class="s2">&quot;letter&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_HR_MULTIPLIER</span> <span class="o">=</span> <span class="mf">1000000.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_DEC_PLACES</span> <span class="o">=</span> <span class="mi">6</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_MTIME</span> <span class="o">=</span> <span class="mf">100.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_GUI_LAYOUT</span> <span class="o">=</span> <span class="s2">&quot;advanced&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_METHOD</span> <span class="o">=</span> <span class="s2">&quot;STANDARD&quot;</span>  <span class="c1"># STANDARD or LRM</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOCALE</span> <span class="o">=</span> <span class="s2">&quot;en_US.UTF8&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOGLEVEL</span> <span class="o">=</span> <span class="s2">&quot;INFO&quot;</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;linux&quot;</span> <span class="ow">or</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;linux2&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_OS</span> <span class="o">=</span> <span class="s2">&quot;Linux&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_INSTALL_PREFIX</span> <span class="o">+</span> <span class="s2">&quot;/share/RAMSTK&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_HOME_DIR</span> <span class="o">=</span> <span class="n">environ</span><span class="p">[</span><span class="s2">&quot;HOME&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_OS</span> <span class="o">=</span> <span class="s2">&quot;Windows&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">=</span> <span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PYTHONPATH&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;/RAMSTK&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_HOME_DIR</span> <span class="o">=</span> <span class="n">environ</span><span class="p">[</span><span class="s2">&quot;USERPROFILE&quot;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_DATA_DIR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">+</span> <span class="s2">&quot;/layouts&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">+</span> <span class="s2">&quot;/icons&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOG_DIR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">+</span> <span class="s2">&quot;/logs&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_DIR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_HOME_DIR</span> <span class="o">+</span> <span class="s2">&quot;/analyses/ramstk/&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_CONF</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">+</span> <span class="s2">&quot;/RAMSTK.toml&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_LOG</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOG_DIR</span> <span class="o">+</span> <span class="s2">&quot;/ramstk_run.log&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_IMPORT_LOG</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOG_DIR</span> <span class="o">+</span> <span class="s2">&quot;/ramstk_import.log&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_do_make_configuration_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create the user configuration directory.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_HOME_DIR</span> <span class="o">+</span> <span class="s2">&quot;/.config/RAMSTK&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dir_exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_CONF</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">+</span> <span class="s2">&quot;/RAMSTK.toml&quot;</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="n">_error_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;User&#39;s configuration directory </span><span class="si">{0:s}</span><span class="s2"> does not &quot;</span>
+                              <span class="s2">&quot;exist and could not be created when attempting &quot;</span>
+                              <span class="s2">&quot;to create a new user configuration &quot;</span>
+                              <span class="s2">&quot;file.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span><span class="p">))</span>
+                <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;fail_create_user_configuration&#39;</span><span class="p">,</span>
+                                <span class="n">error_message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_make_data_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create the user data directory.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_DATA_DIR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">+</span> <span class="s2">&quot;/layouts&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dir_exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_DATA_DIR</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_DATA_DIR</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="n">_error_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;User&#39;s data directory </span><span class="si">{0:s}</span><span class="s2"> does not exist and &quot;</span>
+                              <span class="s2">&quot;could not be created when attempting to create &quot;</span>
+                              <span class="s2">&quot;a new user configuration file.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_DATA_DIR</span><span class="p">))</span>
+                <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;fail_create_user_configuration&#39;</span><span class="p">,</span>
+                                <span class="n">error_message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_make_icon_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create the user icon directory.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">+</span> <span class="s2">&quot;/icons&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dir_exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="n">_error_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;User&#39;s icon directory </span><span class="si">{0:s}</span><span class="s2"> does not exist and &quot;</span>
+                              <span class="s2">&quot;could not be created when attempting to create &quot;</span>
+                              <span class="s2">&quot;a new user configuration file.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span><span class="p">))</span>
+                <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;fail_create_user_configuration&#39;</span><span class="p">,</span>
+                                <span class="n">error_message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_make_log_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create the user log directory.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOG_DIR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">+</span> <span class="s2">&quot;/logs&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dir_exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOG_DIR</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOG_DIR</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="n">_error_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;User&#39;s log directory </span><span class="si">{0:s}</span><span class="s2"> does not exist and &quot;</span>
+                              <span class="s2">&quot;could not be created when attempting to create &quot;</span>
+                              <span class="s2">&quot;a new user configuration file.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOG_DIR</span><span class="p">))</span>
+                <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;fail_create_user_configuration&#39;</span><span class="p">,</span>
+                                <span class="n">error_message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_make_program_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create the user program directory.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dir_exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_DIR</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_DIR</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="n">_error_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Program directory </span><span class="si">{0:s}</span><span class="s2"> does not exist and &quot;</span>
+                              <span class="s2">&quot;could not be created when attempting to create &quot;</span>
+                              <span class="s2">&quot;a new user configuration file.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_DIR</span><span class="p">))</span>
+                <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;fail_create_user_configuration&#39;</span><span class="p">,</span>
+                                <span class="n">error_message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RAMSTKUserConfiguration.do_create_user_configuration"><a class="viewcode-back" href="../../api/ramstk.html#ramstk.configuration.RAMSTKUserConfiguration.do_create_user_configuration">[docs]</a>    <span class="k">def</span> <span class="nf">do_create_user_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create the default user configuration file.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create the directories needed for the user.  Always prefer the RAMSTK</span>
+        <span class="c1"># directories in the user&#39;s $HOME over the system-wide directories.</span>
+        <span class="c1"># Configuration directory.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_make_configuration_dir</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_make_data_dir</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_make_icon_dir</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_make_log_dir</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_make_program_dir</span><span class="p">()</span>
+
+        <span class="c1"># Copy format files from RAMSTK_SITE_DIR (system) to the user&#39;s</span>
+        <span class="c1"># RAMSTK_CONF_DIR.</span>
+        <span class="k">for</span> <span class="n">_file</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_INSTALL_PREFIX</span>
+                               <span class="o">+</span> <span class="s2">&quot;/share/RAMSTK/layouts/*.toml&quot;</span><span class="p">):</span>
+            <span class="n">file_util</span><span class="o">.</span><span class="n">copy_file</span><span class="p">(</span><span class="n">_file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_DATA_DIR</span><span class="p">)</span>
+
+        <span class="c1"># Copy the icons from RAMSTK_SITE_DIR (system) to the user&#39;s</span>
+        <span class="c1"># RAMSTK_ICON_DIR.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">dir_util</span><span class="o">.</span><span class="n">copy_tree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_INSTALL_PREFIX</span> <span class="o">+</span> <span class="s2">&quot;/share/RAMSTK/icons/&quot;</span><span class="p">,</span>
+                               <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">DistutilsFileError</span><span class="p">:</span>
+            <span class="n">_error_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Attempt to copy RAMSTK icons from site-wide icon &#39;</span>
+                          <span class="s1">&#39;directory </span><span class="si">{0:s}</span><span class="s1"> to user</span><span class="se">\&#39;</span><span class="s1">s icon directory </span><span class="si">{1:s}</span><span class="s1"> &#39;</span>
+                          <span class="s1">&#39;failed.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                              <span class="bp">self</span><span class="o">.</span><span class="n">_INSTALL_PREFIX</span> <span class="o">+</span> <span class="s2">&quot;/share/RAMSTK/icons/&quot;</span><span class="p">,</span>
+                              <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span><span class="p">))</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;fail_copy_icons_to_user&#39;</span><span class="p">,</span>
+                            <span class="n">error_message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">)</span>
+
+        <span class="c1"># Create the default RAMSTK user configuration file.</span>
+        <span class="n">_dic_user_configuration</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;RAMSTK User Configuration&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;general&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;firstrun&quot;</span><span class="p">:</span> <span class="s2">&quot;True&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;reportsize&quot;</span><span class="p">:</span> <span class="s2">&quot;letter&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;frmultiplier&quot;</span><span class="p">:</span> <span class="s2">&quot;1000000.0&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;calcreltime&quot;</span><span class="p">:</span> <span class="s2">&quot;100.0&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;decimal&quot;</span><span class="p">:</span> <span class="s2">&quot;6&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;modesource&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;moduletabpos&quot;</span><span class="p">:</span> <span class="s2">&quot;top&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;listtabpos&quot;</span><span class="p">:</span> <span class="s2">&quot;bottom&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;worktabpos&quot;</span><span class="p">:</span> <span class="s2">&quot;bottom&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;loglevel&quot;</span><span class="p">:</span> <span class="s2">&quot;INFO&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;backend&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;dialect&quot;</span><span class="p">:</span> <span class="s2">&quot;sqlite&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="s2">&quot;3306&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;database&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;directories&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;datadir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_DATA_DIR</span><span class="p">,</span>
+                <span class="s2">&quot;icondir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span><span class="p">,</span>
+                <span class="s2">&quot;logdir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOG_DIR</span><span class="p">,</span>
+                <span class="s2">&quot;progdir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_DIR</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;layouts&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;allocation&quot;</span><span class="p">:</span> <span class="s2">&quot;allocation.toml&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;failure_definitions&quot;</span><span class="p">:</span> <span class="s2">&quot;failure_definition.toml&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;fmea&quot;</span><span class="p">:</span> <span class="s2">&quot;fmea.toml&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;function&quot;</span><span class="p">:</span> <span class="s2">&quot;function.toml&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;hardware&quot;</span><span class="p">:</span> <span class="s2">&quot;hardware.toml&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;hazard&quot;</span><span class="p">:</span> <span class="s2">&quot;hazops.toml&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;pof&quot;</span><span class="p">:</span> <span class="s2">&quot;pof.toml&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;requirement&quot;</span><span class="p">:</span> <span class="s2">&quot;requirement.toml&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;revision&quot;</span><span class="p">:</span> <span class="s2">&quot;revision.toml&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;similar_item&quot;</span><span class="p">:</span> <span class="s2">&quot;similar_item.toml&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;stakeholders&quot;</span><span class="p">:</span> <span class="s2">&quot;stakeholder.toml&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;usage_profile&quot;</span><span class="p">:</span> <span class="s2">&quot;usage_profile.toml&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;validation&quot;</span><span class="p">:</span> <span class="s2">&quot;validation.toml&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;colors&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;allocationbg&#39;</span><span class="p">:</span> <span class="s1">&#39;#FFFFFF&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;allocationfg&#39;</span><span class="p">:</span> <span class="s1">&#39;#000000&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;failure_definitionbg&#39;</span><span class="p">:</span> <span class="s1">&#39;#FFFFFF&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;failure_definitionfg&#39;</span><span class="p">:</span> <span class="s1">&#39;#000000&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;fmeabg&#39;</span><span class="p">:</span> <span class="s1">&#39;#FFFFFF&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;fmeafg&#39;</span><span class="p">:</span> <span class="s1">&#39;#000000&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;functionbg&#39;</span><span class="p">:</span> <span class="s1">&#39;#FFFFFF&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;functionfg&#39;</span><span class="p">:</span> <span class="s1">&#39;#000000&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;hardwarebg&#39;</span><span class="p">:</span> <span class="s1">&#39;#FFFFFF&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;hardwarefg&#39;</span><span class="p">:</span> <span class="s1">&#39;#000000&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;hazardbg&#39;</span><span class="p">:</span> <span class="s1">&#39;#FFFFFF&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;hazardfg&#39;</span><span class="p">:</span> <span class="s1">&#39;#000000&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;pofbg&#39;</span><span class="p">:</span> <span class="s1">&#39;#FFFFFF&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;poffg&#39;</span><span class="p">:</span> <span class="s1">&#39;#000000&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;requirementbg&#39;</span><span class="p">:</span> <span class="s1">&#39;#FFFFFF&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;requirementfg&#39;</span><span class="p">:</span> <span class="s1">&#39;#000000&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;revisionbg&#39;</span><span class="p">:</span> <span class="s1">&#39;#FFFFFF&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;revisionfg&#39;</span><span class="p">:</span> <span class="s1">&#39;#000000&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;similar_itembg&#39;</span><span class="p">:</span> <span class="s1">&#39;#FFFFFF&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;similar_itemfg&#39;</span><span class="p">:</span> <span class="s1">&#39;#000000&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;stakeholderbg&#39;</span><span class="p">:</span> <span class="s1">&#39;#FFFFFF&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;stakeholderfg&#39;</span><span class="p">:</span> <span class="s1">&#39;#000000&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;validationbg&#39;</span><span class="p">:</span> <span class="s1">&#39;#FFFFFF&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;validationfg&#39;</span><span class="p">:</span> <span class="s1">&#39;#000000&#39;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;stress&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;integratedcircuit&#39;</span><span class="p">:</span>
+                <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">],</span>
+                <span class="s1">&#39;semiconductor&#39;</span><span class="p">:</span>
+                <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">],</span>
+                <span class="s1">&#39;resistor&#39;</span><span class="p">:</span>
+                <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">],</span>
+                <span class="s1">&#39;capacitor&#39;</span><span class="p">:</span>
+                <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">],</span>
+                <span class="s1">&#39;inductor&#39;</span><span class="p">:</span>
+                <span class="p">[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">],</span>
+                <span class="s1">&#39;relay&#39;</span><span class="p">:</span>
+                <span class="p">[</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">],</span>
+                <span class="s1">&#39;switch&#39;</span><span class="p">:</span>
+                <span class="p">[</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">],</span>
+                <span class="s1">&#39;connection&#39;</span><span class="p">:</span>
+                <span class="p">[</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">25.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">],</span>
+                <span class="s1">&#39;meter&#39;</span><span class="p">:</span>
+                <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">],</span>
+                <span class="s1">&#39;miscellaneous&#39;</span><span class="p">:</span>
+                <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">toml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">_dic_user_configuration</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_CONF</span><span class="p">,</span>
+                                                    <span class="s2">&quot;w&quot;</span><span class="p">))</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;succeed_create_user_configuration&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="n">_error_msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;Failed to write user configuration file </span><span class="si">{0:s}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_CONF</span><span class="p">))</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;fail_create_user_configuration&#39;</span><span class="p">,</span>
+                            <span class="n">error_message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKUserConfiguration.get_user_configuration"><a class="viewcode-back" href="../../api/ramstk.html#ramstk.configuration.RAMSTKUserConfiguration.get_user_configuration">[docs]</a>    <span class="k">def</span> <span class="nf">get_user_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Read the RAMSTK user configuration file.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Try to read the user&#39;s configuration file.  If it doesn&#39;t exist,</span>
+        <span class="c1"># create a new one.  If those options fail, read the system-wide</span>
+        <span class="c1"># configuration file and keep going.</span>
+        <span class="k">if</span> <span class="n">file_exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_CONF</span><span class="p">):</span>
+            <span class="n">_config</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_CONF</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">_color</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_colors</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="n">_color</span><span class="p">]</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;colors&quot;</span><span class="p">][</span><span class="n">_color</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_format_files</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_FORMAT_FILE</span><span class="p">[</span><span class="n">_file</span><span class="p">]</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;layouts&quot;</span><span class="p">][</span><span class="n">_file</span><span class="p">]</span>
+
+            <span class="c1"># Hardware categories are stored as integers, but configuration</span>
+            <span class="c1"># file keys are human-readable nouns.  This converts the noun key</span>
+            <span class="c1"># to the equivalent integer key.</span>
+            <span class="k">for</span> <span class="n">_category</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_categories</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_STRESS_LIMITS</span><span class="p">[</span>
+                    <span class="n">_category</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;stress&quot;</span><span class="p">][</span><span class="n">_category</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_BACKEND</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;backend&quot;</span><span class="p">][</span><span class="s2">&quot;dialect&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">[</span><span class="s2">&quot;dialect&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;backend&quot;</span><span class="p">][</span><span class="s2">&quot;dialect&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;backend&quot;</span><span class="p">][</span><span class="s2">&quot;host&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">[</span><span class="s2">&quot;port&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;backend&quot;</span><span class="p">][</span><span class="s2">&quot;port&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">[</span><span class="s2">&quot;database&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;backend&quot;</span><span class="p">][</span><span class="s2">&quot;database&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;backend&quot;</span><span class="p">][</span><span class="s2">&quot;user&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;backend&quot;</span><span class="p">][</span><span class="s2">&quot;password&quot;</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_DATA_DIR</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;directories&quot;</span><span class="p">][</span><span class="s2">&quot;datadir&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;directories&quot;</span><span class="p">][</span><span class="s2">&quot;icondir&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOG_DIR</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;directories&quot;</span><span class="p">][</span><span class="s2">&quot;logdir&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_DIR</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;directories&quot;</span><span class="p">][</span><span class="s2">&quot;progdir&quot;</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_REPORT_SIZE</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;general&quot;</span><span class="p">][</span><span class="s2">&quot;reportsize&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_HR_MULTIPLIER</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+                <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;general&quot;</span><span class="p">][</span><span class="s2">&quot;frmultiplier&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_DEC_PLACES</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_config</span><span class="p">[</span><span class="s2">&quot;general&quot;</span><span class="p">][</span><span class="s2">&quot;decimal&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_MTIME</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_config</span><span class="p">[</span><span class="s2">&quot;general&quot;</span><span class="p">][</span><span class="s2">&quot;calcreltime&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_MODE_SOURCE</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;general&quot;</span><span class="p">][</span><span class="s2">&quot;modesource&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_TABPOS</span><span class="p">[</span><span class="s2">&quot;listbook&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;general&quot;</span><span class="p">][</span><span class="s2">&quot;listtabpos&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_TABPOS</span><span class="p">[</span><span class="s2">&quot;modulebook&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;general&quot;</span><span class="p">][</span>
+                <span class="s2">&quot;moduletabpos&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_TABPOS</span><span class="p">[</span><span class="s2">&quot;workbook&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;general&quot;</span><span class="p">][</span><span class="s2">&quot;worktabpos&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOGLEVEL</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="s2">&quot;general&quot;</span><span class="p">][</span><span class="s2">&quot;loglevel&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOG_DIR</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_LOG</span> <span class="o">=</span> <span class="s2">&quot;./ramstk_run.log&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_IMPORT_LOG</span> <span class="o">=</span> <span class="s2">&quot;./ramstk_import.log&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_LOG</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOG_DIR</span>
+                                        <span class="o">+</span> <span class="s2">&quot;/ramstk_run.log&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_IMPORT_LOG</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOG_DIR</span>
+                                          <span class="o">+</span> <span class="s2">&quot;/ramstk_import.log&quot;</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_error_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Failed to read User configuration file &quot;</span>
+                          <span class="s2">&quot;</span><span class="si">{0:s}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_CONF</span><span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;fail_get_user_configuration&#39;</span><span class="p">,</span>
+                            <span class="n">error_message</span><span class="o">=</span><span class="n">_error_msg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKUserConfiguration.set_user_configuration"><a class="viewcode-back" href="../../api/ramstk.html#ramstk.configuration.RAMSTKUserConfiguration.set_user_configuration">[docs]</a>    <span class="k">def</span> <span class="nf">set_user_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Write changes to the user&#39;s configuration file.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_dic_user_configuration</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;RAMSTK User Configuration&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;general&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;reportsize&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_REPORT_SIZE</span><span class="p">,</span>
+                <span class="s2">&quot;frmultiplier&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_HR_MULTIPLIER</span><span class="p">),</span>
+                <span class="s2">&quot;calcreltime&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_MTIME</span><span class="p">),</span>
+                <span class="s2">&quot;decimal&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_DEC_PLACES</span><span class="p">),</span>
+                <span class="s2">&quot;modesource&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_MODE_SOURCE</span><span class="p">),</span>
+                <span class="s2">&quot;moduletabpos&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_TABPOS</span><span class="p">[</span><span class="s2">&quot;modulebook&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;listtabpos&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_TABPOS</span><span class="p">[</span><span class="s2">&quot;listbook&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;worktabpos&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_TABPOS</span><span class="p">[</span><span class="s2">&quot;workbook&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;loglevel&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOGLEVEL</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;backend&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;dialect&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">[</span><span class="s2">&quot;dialect&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">]),</span>
+                <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">[</span><span class="s2">&quot;port&quot;</span><span class="p">]),</span>
+                <span class="s2">&quot;database&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">[</span><span class="s2">&quot;database&quot;</span><span class="p">]),</span>
+                <span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">]),</span>
+                <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">])</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;directories&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;datadir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_DATA_DIR</span><span class="p">,</span>
+                <span class="s2">&quot;icondir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span><span class="p">,</span>
+                <span class="s2">&quot;logdir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOG_DIR</span><span class="p">,</span>
+                <span class="s2">&quot;progdir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_DIR</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;layouts&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;allocation&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_FORMAT_FILE</span><span class="p">[</span><span class="s1">&#39;allocation&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;failure_definitions&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_FORMAT_FILE</span><span class="p">[</span><span class="s1">&#39;failure_definitions&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;fmea&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_FORMAT_FILE</span><span class="p">[</span><span class="s1">&#39;fmea&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;function&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_FORMAT_FILE</span><span class="p">[</span><span class="s1">&#39;function&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;hardware&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_FORMAT_FILE</span><span class="p">[</span><span class="s1">&#39;hardware&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;hazard&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_FORMAT_FILE</span><span class="p">[</span><span class="s1">&#39;hazard&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;pof&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_FORMAT_FILE</span><span class="p">[</span><span class="s1">&#39;pof&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;requirement&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_FORMAT_FILE</span><span class="p">[</span><span class="s1">&#39;requirement&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;revision&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_FORMAT_FILE</span><span class="p">[</span><span class="s1">&#39;revision&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;similar_item&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_FORMAT_FILE</span><span class="p">[</span><span class="s1">&#39;similar_item&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;stakeholders&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_FORMAT_FILE</span><span class="p">[</span><span class="s1">&#39;stakeholders&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;usage_profile&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_FORMAT_FILE</span><span class="p">[</span><span class="s1">&#39;usage_profile&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;validation&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_FORMAT_FILE</span><span class="p">[</span><span class="s1">&#39;validation&#39;</span><span class="p">]</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;colors&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;allocationbg&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;allocationbg&#39;</span><span class="p">],</span>
+                <span class="s1">&#39;allocationfg&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;allocationbg&#39;</span><span class="p">],</span>
+                <span class="s1">&#39;failure_definitionbg&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;failure_definitionbg&#39;</span><span class="p">],</span>
+                <span class="s1">&#39;failure_definitionfg&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span>
+                    <span class="s1">&#39;failure_definitionbg&#39;</span><span class="p">],</span>
+                <span class="s1">&#39;fmeabg&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;fmeabg&#39;</span><span class="p">],</span>
+                <span class="s1">&#39;fmeafg&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;fmeafg&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;functionbg&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;functionbg&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;functionfg&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;functionfg&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;hardwarebg&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;hardwarebg&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;hardwarefg&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;hardwarefg&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;hazardbg&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;hazardbg&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;hazardfg&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;hazardfg&#39;</span><span class="p">],</span>
+                <span class="s1">&#39;pofbg&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;pofbg&#39;</span><span class="p">],</span>
+                <span class="s1">&#39;poffg&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;poffg&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;requirementbg&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;requirementbg&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;requirementfg&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;requirementfg&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;revisionbg&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;revisionbg&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;revisionfg&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;revisionfg&#39;</span><span class="p">],</span>
+                <span class="s1">&#39;similar_itembg&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;similar_itembg&#39;</span><span class="p">],</span>
+                <span class="s1">&#39;similar_itemfg&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;similar_itemfg&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;stakeholderbg&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;stakeholderbg&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;stakeholderfg&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;stakeholderfg&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;validationbg&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;validationbg&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;validationfg&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_COLORS</span><span class="p">[</span><span class="s1">&#39;validationfg&#39;</span><span class="p">]</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;stress&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;integratedcircuit&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_STRESS_LIMITS</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="s2">&quot;semiconductor&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_STRESS_LIMITS</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                <span class="s2">&quot;resistor&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_STRESS_LIMITS</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                <span class="s2">&quot;capacitor&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_STRESS_LIMITS</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+                <span class="s2">&quot;inductor&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_STRESS_LIMITS</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+                <span class="s2">&quot;relay&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_STRESS_LIMITS</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span>
+                <span class="s2">&quot;switch&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_STRESS_LIMITS</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
+                <span class="s2">&quot;connection&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_STRESS_LIMITS</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span>
+                <span class="s2">&quot;meter&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_STRESS_LIMITS</span><span class="p">[</span><span class="mi">9</span><span class="p">],</span>
+                <span class="s2">&quot;miscellaneous&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_STRESS_LIMITS</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="n">toml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">_dic_user_configuration</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_CONF</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="RAMSTKUserConfiguration.set_user_directories"><a class="viewcode-back" href="../../api/ramstk.html#ramstk.configuration.RAMSTKUserConfiguration.set_user_directories">[docs]</a>    <span class="k">def</span> <span class="nf">set_user_directories</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the user-specific configuration directories.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Prefer user-specific directories in their $HOME directory over the</span>
+        <span class="c1"># system-wide directories.</span>
+        <span class="k">if</span> <span class="n">dir_exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_HOME_DIR</span> <span class="o">+</span> <span class="s2">&quot;/.config/RAMSTK&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_HOME_DIR</span> <span class="o">+</span> <span class="s2">&quot;/.config/RAMSTK&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_INSTALL_PREFIX</span> <span class="o">+</span> <span class="s2">&quot;/share/RAMSTK&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_CONF</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">+</span> <span class="s2">&quot;/RAMSTK.toml&quot;</span>
+
+        <span class="k">if</span> <span class="n">dir_exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">+</span> <span class="s2">&quot;/layouts&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_DATA_DIR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">+</span> <span class="s2">&quot;/layouts&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_DATA_DIR</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_INSTALL_PREFIX</span>
+                                    <span class="o">+</span> <span class="s2">&quot;/share/RAMSTK/layouts&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dir_exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">+</span> <span class="s2">&quot;/icons&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">+</span> <span class="s2">&quot;/icons&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_INSTALL_PREFIX</span> <span class="o">+</span> <span class="s2">&quot;/share/RAMSTK/icons&quot;</span>
+
+        <span class="k">if</span> <span class="n">dir_exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">+</span> <span class="s2">&quot;/log&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOG_DIR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_CONF_DIR</span> <span class="o">+</span> <span class="s2">&quot;/log&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_LOG_DIR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_INSTALL_PREFIX</span> <span class="o">+</span> <span class="s2">&quot;/share/RAMSTK/log&quot;</span>
+
+        <span class="k">if</span> <span class="n">dir_exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_HOME_DIR</span> <span class="o">+</span> <span class="s2">&quot;/analyses/ramstk&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_DIR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_HOME_DIR</span> <span class="o">+</span> <span class="s2">&quot;/analyses/ramstk&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_PROG_DIR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_HOME_DIR</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

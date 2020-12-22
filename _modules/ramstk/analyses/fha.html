@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.analyses.fha &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    
+    <script src="../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.analyses.fha</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.analyses.fha.py is part of the RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2019 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;Functional Hazards Analysis (FHA) Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="c1"># noinspection PyPackageRequirements</span>
+<span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">symbols</span><span class="p">,</span> <span class="n">sympify</span>  <span class="c1"># type: ignore</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.exceptions</span> <span class="kn">import</span> <span class="n">OutOfRangeError</span>
+
+<span class="n">PROBABILITY</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Level E - Extremely Unlikely&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s1">&#39;Level D - Remote&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s1">&#39;Level C - Occasional&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s1">&#39;Level B - Reasonably Probable&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s1">&#39;Level A - Frequent&#39;</span><span class="p">:</span> <span class="mi">5</span>
+<span class="p">}</span>
+<span class="n">SEVERITY</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Insignificant&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s1">&#39;Slight&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s1">&#39;Low&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s1">&#39;Medium&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s1">&#39;High&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s1">&#39;Major&#39;</span><span class="p">:</span> <span class="mi">6</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="calculate_hri"><a class="viewcode-back" href="../../../api/ramstk.analyses.html#ramstk.analyses.fha.calculate_hri">[docs]</a><span class="k">def</span> <span class="nf">calculate_hri</span><span class="p">(</span><span class="n">probability</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">severity</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the hazard risk index (HRI).</span>
+
+<span class="sd">    .. note:: See MIL-STD-882.</span>
+
+<span class="sd">    :param probability: the hazard probability expressed in text.</span>
+<span class="sd">    :param severity: the hazard severity expressed in text.</span>
+<span class="sd">    :return: _hri; the calculated hazard risk index.</span>
+<span class="sd">    :rtype: int</span>
+<span class="sd">    :raise: OutOfRangeError if passed an unknown probability or severity</span>
+<span class="sd">        description.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">PROBABILITY</span><span class="p">[</span><span class="n">probability</span><span class="p">]</span> <span class="o">*</span> <span class="n">SEVERITY</span><span class="p">[</span><span class="n">severity</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">_error</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">OutOfRangeError</span><span class="p">((</span><span class="s2">&quot;calculate_hri() was passed an unknown hazard &quot;</span>
+                               <span class="s2">&quot;probability (</span><span class="si">{0:s}</span><span class="s2">) or severity (</span><span class="si">{1:s}</span><span class="s2">) &quot;</span>
+                               <span class="s2">&quot;description.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">probability</span><span class="p">,</span>
+                                                      <span class="n">severity</span><span class="p">))</span> <span class="kn">from</span> <span class="nn">_error</span></div>
+
+
+<div class="viewcode-block" id="calculate_user_defined"><a class="viewcode-back" href="../../../api/ramstk.analyses.html#ramstk.analyses.fha.calculate_user_defined">[docs]</a><span class="k">def</span> <span class="nf">calculate_user_defined</span><span class="p">(</span><span class="n">fha</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the user-defined hazards analysis.</span>
+
+<span class="sd">    :param fha: the user-defined functional hazards assessment dict.  The</span>
+<span class="sd">        calling method/function should create the fha dict as follows:</span>
+
+<span class="sd">        fha = OrderedDict({</span>
+<span class="sd">            _key: None</span>
+<span class="sd">            for _key in [</span>
+<span class="sd">                &#39;uf1&#39;, &#39;uf2&#39;, &#39;uf3&#39;, &#39;ui1&#39;, &#39;ui2&#39;, &#39;ui3&#39;, &#39;equation1&#39;,</span>
+<span class="sd">                &#39;equation2&#39;, &#39;equation3&#39;, &#39;equation4&#39;, &#39;equation5&#39;, &#39;res1&#39;,</span>
+<span class="sd">                &#39;res2&#39;, &#39;res3&#39;, &#39;res4&#39;, &#39;res5&#39;</span>
+<span class="sd">                ]</span>
+<span class="sd">            })</span>
+
+<span class="sd">    :return: fha; the functional hazards assessment dict with updated results.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="p">(</span><span class="n">uf1</span><span class="p">,</span> <span class="n">uf2</span><span class="p">,</span> <span class="n">uf3</span><span class="p">,</span> <span class="n">ui1</span><span class="p">,</span> <span class="n">ui2</span><span class="p">,</span> <span class="n">ui3</span><span class="p">,</span> <span class="n">res1</span><span class="p">,</span> <span class="n">res2</span><span class="p">,</span> <span class="n">res3</span><span class="p">,</span> <span class="n">res4</span><span class="p">,</span>
+     <span class="n">res5</span><span class="p">)</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;uf1 uf2 uf3 ui1 ui2 ui3 res1 res2 res3 res4 res5&#39;</span><span class="p">)</span>
+
+    <span class="c1"># pylint: disable=eval-used</span>
+    <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sympify</span><span class="p">(</span><span class="n">fha</span><span class="p">[</span><span class="s1">&#39;equation1&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">evalf</span><span class="p">(</span>
+        <span class="n">subs</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">uf1</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;uf1&#39;</span><span class="p">],</span>
+            <span class="n">uf2</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;uf2&#39;</span><span class="p">],</span>
+            <span class="n">uf3</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;uf3&#39;</span><span class="p">],</span>
+            <span class="n">ui1</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;ui1&#39;</span><span class="p">],</span>
+            <span class="n">ui2</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;ui2&#39;</span><span class="p">],</span>
+            <span class="n">ui3</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;ui3&#39;</span><span class="p">],</span>
+            <span class="n">res1</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res1&#39;</span><span class="p">],</span>
+            <span class="n">res2</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res2&#39;</span><span class="p">],</span>
+            <span class="n">res3</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res3&#39;</span><span class="p">],</span>
+            <span class="n">res4</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res4&#39;</span><span class="p">],</span>
+            <span class="n">res5</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res5&#39;</span><span class="p">]</span>
+        <span class="p">})</span>
+    <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sympify</span><span class="p">(</span><span class="n">fha</span><span class="p">[</span><span class="s1">&#39;equation2&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">evalf</span><span class="p">(</span>
+        <span class="n">subs</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">uf1</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;uf1&#39;</span><span class="p">],</span>
+            <span class="n">uf2</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;uf2&#39;</span><span class="p">],</span>
+            <span class="n">uf3</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;uf3&#39;</span><span class="p">],</span>
+            <span class="n">ui1</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;ui1&#39;</span><span class="p">],</span>
+            <span class="n">ui2</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;ui2&#39;</span><span class="p">],</span>
+            <span class="n">ui3</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;ui3&#39;</span><span class="p">],</span>
+            <span class="n">res1</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res1&#39;</span><span class="p">],</span>
+            <span class="n">res2</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res2&#39;</span><span class="p">],</span>
+            <span class="n">res3</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res3&#39;</span><span class="p">],</span>
+            <span class="n">res4</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res4&#39;</span><span class="p">],</span>
+            <span class="n">res5</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res5&#39;</span><span class="p">]</span>
+        <span class="p">})</span>
+    <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sympify</span><span class="p">(</span><span class="n">fha</span><span class="p">[</span><span class="s1">&#39;equation3&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">evalf</span><span class="p">(</span>
+        <span class="n">subs</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">uf1</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;uf1&#39;</span><span class="p">],</span>
+            <span class="n">uf2</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;uf2&#39;</span><span class="p">],</span>
+            <span class="n">uf3</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;uf3&#39;</span><span class="p">],</span>
+            <span class="n">ui1</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;ui1&#39;</span><span class="p">],</span>
+            <span class="n">ui2</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;ui2&#39;</span><span class="p">],</span>
+            <span class="n">ui3</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;ui3&#39;</span><span class="p">],</span>
+            <span class="n">res1</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res1&#39;</span><span class="p">],</span>
+            <span class="n">res2</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res2&#39;</span><span class="p">],</span>
+            <span class="n">res3</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res3&#39;</span><span class="p">],</span>
+            <span class="n">res4</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res4&#39;</span><span class="p">],</span>
+            <span class="n">res5</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res5&#39;</span><span class="p">]</span>
+        <span class="p">})</span>
+    <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res4&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sympify</span><span class="p">(</span><span class="n">fha</span><span class="p">[</span><span class="s1">&#39;equation4&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">evalf</span><span class="p">(</span>
+        <span class="n">subs</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">uf1</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;uf1&#39;</span><span class="p">],</span>
+            <span class="n">uf2</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;uf2&#39;</span><span class="p">],</span>
+            <span class="n">uf3</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;uf3&#39;</span><span class="p">],</span>
+            <span class="n">ui1</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;ui1&#39;</span><span class="p">],</span>
+            <span class="n">ui2</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;ui2&#39;</span><span class="p">],</span>
+            <span class="n">ui3</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;ui3&#39;</span><span class="p">],</span>
+            <span class="n">res1</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res1&#39;</span><span class="p">],</span>
+            <span class="n">res2</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res2&#39;</span><span class="p">],</span>
+            <span class="n">res3</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res3&#39;</span><span class="p">],</span>
+            <span class="n">res4</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res4&#39;</span><span class="p">],</span>
+            <span class="n">res5</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res5&#39;</span><span class="p">]</span>
+        <span class="p">})</span>
+    <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res5&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sympify</span><span class="p">(</span><span class="n">fha</span><span class="p">[</span><span class="s1">&#39;equation5&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">evalf</span><span class="p">(</span>
+        <span class="n">subs</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">uf1</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;uf1&#39;</span><span class="p">],</span>
+            <span class="n">uf2</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;uf2&#39;</span><span class="p">],</span>
+            <span class="n">uf3</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;uf3&#39;</span><span class="p">],</span>
+            <span class="n">ui1</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;ui1&#39;</span><span class="p">],</span>
+            <span class="n">ui2</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;ui2&#39;</span><span class="p">],</span>
+            <span class="n">ui3</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;ui3&#39;</span><span class="p">],</span>
+            <span class="n">res1</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res1&#39;</span><span class="p">],</span>
+            <span class="n">res2</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res2&#39;</span><span class="p">],</span>
+            <span class="n">res3</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res3&#39;</span><span class="p">],</span>
+            <span class="n">res4</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res4&#39;</span><span class="p">],</span>
+            <span class="n">res5</span><span class="p">:</span> <span class="n">fha</span><span class="p">[</span><span class="s1">&#39;res5&#39;</span><span class="p">]</span>
+        <span class="p">})</span>
+
+    <span class="k">return</span> <span class="n">fha</span></div>
+
+
+<div class="viewcode-block" id="set_user_defined_floats"><a class="viewcode-back" href="../../../api/ramstk.analyses.html#ramstk.analyses.fha.set_user_defined_floats">[docs]</a><span class="k">def</span> <span class="nf">set_user_defined_floats</span><span class="p">(</span><span class="n">fha</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+                            <span class="n">floats</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Set the user-defined float values for the user-defined calculations.</span>
+
+<span class="sd">    :param fha: the functional hazard assessment dict.</span>
+<span class="sd">    :param list floats: the list of float values.</span>
+<span class="sd">    :return: fha; the functional hazard assessment dict with updated float</span>
+<span class="sd">        values.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_key</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">_idx</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_key</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">fha</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">_idx</span><span class="p">]</span>
+            <span class="n">fha</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">floats</span><span class="p">[</span><span class="n">_idx</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">fha</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="k">return</span> <span class="n">fha</span></div>
+
+
+<div class="viewcode-block" id="set_user_defined_ints"><a class="viewcode-back" href="../../../api/ramstk.analyses.html#ramstk.analyses.fha.set_user_defined_ints">[docs]</a><span class="k">def</span> <span class="nf">set_user_defined_ints</span><span class="p">(</span><span class="n">fha</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+                          <span class="n">ints</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Set the user-defined integer values for the user-defined calculations.</span>
+
+<span class="sd">    :param fha: the functional hazard assessment dict.</span>
+<span class="sd">    :param list ints: the list of integer values.</span>
+<span class="sd">    :return: fha; the functional hazard assessment dict with updated integer</span>
+<span class="sd">        values.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_key</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">_idx</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_key</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">fha</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">_idx</span><span class="p">]</span>
+            <span class="n">fha</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ints</span><span class="p">[</span><span class="n">_idx</span> <span class="o">-</span> <span class="mi">3</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">fha</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="n">fha</span></div>
+
+
+<div class="viewcode-block" id="set_user_defined_functions"><a class="viewcode-back" href="../../../api/ramstk.analyses.html#ramstk.analyses.fha.set_user_defined_functions">[docs]</a><span class="k">def</span> <span class="nf">set_user_defined_functions</span><span class="p">(</span><span class="n">fha</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+                               <span class="n">functions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Set the user-defined functions for the user-defined calculations.</span>
+
+<span class="sd">    .. note:: by default we set the function equal to 0.0.  This prevents Sympy</span>
+<span class="sd">        errors resulting from empty strings.</span>
+
+<span class="sd">    :param fha: the functional hazard assessment dict.</span>
+<span class="sd">    :param list functions: the list of functions; list items are str.</span>
+<span class="sd">    :return: fha; the functional hazard assessment dict with updated functions.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_key</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">_idx</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">]:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_key</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">fha</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">_idx</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">functions</span><span class="p">[</span><span class="n">_idx</span> <span class="o">-</span> <span class="mi">6</span><span class="p">])</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="n">fha</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.0&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fha</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">functions</span><span class="p">[</span><span class="n">_idx</span> <span class="o">-</span> <span class="mi">6</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">fha</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.0&#39;</span>
+
+    <span class="k">return</span> <span class="n">fha</span></div>
+
+
+<div class="viewcode-block" id="set_user_defined_results"><a class="viewcode-back" href="../../../api/ramstk.analyses.html#ramstk.analyses.fha.set_user_defined_results">[docs]</a><span class="k">def</span> <span class="nf">set_user_defined_results</span><span class="p">(</span><span class="n">fha</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+                             <span class="n">results</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Set the user-defined results for the user-defined calculations.</span>
+
+<span class="sd">    This allows the use of the results fields to be manually set to float</span>
+<span class="sd">    values by the user essentially creating five more user-defined float</span>
+<span class="sd">    values.</span>
+
+<span class="sd">    :param fha: the functional hazard assessment dict.</span>
+<span class="sd">    :param list results: the list of results.</span>
+<span class="sd">    :return: fha; the functional hazard assessment dict with updated results.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_key</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">_idx</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">]:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_key</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">fha</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">_idx</span><span class="p">]</span>
+            <span class="n">fha</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">_idx</span> <span class="o">-</span> <span class="mi">11</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">fha</span><span class="p">[</span><span class="n">_key</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="n">fha</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.widgets.button &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.widgets.button</h1><div class="highlight"><pre>
+<span></span><span class="c1"># pylint: disable=protected-access, non-parent-init-called</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.views.gtk3.ramstk.Button.py is part of the RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2017 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;RAMSTK Button Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3</span> <span class="kn">import</span> <span class="n">GdkPixbuf</span><span class="p">,</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">_</span>
+
+<span class="c1"># RAMSTK Local Imports</span>
+<span class="kn">from</span> <span class="nn">.widget</span> <span class="kn">import</span> <span class="n">RAMSTKWidget</span>
+
+
+<div class="viewcode-block" id="do_make_buttonbox"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.button.do_make_buttonbox">[docs]</a><span class="k">def</span> <span class="nf">do_make_buttonbox</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+                      <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Gtk</span><span class="o">.</span><span class="n">HButtonBox</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">VButtonBox</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Create the buttonbox for RAMSTK Views.</span>
+
+<span class="sd">    This method creates the base buttonbox used by all RAMSTK Views.  Use a</span>
+<span class="sd">    buttonbox for a RAMSTK View if there are only buttons to be added.</span>
+
+<span class="sd">    :param view: the RAMSTKView() this buttonbox will be embedded in.</span>
+<span class="sd">    :type view: :class:`ramstk.views.gtk3.widgets.view.RAMSTKBaseView`</span>
+
+<span class="sd">    Accepts the following keyword arguments:</span>
+<span class="sd">        * *callbacks* (list) -- list of callback functions to assign to each</span>
+<span class="sd">            button in the buttonbox.</span>
+<span class="sd">        * *height* (int) -- height of the Gtk.Button() widget.</span>
+<span class="sd">            Default is 30.</span>
+<span class="sd">        * *icons* (list) -- list of the icons to display on each button in the</span>
+<span class="sd">            buttonbox.</span>
+<span class="sd">        * *orientation* (str) -- the orientation of the buttonbox, either</span>
+<span class="sd">            horizontal or vertical.  Default is vertical.</span>
+<span class="sd">        * *tooltips* (list) -- list of tooltips for each button in the</span>
+<span class="sd">            buttonbox.</span>
+<span class="sd">        * *width* (int) -- width of the Gtk.Button() widget.</span>
+<span class="sd">            Default is 200.</span>
+
+<span class="sd">    :return: _buttonbox</span>
+<span class="sd">    :rtype: :class:`Gtk.ButtonBox`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_callbacks</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;callbacks&#39;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="n">_height</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;height&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">_icons</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;icons&#39;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="n">_orientation</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;orientation&#39;</span><span class="p">,</span> <span class="s1">&#39;vertical&#39;</span><span class="p">)</span>
+    <span class="n">_tooltips</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tooltips&#39;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="n">_width</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;width&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">_orientation</span> <span class="o">==</span> <span class="s1">&#39;horizontal&#39;</span><span class="p">:</span>
+        <span class="n">_buttonbox</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">HButtonBox</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_buttonbox</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">VButtonBox</span><span class="p">()</span>
+
+    <span class="n">_buttonbox</span><span class="o">.</span><span class="n">set_layout</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">ButtonBoxStyle</span><span class="o">.</span><span class="n">START</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">_idx</span><span class="p">,</span> <span class="n">_icon</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">_icons</span><span class="p">):</span>
+        <span class="n">_image</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Image</span><span class="p">()</span>
+        <span class="n">_icon</span> <span class="o">=</span> <span class="n">GdkPixbuf</span><span class="o">.</span><span class="n">Pixbuf</span><span class="o">.</span><span class="n">new_from_file_at_size</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">_dic_icons</span><span class="p">[</span><span class="n">_icon</span><span class="p">],</span>
+                                                       <span class="n">_height</span><span class="p">,</span> <span class="n">_width</span><span class="p">)</span>
+        <span class="n">_image</span><span class="o">.</span><span class="n">set_from_pixbuf</span><span class="p">(</span><span class="n">_icon</span><span class="p">)</span>
+
+        <span class="n">_button</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Button</span><span class="p">()</span>
+        <span class="n">_button</span><span class="o">.</span><span class="n">set_image</span><span class="p">(</span><span class="n">_image</span><span class="p">)</span>
+
+        <span class="n">_button</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">width_request</span> <span class="o">=</span> <span class="n">_width</span>
+        <span class="n">_button</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">height_request</span> <span class="o">=</span> <span class="n">_height</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_button</span><span class="o">.</span><span class="n">set_tooltip_markup</span><span class="p">(</span><span class="n">_tooltips</span><span class="p">[</span><span class="n">_idx</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">_button</span><span class="o">.</span><span class="n">set_tooltip_markup</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_button</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;clicked&#39;</span><span class="p">,</span> <span class="n">_callbacks</span><span class="p">[</span><span class="n">_idx</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">_button</span><span class="o">.</span><span class="n">set_sensitive</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">_buttonbox</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">_button</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_buttonbox</span></div>
+
+
+<div class="viewcode-block" id="RAMSTKButton"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.button.RAMSTKButton">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKButton</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Button</span><span class="p">,</span> <span class="n">RAMSTKWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The RAMSTK Button class.&quot;&quot;&quot;</span>
+
+    <span class="c1"># Define private class scalar attributes.</span>
+    <span class="n">_default_height</span> <span class="o">=</span> <span class="mi">30</span>
+    <span class="n">_default_width</span> <span class="o">=</span> <span class="mi">200</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;...&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the RAMSTKButton().</span>
+
+<span class="sd">        :keyword str label: the text to display on the RAMSTKButton().</span>
+<span class="sd">            Default is an ellipsis (...).</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># noinspection PyCallByClass,PyTypeChecker</span>
+        <span class="n">RAMSTKWidget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+
+<div class="viewcode-block" id="RAMSTKButton.do_set_properties"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.button.RAMSTKButton.do_set_properties">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the properties of the RAMSTKButton.</span>
+
+<span class="sd">        Accepts the following keyword arguments:</span>
+<span class="sd">            * *icon* (str) -- the icon to display on the button.  Default is</span>
+<span class="sd">                None.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;always_show_image&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">_icon</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;icon&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">_icon</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">_icon</span> <span class="o">=</span> <span class="n">GdkPixbuf</span><span class="o">.</span><span class="n">Pixbuf</span><span class="o">.</span><span class="n">new_from_file_at_size</span><span class="p">(</span>
+                <span class="n">_icon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)</span>
+            <span class="n">_image</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Image</span><span class="p">()</span>
+            <span class="n">_image</span><span class="o">.</span><span class="n">set_from_pixbuf</span><span class="p">(</span><span class="n">_icon</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_image</span><span class="p">(</span><span class="n">_image</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="RAMSTKCheckButton"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.button.RAMSTKCheckButton">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKCheckButton</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">CheckButton</span><span class="p">,</span> <span class="n">RAMSTKWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The RAMSTK Check Button class.&quot;&quot;&quot;</span>
+
+    <span class="c1"># Define private class scalar attributes.</span>
+    <span class="n">_default_height</span> <span class="o">=</span> <span class="mi">40</span>
+    <span class="n">_default_width</span> <span class="o">=</span> <span class="mi">200</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the RAMSTK CheckButton.</span>
+
+<span class="sd">        :keyword str label: the text to display with the Gtk.CheckButton().</span>
+<span class="sd">            Default is an empty string.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># noinspection PyCallByClass,PyTypeChecker</span>
+        <span class="n">RAMSTKWidget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RAMSTKCheckButton.do_set_properties"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.button.RAMSTKCheckButton.do_set_properties">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the properties of the RAMSTK button.</span>
+
+<span class="sd">        Accepts the following keyword arguments:</span>
+<span class="sd">            * *height* (int) -- height of the RAMSTKCheckButton() widget.</span>
+<span class="sd">                Default is 40.</span>
+<span class="sd">            * *tooltip* (str) -- the tooltip, if any, for the button.</span>
+<span class="sd">                Default is a message to file a QA-type issue to have one added.</span>
+<span class="sd">            * *width* (int) -- width of the RAMSTKCheckButton() widget.</span>
+<span class="sd">                Default is 200.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_use_underline</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">()</span><span class="o">.</span><span class="n">set_use_markup</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">()</span><span class="o">.</span><span class="n">set_line_wrap</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">()</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;height-request&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">()</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;width-request&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKCheckButton.do_update"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.button.RAMSTKCheckButton.do_update">[docs]</a>    <span class="k">def</span> <span class="nf">do_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">signal</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Update the RAMSTK CheckButton with a new value.</span>
+
+<span class="sd">        :param value: the information to update the RAMSTKCheckButton() to</span>
+<span class="sd">            display.</span>
+<span class="sd">        :keyword str signal: the name of the signal whose handler ID the</span>
+<span class="sd">            RAMSTKCheckButton() needs to block.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_handler_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="n">signal</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler_block</span><span class="p">(</span><span class="n">_handler_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler_unblock</span><span class="p">(</span><span class="n">_handler_id</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="RAMSTKOptionButton"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.button.RAMSTKOptionButton">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKOptionButton</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">RadioButton</span><span class="p">,</span> <span class="n">RAMSTKWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The RAMSTK Option Button class.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">group</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">RadioButton</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the RAMSTK OptionButton.</span>
+
+<span class="sd">        :keyword group: the group the Gtk.RadioButton() belongs to, if any.</span>
+<span class="sd">            Default is None.</span>
+<span class="sd">        :type group: :class:`Gtk.RadioButton`</span>
+<span class="sd">        :keyword str label: the text to place in the label on the</span>
+<span class="sd">            Gtk.RadioButton().  Default is an empty string.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># noinspection PyCallByClass,PyTypeChecker</span>
+        <span class="n">RAMSTKWidget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_group</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">label</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RAMSTKSpinButton"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.button.RAMSTKSpinButton">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKSpinButton</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">SpinButton</span><span class="p">,</span> <span class="n">RAMSTKWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The RAMSTK Spin Button class.&quot;&quot;&quot;</span>
+
+    <span class="c1"># Define private class scalar attributes.</span>
+    <span class="n">_default_height</span> <span class="o">=</span> <span class="mi">30</span>
+    <span class="n">_default_width</span> <span class="o">=</span> <span class="mi">200</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the RAMSTKSpinButton().</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># noinspection PyCallByClass,PyTypeChecker</span>
+        <span class="n">RAMSTKWidget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+
+<div class="viewcode-block" id="RAMSTKSpinButton.do_set_properties"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.button.RAMSTKSpinButton.do_set_properties">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the properties of the RAMSTKSpinButton.</span>
+
+<span class="sd">        Accepts the following keyword arguments:</span>
+
+<span class="sd">            * *height* (int) -- height of the RAMSTKButton() widget.</span>
+<span class="sd">                Default is 30.</span>
+<span class="sd">            * *limits* (list) -- the list of values for the spin button</span>
+<span class="sd">                Gtk.Adjustment().</span>
+<span class="sd">            * *tooltip* (str) -- the tooltip, if any, for the button.</span>
+<span class="sd">                Default is a message to file a QA-type issue to have one added.</span>
+<span class="sd">            * *width* (int) -- width of the RAMSTKButton() widget.</span>
+<span class="sd">                Default is 200.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">_limits</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;limits&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">])</span>
+        <span class="n">_numeric</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;numeric&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">_snap_to_ticks</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ticks&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_adjustment</span><span class="p">(</span>
+            <span class="n">Gtk</span><span class="o">.</span><span class="n">Adjustment</span><span class="p">(</span><span class="n">_limits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">_limits</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">_limits</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">_limits</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                           <span class="n">_limits</span><span class="p">[</span><span class="mi">4</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_numeric</span><span class="p">(</span><span class="n">_numeric</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_snap_to_ticks</span><span class="p">(</span><span class="n">_snap_to_ticks</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_update_policy</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">SpinButtonUpdatePolicy</span><span class="o">.</span><span class="n">IF_VALID</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKSpinButton.do_update"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.button.RAMSTKSpinButton.do_update">[docs]</a>    <span class="k">def</span> <span class="nf">do_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">signal</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Update the RAMSTK Spin Button with a new value.</span>
+
+<span class="sd">        :param value: the information to update the RAMSTKSpinButton() to</span>
+<span class="sd">            display.</span>
+<span class="sd">        :keyword str signal: the name of the signal whose handler ID the</span>
+<span class="sd">            RAMSTKSpinButton() needs to block.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_handler_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="n">signal</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler_block</span><span class="p">(</span><span class="n">_handler_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler_unblock</span><span class="p">(</span><span class="n">_handler_id</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

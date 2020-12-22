@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.widgets.dialog &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.widgets.dialog</h1><div class="highlight"><pre>
+<span></span><span class="c1"># pylint: disable=non-parent-init-called</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.views.gtk3.widgets.dialog.py is part of the RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2019 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;RAMSTK Dialog Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.db.base</span> <span class="kn">import</span> <span class="n">BaseDatabase</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3</span> <span class="kn">import</span> <span class="n">GObject</span><span class="p">,</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">Pango</span><span class="p">,</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.widgets.entry</span> <span class="kn">import</span> <span class="n">RAMSTKEntry</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.widgets.label</span> <span class="kn">import</span> <span class="n">RAMSTKLabel</span>
+
+
+<div class="viewcode-block" id="RAMSTKDialog"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.dialog.RAMSTKDialog">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKDialog</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Dialog</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The RAMSTK Dialog class.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dlgtitle</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize a RAMSTK Dialog widget.</span>
+
+<span class="sd">        Accepts the following keyword arguments:</span>
+<span class="sd">            * *dlgparent* (tuple) -- the parent window to associate the</span>
+<span class="sd">                Gtk.Dialog() with.</span>
+<span class="sd">            * *dlgflags* (tuple) -- the flags that control the operation of the</span>
+<span class="sd">                Gtk.Dialog().  Default is Gtk.DialogFlags.MODAL and</span>
+<span class="sd">                Gtk.DialogFlags.DESTROY_WITH_PARENT.</span>
+<span class="sd">            * *dlgbuttons* (tuple) -- the buttons to display and their response</span>
+<span class="sd">                values.  Default is Gtk.STOCK_OK &lt;==&gt; Gtk.ResponseType.ACCEPT</span>
+<span class="sd">                Gtk.STOCK_CANCEL &lt;==&gt; Gtk.ResponseType.CANCEL</span>
+
+<span class="sd">        :param dlgtitle: the title text for the Gtk.Dialog().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_dlgbuttons</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dlgbuttons&#39;</span><span class="p">,</span>
+                                 <span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">STOCK_OK</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span>
+                                  <span class="n">Gtk</span><span class="o">.</span><span class="n">STOCK_CANCEL</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">CANCEL</span><span class="p">))</span>
+        <span class="n">_dlgparent</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dlgparent&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">dlgtitle</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_transient_for</span><span class="p">(</span><span class="n">_dlgparent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_buttons</span><span class="p">(</span><span class="o">*</span><span class="n">_dlgbuttons</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_destroy_with_parent</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_modal</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RAMSTKDialog.do_destroy"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.dialog.RAMSTKDialog.do_destroy">[docs]</a>    <span class="k">def</span> <span class="nf">do_destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pylint: disable=arguments-differ</span>
+        <span class="sd">&quot;&quot;&quot;Destroy the RAMSTK Dialog.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RAMSTKDialog.do_run"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.dialog.RAMSTKDialog.do_run">[docs]</a>    <span class="k">def</span> <span class="nf">do_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Run the RAMSTK Dialog.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="RAMSTKDatabaseSelect"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.dialog.RAMSTKDatabaseSelect">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKDatabaseSelect</span><span class="p">(</span><span class="n">RAMSTKDialog</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The RAMSTK Database Selection Dialog.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dlgtitle</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the RAMSTKdatabaseSelect class.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">dlgtitle</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dict attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dao</span><span class="p">:</span> <span class="n">BaseDatabase</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;dao&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_databases</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_entry</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_treeview</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeView</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeView</span><span class="p">()</span>
+
+        <span class="c1"># Initialize public dict attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__make_ui</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_load_databases</span><span class="p">(</span><span class="n">database</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;database&#39;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">__do_load_databases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Read the database server and load the database list.</span>
+
+<span class="sd">        :param database: a dict containing the connection information for the</span>
+<span class="sd">            RAMSTK program databases.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_treeview</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+        <span class="n">_model</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">database</span><span class="p">[</span><span class="s1">&#39;dialect&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;postgres&#39;</span><span class="p">:</span>
+            <span class="n">database</span><span class="p">[</span><span class="s1">&#39;database&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;postgres&#39;</span>
+
+        <span class="k">for</span> <span class="n">_db</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dao</span><span class="o">.</span><span class="n">get_database_list</span><span class="p">(</span><span class="n">database</span><span class="p">):</span>
+            <span class="n">_model</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">_db</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lst_databases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_db</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__make_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Build the GUI.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_modal</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">_fixed</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Fixed</span><span class="p">()</span>
+        <span class="n">_label</span> <span class="o">=</span> <span class="n">RAMSTKLabel</span><span class="p">(</span><span class="s1">&#39;Enter Database Name:&#39;</span><span class="p">)</span>
+        <span class="n">_label</span><span class="o">.</span><span class="n">set_width_chars</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;Enter Database Name:&#39;</span><span class="p">))</span>
+        <span class="n">_x_pos</span> <span class="o">=</span> <span class="n">_label</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s1">&#39;width&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_entry</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">_label</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_entry</span><span class="p">,</span> <span class="n">_x_pos</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vbox</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">_fixed</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">_model</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ListStore</span><span class="p">(</span><span class="n">GObject</span><span class="o">.</span><span class="n">TYPE_STRING</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_treeview</span><span class="o">.</span><span class="n">set_model</span><span class="p">(</span><span class="n">_model</span><span class="p">)</span>
+
+        <span class="n">_cell</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRendererText</span><span class="p">()</span>
+        <span class="n">_cell</span><span class="o">.</span><span class="n">set_alignment</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">_cell</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;background&#39;</span><span class="p">,</span> <span class="s1">&#39;light gray&#39;</span><span class="p">)</span>
+        <span class="n">_cell</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;editable&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">_cell</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;foreground&#39;</span><span class="p">,</span> <span class="s1">&#39;#000000&#39;</span><span class="p">)</span>
+        <span class="n">_cell</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;wrap-width&#39;</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>
+        <span class="n">_cell</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;wrap-mode&#39;</span><span class="p">,</span> <span class="n">Pango</span><span class="o">.</span><span class="n">WrapMode</span><span class="o">.</span><span class="n">WORD_CHAR</span><span class="p">)</span>
+
+        <span class="n">_column</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeViewColumn</span><span class="p">(</span><span class="s2">&quot;Available Databases&quot;</span><span class="p">)</span>
+        <span class="n">_column</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">_cell</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">_column</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">_cell</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_treeview</span><span class="o">.</span><span class="n">append_column</span><span class="p">(</span><span class="n">_column</span><span class="p">)</span>
+
+        <span class="n">_scrollwindow</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ScrolledWindow</span><span class="p">()</span>
+        <span class="n">_scrollwindow</span><span class="o">.</span><span class="n">set_min_content_height</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+        <span class="n">_scrollwindow</span><span class="o">.</span><span class="n">set_min_content_width</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
+        <span class="n">_scrollwindow</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_treeview</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vbox</span><span class="o">.</span><span class="n">pack_end</span><span class="p">(</span><span class="n">_scrollwindow</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vbox</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_database</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get the name of the selected database.</span>
+
+<span class="sd">        :return: the name of the selected database.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_database</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entry</span><span class="o">.</span><span class="n">do_get_text</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">_database</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">_model</span><span class="p">,</span> <span class="n">_row</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_treeview</span><span class="o">.</span><span class="n">get_selection</span><span class="p">()</span><span class="o">.</span><span class="n">get_selected</span><span class="p">()</span>
+            <span class="n">_database</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">_row</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_database</span>
+
+<div class="viewcode-block" id="RAMSTKDatabaseSelect.do_destroy"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.dialog.RAMSTKDatabaseSelect.do_destroy">[docs]</a>    <span class="k">def</span> <span class="nf">do_destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pylint: disable=arguments-differ</span>
+        <span class="sd">&quot;&quot;&quot;Destroy the RAMSTKDateSelect dialog.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RAMSTKDatabaseSelect.do_run"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.dialog.RAMSTKDatabaseSelect.do_run">[docs]</a>    <span class="k">def</span> <span class="nf">do_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Run the RAMSTKFileChooser dialog.</span>
+
+<span class="sd">        :return: _database, _exists; the selected database name or empty</span>
+<span class="sd">            string if none selected and a variable indicating whether the</span>
+<span class="sd">            database already exists.</span>
+<span class="sd">        :rtype: tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_database</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">_exists</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="o">==</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span>
+            <span class="n">_database</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_database</span><span class="p">()</span>
+            <span class="n">_exists</span> <span class="o">=</span> <span class="n">_database</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_databases</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="o">==</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">CANCEL</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">do_destroy</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">_database</span><span class="p">,</span> <span class="n">_exists</span></div></div>
+
+
+<div class="viewcode-block" id="RAMSTKDateSelect"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.dialog.RAMSTKDateSelect">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKDateSelect</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Dialog</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The RAMSTK Date Selection Dialog.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the RAMSTKDateSelect class.&quot;&quot;&quot;</span>
+        <span class="n">GObject</span><span class="o">.</span><span class="n">GObject</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_buttons</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">STOCK_OK</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">ACCEPT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Select Date&quot;</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calendar</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Calendar</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vbox</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_calendar</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vbox</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+
+<div class="viewcode-block" id="RAMSTKDateSelect.do_destroy"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.dialog.RAMSTKDateSelect.do_destroy">[docs]</a>    <span class="k">def</span> <span class="nf">do_destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pylint: disable=arguments-differ</span>
+        <span class="sd">&quot;&quot;&quot;Destroy the RAMSTKDateSelect dialog.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RAMSTKDateSelect.do_run"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.dialog.RAMSTKDateSelect.do_run">[docs]</a>    <span class="k">def</span> <span class="nf">do_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Run the RAMSTKDateSelect dialog.</span>
+
+<span class="sd">        :return: the selected date or the default date if the dialog is</span>
+<span class="sd">            cancelled.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="o">==</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">ACCEPT</span><span class="p">:</span>
+            <span class="n">_date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calendar</span><span class="o">.</span><span class="n">get_date</span><span class="p">()</span>
+            <span class="n">_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span>
+                <span class="n">_date</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">_date</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="n">_date</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_date</span> <span class="o">=</span> <span class="s2">&quot;1970-01-01&quot;</span>
+
+        <span class="k">return</span> <span class="n">_date</span></div></div>
+
+
+<div class="viewcode-block" id="RAMSTKFileChooser"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.dialog.RAMSTKFileChooser">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKFileChooser</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">FileChooserDialog</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The RAMSTK File Chooser Dialog class.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the RAMSTKFileChooser dialog.</span>
+
+<span class="sd">        :param title: the title of the dialog.</span>
+<span class="sd">        :param object parent: the parent window for the dialog.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Gtk</span><span class="o">.</span><span class="n">FileChooserDialog</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_buttons</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">STOCK_OK</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">ACCEPT</span><span class="p">,</span>
+                         <span class="n">Gtk</span><span class="o">.</span><span class="n">STOCK_CANCEL</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">REJECT</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_transient_for</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_destroy_with_parent</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_modal</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_action</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">FileChooserAction</span><span class="o">.</span><span class="n">SAVE</span><span class="p">)</span>
+
+        <span class="n">_filter</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">FileFilter</span><span class="p">()</span>
+        <span class="n">_filter</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Excel Files&quot;</span><span class="p">))</span>
+        <span class="n">_filter</span><span class="o">.</span><span class="n">add_pattern</span><span class="p">(</span><span class="s1">&#39;*.xls&#39;</span><span class="p">)</span>
+        <span class="n">_filter</span><span class="o">.</span><span class="n">add_pattern</span><span class="p">(</span><span class="s1">&#39;*xlsm&#39;</span><span class="p">)</span>
+        <span class="n">_filter</span><span class="o">.</span><span class="n">add_pattern</span><span class="p">(</span><span class="s1">&#39;*xlsx&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">_filter</span><span class="p">)</span>
+        <span class="n">_filter</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">FileFilter</span><span class="p">()</span>
+        <span class="n">_filter</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Delimited Text Files&quot;</span><span class="p">))</span>
+        <span class="n">_filter</span><span class="o">.</span><span class="n">add_pattern</span><span class="p">(</span><span class="s1">&#39;*.csv&#39;</span><span class="p">)</span>
+        <span class="n">_filter</span><span class="o">.</span><span class="n">add_pattern</span><span class="p">(</span><span class="s1">&#39;*.txt&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">_filter</span><span class="p">)</span>
+        <span class="n">_filter</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">FileFilter</span><span class="p">()</span>
+        <span class="n">_filter</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s2">&quot;All files&quot;</span><span class="p">)</span>
+        <span class="n">_filter</span><span class="o">.</span><span class="n">add_pattern</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">_filter</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RAMSTKFileChooser.do_destroy"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.dialog.RAMSTKFileChooser.do_destroy">[docs]</a>    <span class="k">def</span> <span class="nf">do_destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pylint: disable=arguments-differ</span>
+        <span class="sd">&quot;&quot;&quot;Destroy the RAMSTKFileChooser dialog.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RAMSTKFileChooser.do_run"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.dialog.RAMSTKFileChooser.do_run">[docs]</a>    <span class="k">def</span> <span class="nf">do_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;Run the RAMSTKFileChooser dialog.</span>
+
+<span class="sd">        :return: (_filename, _extension); the file name and file extension of</span>
+<span class="sd">                 the selected file.</span>
+<span class="sd">        :rtype: (str, str) or (None, None)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_filename</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">_extension</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="o">==</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">ACCEPT</span><span class="p">:</span>
+            <span class="n">_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_filename</span><span class="p">()</span>
+            <span class="c1"># pylint: disable=unused-variable</span>
+            <span class="n">__</span><span class="p">,</span> <span class="n">_extension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">_filename</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="o">==</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">REJECT</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">do_destroy</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">_filename</span><span class="p">,</span> <span class="n">_extension</span></div></div>
+
+
+<div class="viewcode-block" id="RAMSTKMessageDialog"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.dialog.RAMSTKMessageDialog">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKMessageDialog</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">MessageDialog</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The RAMSTK Message Dialog class.</span>
+
+<span class="sd">    It used for RAMSTK error, warning, and information messages.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Window</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize runtime error, warning, and information dialogs.</span>
+
+<span class="sd">        :param parent: the parent Gtk.Window(), if any, for the dialog.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Gtk</span><span class="o">.</span><span class="n">MessageDialog</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_transient_for</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_destroy_with_parent</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_modal</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+
+<div class="viewcode-block" id="RAMSTKMessageDialog.do_set_message"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.dialog.RAMSTKMessageDialog.do_set_message">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the message to display in the dialog.</span>
+
+<span class="sd">        :param message: the message to display.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_markup</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKMessageDialog.do_set_message_type"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.dialog.RAMSTKMessageDialog.do_set_message_type">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_message_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set RAMSTKMessageDialog message type.</span>
+
+<span class="sd">        :param message_type: the RAMSTKMessageDialog message type.</span>
+<span class="sd">            Options are error, warning, information, or question.  Default</span>
+<span class="sd">            is error.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">message_type</span> <span class="o">==</span> <span class="s1">&#39;error&#39;</span><span class="p">:</span>
+            <span class="n">_prompt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_property</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">)</span>
+            <span class="c1"># Set the prompt to bold text with a hyperlink to the RAMSTK bugs</span>
+            <span class="c1"># e-mail address.</span>
+            <span class="n">_hyper</span> <span class="o">=</span> <span class="s2">&quot;&lt;a href=&#39;mailto:bugs@reliaqual.com?subject=RAMSTK BUG &quot;</span> \
+                     <span class="s2">&quot;REPORT: &lt;ADD SHORT PROBLEM DESCRIPTION&gt;&amp;amp;&quot;</span> \
+                     <span class="s2">&quot;body=RAMSTK MODULE:</span><span class="si">%0d%0a%0d%0a</span><span class="s2">&quot;</span> \
+                     <span class="s2">&quot;RAMSTK VERSION:</span><span class="si">%20%</span><span class="s2">0d</span><span class="si">%0a%0d%0a</span><span class="s2">&quot;</span> \
+                     <span class="s2">&quot;YOUR HARDWARE:</span><span class="si">%20%</span><span class="s2">0d</span><span class="si">%0a%0d%0a</span><span class="s2">&quot;</span> \
+                     <span class="s2">&quot;YOUR OS:</span><span class="si">%20%</span><span class="s2">0d</span><span class="si">%0a%0d%0a</span><span class="s2">&quot;</span> \
+                     <span class="s2">&quot;DETAILED PROBLEM DESCRIPTION:</span><span class="si">%20%</span><span class="s2">0d</span><span class="si">%0a</span><span class="s2">&#39;&gt;&quot;</span>
+            <span class="n">_prompt</span> <span class="o">=</span> <span class="s1">&#39;&lt;b&gt;&#39;</span> <span class="o">+</span> <span class="n">_prompt</span> <span class="o">+</span> <span class="n">_</span><span class="p">(</span>
+                <span class="s2">&quot;  Check the error log for additional information &quot;</span>
+                <span class="s2">&quot;(if any).  Please e-mail &lt;span foreground=&#39;blue&#39; &quot;</span>
+                <span class="s2">&quot;underline=&#39;single&#39;&gt;&quot;</span><span class="p">,</span> <span class="p">)</span> <span class="o">+</span> <span class="n">_hyper</span> <span class="o">+</span> <span class="n">_</span><span class="p">(</span>
+                    <span class="s2">&quot;bugs@reliaqual.com&lt;/a&gt;&lt;/span&gt; with a detailed &quot;</span>
+                    <span class="s2">&quot;description of the problem, the workflow you are &quot;</span>
+                    <span class="s2">&quot;using and the error log attached if the problem &quot;</span>
+                    <span class="s2">&quot;persists.&lt;/b&gt;&quot;</span><span class="p">,</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_markup</span><span class="p">(</span><span class="n">_prompt</span><span class="p">)</span>
+            <span class="n">_message_type</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">MessageType</span><span class="o">.</span><span class="n">ERROR</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_buttons</span><span class="p">(</span><span class="s2">&quot;_OK&quot;</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">OK</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">message_type</span> <span class="o">==</span> <span class="s1">&#39;warning&#39;</span><span class="p">:</span>
+            <span class="n">_message_type</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">MessageType</span><span class="o">.</span><span class="n">WARNING</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_buttons</span><span class="p">(</span><span class="s2">&quot;_OK&quot;</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">OK</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">message_type</span> <span class="o">==</span> <span class="s1">&#39;information&#39;</span><span class="p">:</span>
+            <span class="n">_message_type</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">MessageType</span><span class="o">.</span><span class="n">INFO</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_buttons</span><span class="p">(</span><span class="s2">&quot;_OK&quot;</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">OK</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">message_type</span> <span class="o">==</span> <span class="s1">&#39;question&#39;</span><span class="p">:</span>
+            <span class="n">_message_type</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">MessageType</span><span class="o">.</span><span class="n">QUESTION</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_buttons</span><span class="p">(</span><span class="s2">&quot;_Yes&quot;</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">YES</span><span class="p">,</span> <span class="s2">&quot;_No&quot;</span><span class="p">,</span>
+                             <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">NO</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;message-type&#39;</span><span class="p">,</span> <span class="n">_message_type</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKMessageDialog.do_run"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.dialog.RAMSTKMessageDialog.do_run">[docs]</a>    <span class="k">def</span> <span class="nf">do_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Run the RAMSTK Message Dialog.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RAMSTKMessageDialog.do_destroy"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.dialog.RAMSTKMessageDialog.do_destroy">[docs]</a>    <span class="k">def</span> <span class="nf">do_destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pylint: disable=arguments-differ</span>
+        <span class="sd">&quot;&quot;&quot;Destroy the RAMSTK Message Dialog.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

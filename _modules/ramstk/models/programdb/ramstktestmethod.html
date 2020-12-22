@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.models.programdb.ramstktestmethod &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.models.programdb.ramstktestmethod</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.models.programdb.RAMSTKTestMethod.py is part of The RAMSTK</span>
+<span class="c1">#       Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2020 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;RAMSTKTestMethod Table.&quot;&quot;&quot;</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">ForeignKeyConstraint</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">relationship</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.db</span> <span class="kn">import</span> <span class="n">RAMSTK_BASE</span>
+<span class="kn">from</span> <span class="nn">ramstk.models</span> <span class="kn">import</span> <span class="n">RAMSTKBaseTable</span>
+
+
+<div class="viewcode-block" id="RAMSTKTestMethod"><a class="viewcode-back" href="../../../../api/ramstk.models.programdb.html#ramstk.models.programdb.ramstktestmethod.RAMSTKTestMethod">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKTestMethod</span><span class="p">(</span><span class="n">RAMSTK_BASE</span><span class="p">,</span> <span class="n">RAMSTKBaseTable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class to represent table ramstk_test_method in RAMSTK Program database.</span>
+
+<span class="sd">    This table shared a Many-to-One relationship with ramstk_op_stress.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__defaults__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;boundary_conditions&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;remarks&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span>
+    <span class="p">}</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;ramstk_test_method&#39;</span>
+    <span class="n">__table_args__</span> <span class="o">=</span> <span class="p">(</span><span class="n">ForeignKeyConstraint</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="s1">&#39;fld_revision_id&#39;</span><span class="p">,</span> <span class="s1">&#39;fld_hardware_id&#39;</span><span class="p">,</span> <span class="s1">&#39;fld_mode_id&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;fld_mechanism_id&#39;</span><span class="p">,</span> <span class="s1">&#39;fld_load_id&#39;</span>
+        <span class="p">],</span>
+        <span class="p">[</span>
+            <span class="s1">&#39;ramstk_op_load.fld_revision_id&#39;</span><span class="p">,</span> <span class="s1">&#39;ramstk_op_load.fld_hardware_id&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ramstk_op_load.fld_mode_id&#39;</span><span class="p">,</span> <span class="s1">&#39;ramstk_op_load.fld_mechanism_id&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ramstk_op_load.fld_load_id&#39;</span>
+        <span class="p">],</span>
+    <span class="p">),</span> <span class="p">{</span>
+        <span class="s1">&#39;extend_existing&#39;</span><span class="p">:</span> <span class="kc">True</span>
+    <span class="p">})</span>
+
+    <span class="n">revision_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_revision_id&#39;</span><span class="p">,</span>
+                         <span class="n">Integer</span><span class="p">,</span>
+                         <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                         <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">hardware_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_hardware_id&#39;</span><span class="p">,</span>
+                         <span class="n">Integer</span><span class="p">,</span>
+                         <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                         <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">mode_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_mode_id&#39;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">mechanism_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_mechanism_id&#39;</span><span class="p">,</span>
+                          <span class="n">Integer</span><span class="p">,</span>
+                          <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                          <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">load_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_load_id&#39;</span><span class="p">,</span>
+                     <span class="n">Integer</span><span class="p">,</span>
+                     <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                     <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                     <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">test_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_test_id&#39;</span><span class="p">,</span>
+                     <span class="n">Integer</span><span class="p">,</span>
+                     <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                     <span class="n">autoincrement</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                     <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">description</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_description&#39;</span><span class="p">,</span>
+                         <span class="n">String</span><span class="p">(</span><span class="mi">512</span><span class="p">),</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">])</span>
+    <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_boundary_conditions&#39;</span><span class="p">,</span>
+                                 <span class="n">String</span><span class="p">(</span><span class="mi">512</span><span class="p">),</span>
+                                 <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;boundary_conditions&#39;</span><span class="p">])</span>
+    <span class="n">remarks</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_remarks&#39;</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;remarks&#39;</span><span class="p">])</span>
+
+    <span class="c1"># Define the relationships to other tables in the RAMSTK Program database.</span>
+    <span class="n">op_load</span><span class="p">:</span> <span class="n">relationship</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span>
+        <span class="s1">&#39;RAMSTKOpLoad&#39;</span><span class="p">,</span>
+        <span class="n">back_populates</span><span class="o">=</span><span class="s1">&#39;test_method&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">is_mode</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">is_mechanism</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">is_opload</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">is_opstress</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">is_testmethod</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="RAMSTKTestMethod.get_attributes"><a class="viewcode-back" href="../../../../api/ramstk.models.programdb.html#ramstk.models.programdb.ramstktestmethod.RAMSTKTestMethod.get_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve current values of RAMSTKTestMethod data model attributes.</span>
+
+<span class="sd">        :return: {stress_id, test_id, description, boundary_conditions,</span>
+<span class="sd">                  remarks} pairs</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_attributes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;load_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_id</span><span class="p">,</span>
+            <span class="s1">&#39;test_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_id</span><span class="p">,</span>
+            <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+            <span class="s1">&#39;boundary_conditions&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_conditions</span><span class="p">,</span>
+            <span class="s1">&#39;remarks&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">remarks</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">_attributes</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

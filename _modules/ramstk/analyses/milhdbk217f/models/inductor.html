@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.analyses.milhdbk217f.models.inductor &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.analyses.milhdbk217f.models.inductor</h1><div class="highlight"><pre>
+<span></span><span class="c1"># type: ignore</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.analyses.prediction.Inductor.py is part of the RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2017 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;Inductor MIL-HDBK-217F Constants and Calculations Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">exp</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="n">PART_COUNT_LAMBDA_B</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.0035</span><span class="p">,</span> <span class="mf">0.023</span><span class="p">,</span> <span class="mf">0.049</span><span class="p">,</span> <span class="mf">0.019</span><span class="p">,</span> <span class="mf">0.065</span><span class="p">,</span> <span class="mf">0.027</span><span class="p">,</span> <span class="mf">0.037</span><span class="p">,</span> <span class="mf">0.041</span><span class="p">,</span> <span class="mf">0.052</span><span class="p">,</span>
+            <span class="mf">0.11</span><span class="p">,</span> <span class="mf">0.0018</span><span class="p">,</span> <span class="mf">0.053</span><span class="p">,</span> <span class="mf">0.16</span><span class="p">,</span> <span class="mf">2.3</span>
+        <span class="p">],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.0071</span><span class="p">,</span> <span class="mf">0.046</span><span class="p">,</span> <span class="mf">0.097</span><span class="p">,</span> <span class="mf">0.038</span><span class="p">,</span> <span class="mf">0.13</span><span class="p">,</span> <span class="mf">0.055</span><span class="p">,</span> <span class="mf">0.073</span><span class="p">,</span> <span class="mf">0.081</span><span class="p">,</span> <span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.22</span><span class="p">,</span>
+            <span class="mf">0.035</span><span class="p">,</span> <span class="mf">0.11</span><span class="p">,</span> <span class="mf">0.31</span><span class="p">,</span> <span class="mf">4.7</span>
+        <span class="p">],</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.023</span><span class="p">,</span> <span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="mf">0.13</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.21</span><span class="p">,</span> <span class="mf">0.27</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.82</span><span class="p">,</span> <span class="mf">0.011</span><span class="p">,</span>
+            <span class="mf">0.37</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">16.0</span>
+        <span class="p">],</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.028</span><span class="p">,</span> <span class="mf">0.18</span><span class="p">,</span> <span class="mf">0.39</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.52</span><span class="p">,</span> <span class="mf">0.22</span><span class="p">,</span> <span class="mf">0.29</span><span class="p">,</span> <span class="mf">0.33</span><span class="p">,</span> <span class="mf">0.42</span><span class="p">,</span> <span class="mf">0.88</span><span class="p">,</span> <span class="mf">0.015</span><span class="p">,</span>
+            <span class="mf">0.42</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">19.0</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.0017</span><span class="p">,</span> <span class="mf">0.0073</span><span class="p">,</span> <span class="mf">0.023</span><span class="p">,</span> <span class="mf">0.0091</span><span class="p">,</span> <span class="mf">0.031</span><span class="p">,</span> <span class="mf">0.011</span><span class="p">,</span> <span class="mf">0.015</span><span class="p">,</span> <span class="mf">0.016</span><span class="p">,</span> <span class="mf">0.022</span><span class="p">,</span>
+            <span class="mf">0.052</span><span class="p">,</span> <span class="mf">0.00083</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.073</span><span class="p">,</span> <span class="mf">1.1</span>
+        <span class="p">],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[</span>
+            <span class="mf">0.0033</span><span class="p">,</span> <span class="mf">0.015</span><span class="p">,</span> <span class="mf">0.046</span><span class="p">,</span> <span class="mf">0.018</span><span class="p">,</span> <span class="mf">0.061</span><span class="p">,</span> <span class="mf">0.022</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.033</span><span class="p">,</span> <span class="mf">0.044</span><span class="p">,</span>
+            <span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.0017</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">2.2</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">PART_COUNT_PI_Q</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">]</span>
+<span class="n">PART_STRESS_PI_Q</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">7.5</span><span class="p">],</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="mf">8.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">],</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="mf">12.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">]</span>
+    <span class="p">},</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">]</span>
+<span class="p">}</span>
+<span class="n">PI_E</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">1.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">16.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mf">9.0</span><span class="p">,</span> <span class="mf">24.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">13.0</span><span class="p">,</span> <span class="mf">34.0</span><span class="p">,</span>
+        <span class="mf">610.0</span>
+    <span class="p">],</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mf">1.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">16.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">24.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">13.0</span><span class="p">,</span> <span class="mf">34.0</span><span class="p">,</span>
+        <span class="mf">610.0</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+<span class="n">REF_TEMPS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="mf">329.0</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="mf">352.0</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="mf">364.0</span><span class="p">,</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="mf">400.0</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="mf">398.0</span><span class="p">,</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="mf">477.0</span>
+    <span class="p">},</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="mf">329.0</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="mf">352.0</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="mf">364.0</span><span class="p">,</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="mf">409.0</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="calculate_hot_spot_temperature"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.inductor.calculate_hot_spot_temperature">[docs]</a><span class="k">def</span> <span class="nf">calculate_hot_spot_temperature</span><span class="p">(</span><span class="n">temperature_active</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                   <span class="n">temperature_rise</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the coil or transformer hot spot temperature.</span>
+
+<span class="sd">    :return: _temperature_hot_spot; the calculate hot spot temperature.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">temperature_active</span> <span class="o">+</span> <span class="mf">1.1</span> <span class="o">*</span> <span class="n">temperature_rise</span></div>
+
+
+<div class="viewcode-block" id="calculate_part_count"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.inductor.calculate_part_count">[docs]</a><span class="k">def</span> <span class="nf">calculate_part_count</span><span class="p">(</span><span class="o">**</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Wrap get_part_count_lambda_b().</span>
+
+<span class="sd">    This wrapper allows us to pass an attributes dict from a generic parts</span>
+<span class="sd">    count function.</span>
+
+<span class="sd">    :param attributes: the attributes for the connection being calculated.</span>
+<span class="sd">    :return: _base_hr; the parts count base hazard rates.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">get_part_count_lambda_b</span><span class="p">(</span>
+        <span class="n">id_keys</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;subcategory_id&#39;</span><span class="p">:</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;family_id&#39;</span><span class="p">:</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;family_id&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;environment_active_id&#39;</span><span class="p">:</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;environment_active_id&#39;</span><span class="p">]</span>
+        <span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="calculate_part_stress"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.inductor.calculate_part_stress">[docs]</a><span class="k">def</span> <span class="nf">calculate_part_stress</span><span class="p">(</span><span class="o">**</span><span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the part stress hazard rate for a inductor.</span>
+
+<span class="sd">    This function calculates the MIL-HDBK-217F hazard rate using the part</span>
+<span class="sd">    stress method.</span>
+
+<span class="sd">    :return: attributes; the keyword argument (hardware attribute)</span>
+<span class="sd">        dictionary with updated values.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piC&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;construction_id&#39;</span><span class="p">])</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piQ&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_part_stress_quality_factor</span><span class="p">(</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">],</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;quality_id&#39;</span><span class="p">],</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;family_id&#39;</span><span class="p">])</span>
+
+    <span class="n">_power_input</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;voltage_dc_operating&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span>
+        <span class="s1">&#39;current_operating&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span>
+            <span class="ow">and</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;specification_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;temperature_rise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_temperature_rise_spec_sheet</span><span class="p">(</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;page_number&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;power_operating&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;area&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">):</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;temperature_rise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">calculate_temperature_rise_power_loss_surface</span><span class="p">(</span>
+                <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;power_operating&#39;</span><span class="p">],</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;area&#39;</span><span class="p">]))</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;power_operating&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">):</span>
+        <span class="n">attributes</span><span class="p">[</span>
+            <span class="s1">&#39;temperature_rise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calculate_temperature_rise_power_loss_weight</span><span class="p">(</span>
+                <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;power_operating&#39;</span><span class="p">],</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">_power_input</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">):</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;temperature_rise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">calculate_temperature_rise_input_power_weight</span><span class="p">(</span>
+                <span class="n">_power_input</span><span class="p">,</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">]))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;temperature_rise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;temperature_hot_spot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calculate_hot_spot_temperature</span><span class="p">(</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;temperature_active&#39;</span><span class="p">],</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;temperature_rise&#39;</span><span class="p">])</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;lambda_b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calculate_part_stress_lambda_b</span><span class="p">(</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">],</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;insulation_id&#39;</span><span class="p">],</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;temperature_hot_spot&#39;</span><span class="p">])</span>
+
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;lambda_b&#39;</span><span class="p">]</span>
+                                        <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piQ&#39;</span><span class="p">]</span>
+                                        <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piE&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">]</span>
+                                            <span class="o">*</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;piC&#39;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">attributes</span></div>
+
+
+<div class="viewcode-block" id="calculate_part_stress_lambda_b"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.inductor.calculate_part_stress_lambda_b">[docs]</a><span class="k">def</span> <span class="nf">calculate_part_stress_lambda_b</span><span class="p">(</span><span class="n">subcategory_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">insulation_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                   <span class="n">temperature_hot_spot</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate part stress base hazard rate (lambda b) from MIL-HDBK-217F.</span>
+
+<span class="sd">    This function calculates the MIL-HDBK-217F hazard rate using the parts</span>
+<span class="sd">    stress method.</span>
+
+<span class="sd">    :param attributes: the attributes for the connection being calculated.</span>
+<span class="sd">    :return: _lambda_b; the calculate parts stress lambda_b.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: KeyError when passed an unknown subcategory ID or insulation ID.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_dic_factors</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0018</span><span class="p">,</span> <span class="mf">15.6</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.002</span><span class="p">,</span> <span class="mf">14.0</span><span class="p">],</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0018</span><span class="p">,</span> <span class="mf">8.7</span><span class="p">],</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.002</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">],</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.00125</span><span class="p">,</span> <span class="mf">3.8</span><span class="p">],</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.00159</span><span class="p">,</span> <span class="mf">8.4</span><span class="p">]</span>
+        <span class="p">},</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.000335</span><span class="p">,</span> <span class="mf">15.6</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.000379</span><span class="p">,</span> <span class="mf">14.0</span><span class="p">],</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.000319</span><span class="p">,</span> <span class="mf">8.7</span><span class="p">],</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.00035</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">_ref_temp</span> <span class="o">=</span> <span class="n">REF_TEMPS</span><span class="p">[</span><span class="n">subcategory_id</span><span class="p">][</span><span class="n">insulation_id</span><span class="p">]</span>
+    <span class="n">_f0</span> <span class="o">=</span> <span class="n">_dic_factors</span><span class="p">[</span><span class="n">subcategory_id</span><span class="p">][</span><span class="n">insulation_id</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">_f1</span> <span class="o">=</span> <span class="n">_dic_factors</span><span class="p">[</span><span class="n">subcategory_id</span><span class="p">][</span><span class="n">insulation_id</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">_lambda_b</span> <span class="o">=</span> <span class="n">_f0</span> <span class="o">*</span> <span class="n">exp</span><span class="p">(((</span><span class="n">temperature_hot_spot</span> <span class="o">+</span> <span class="mf">273.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">_ref_temp</span><span class="p">)</span><span class="o">**</span><span class="n">_f1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_lambda_b</span></div>
+
+
+<div class="viewcode-block" id="calculate_temperature_rise_input_power_weight"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.inductor.calculate_temperature_rise_input_power_weight">[docs]</a><span class="k">def</span> <span class="nf">calculate_temperature_rise_input_power_weight</span><span class="p">(</span><span class="n">power_input</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                                  <span class="n">weight</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the temperature rise based on input power and xfmr weight.</span>
+
+<span class="sd">    .. attention:: input power must be calculated by the calling function from</span>
+<span class="sd">    voltage and current as it is not an attribute of an inductive device.</span>
+
+<span class="sd">    :param power_input: the input power in W.</span>
+<span class="sd">    :param weight: the weight of the xfmr in lbf.</span>
+<span class="sd">    :retur: _temperature_rise; the calculated temperature rise in C.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: ZeroDivisionError if passed an weight=0.0.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mf">2.1</span> <span class="o">*</span> <span class="p">(</span><span class="n">power_input</span> <span class="o">/</span> <span class="n">weight</span><span class="o">**</span><span class="mf">0.6766</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="calculate_temperature_rise_power_loss_surface"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.inductor.calculate_temperature_rise_power_loss_surface">[docs]</a><span class="k">def</span> <span class="nf">calculate_temperature_rise_power_loss_surface</span><span class="p">(</span><span class="n">power_operating</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                                  <span class="n">area</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the temperature rise based on the power loss and surface area.</span>
+
+<span class="sd">    :param power_operating: the power loss in W.</span>
+<span class="sd">    :param area: the radiating surface area of the case in sq. inches.</span>
+<span class="sd">    :return: _temperature_rise; the calculated temperature rise in C.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: ZeroDivisionError if passed an area=0.0.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mf">125.0</span> <span class="o">*</span> <span class="n">power_operating</span> <span class="o">/</span> <span class="n">area</span></div>
+
+
+<div class="viewcode-block" id="calculate_temperature_rise_power_loss_weight"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.inductor.calculate_temperature_rise_power_loss_weight">[docs]</a><span class="k">def</span> <span class="nf">calculate_temperature_rise_power_loss_weight</span><span class="p">(</span><span class="n">power_operating</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                                 <span class="n">weight</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the temperature rise based on the power loss and xfmr weight.</span>
+
+<span class="sd">    :param power_operating: the power loss in W.</span>
+<span class="sd">    :param weight: the weight of the device in lbf.</span>
+<span class="sd">    :return: _temperature_rise; the calculated temperature rise in C.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: ZeroDivisionError if passed an weight=0.0.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mf">11.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">power_operating</span> <span class="o">/</span> <span class="n">weight</span><span class="o">**</span><span class="mf">0.6766</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_part_count_lambda_b"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.inductor.get_part_count_lambda_b">[docs]</a><span class="k">def</span> <span class="nf">get_part_count_lambda_b</span><span class="p">(</span><span class="n">id_keys</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Retrieve the parts count base hazard rate (lambda b) from MIL-HDBK-217F.</span>
+
+<span class="sd">    This function calculates the MIL-HDBK-217F hazard rate using the parts</span>
+<span class="sd">    count method.</span>
+
+<span class="sd">    This function calculates the MIL-HDBK-217F hazard rate using the parts</span>
+<span class="sd">    count method.  The dictionary PART_COUNT_217F_LAMBDA_B contains the</span>
+<span class="sd">    MIL-HDBK-217F parts count base hazard rates.  Keys are for</span>
+<span class="sd">    PART_COUNT_217F_LAMBDA_B are:</span>
+
+<span class="sd">        #. subcategory_id</span>
+<span class="sd">        #. environment_active_id</span>
+<span class="sd">        #. family id; if the inductor subcategory is NOT family dependent, then</span>
+<span class="sd">            the second key will be zero.</span>
+
+<span class="sd">    Current subcategory IDs are:</span>
+
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    | Subcategory    |           Inductor            | MIL-HDBK-217F   |</span>
+<span class="sd">    |       ID       |             Style             |    Section      |</span>
+<span class="sd">    +================+===============================+=================+</span>
+<span class="sd">    |        1       | Transformer                   |       11.1      |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+<span class="sd">    |        2       | Coil                          |       11.2      |</span>
+<span class="sd">    +----------------+-------------------------------+-----------------+</span>
+
+<span class="sd">    These keys return a list of base hazard rates.  The hazard rate to use is</span>
+<span class="sd">    selected from the list depending on the active environment.</span>
+
+<span class="sd">    :param id_keys: the ID&#39;s used as keys when selecting</span>
+<span class="sd">        the base hazard rate.  The keys are subcategory_id,</span>
+<span class="sd">        environment_active_id, and family_id.</span>
+<span class="sd">    :return: _base_hr; the list of part count base hazard rate.</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    :raise: KeyError if passed an unknown subcategory ID or family ID.</span>
+<span class="sd">    :raise: IndexError if passed an unknown active environment ID.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">PART_COUNT_LAMBDA_B</span><span class="p">[</span><span class="n">id_keys</span><span class="p">[</span><span class="s1">&#39;subcategory_id&#39;</span><span class="p">]][</span>
+        <span class="n">id_keys</span><span class="p">[</span><span class="s1">&#39;family_id&#39;</span><span class="p">]][</span><span class="n">id_keys</span><span class="p">[</span><span class="s1">&#39;environment_active_id&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_part_stress_quality_factor"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.inductor.get_part_stress_quality_factor">[docs]</a><span class="k">def</span> <span class="nf">get_part_stress_quality_factor</span><span class="p">(</span><span class="n">subcategory_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">quality_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                   <span class="n">family_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Select the MIL-HDBK-217F quality factor for the inductor device.</span>
+
+<span class="sd">    :param subcategory_id: the subcategory identifier.</span>
+<span class="sd">    :param quality_id: the quality level identifier.</span>
+<span class="sd">    :param family_id: the device family identifier.</span>
+<span class="sd">    :return: _pi_q; the selected quality factor</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: IndexError if passed an unknown quality ID.</span>
+<span class="sd">    :raise: KeyError if passed an unknown subcategory ID or family ID.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">subcategory_id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">_pi_q</span> <span class="o">=</span> <span class="n">PART_STRESS_PI_Q</span><span class="p">[</span><span class="n">subcategory_id</span><span class="p">][</span><span class="n">family_id</span><span class="p">][</span><span class="n">quality_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_pi_q</span> <span class="o">=</span> <span class="n">PART_STRESS_PI_Q</span><span class="p">[</span><span class="n">subcategory_id</span><span class="p">][</span><span class="n">quality_id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">_pi_q</span></div>
+
+
+<div class="viewcode-block" id="get_temperature_rise_spec_sheet"><a class="viewcode-back" href="../../../../../api/ramstk.analyses.milhdbk217f.models.html#ramstk.analyses.milhdbk217f.models.inductor.get_temperature_rise_spec_sheet">[docs]</a><span class="k">def</span> <span class="nf">get_temperature_rise_spec_sheet</span><span class="p">(</span><span class="n">page_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Retrieve the temperature rise based on the spec sheet from MIL-C-39010.</span>
+
+<span class="sd">    :param page_number: the spec sheet to retrieve the temperature rise</span>
+<span class="sd">        for.</span>
+<span class="sd">    :return: _temperature_rise; the spec sheet temperature rise.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raise: KeyError if an unknown spec sheet is passed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="mf">35.0</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="mf">35.0</span><span class="p">,</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+        <span class="mi">8</span><span class="p">:</span> <span class="mf">35.0</span><span class="p">,</span>
+        <span class="mi">9</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+        <span class="mi">11</span><span class="p">:</span> <span class="mf">35.0</span><span class="p">,</span>
+        <span class="mi">12</span><span class="p">:</span> <span class="mf">35.0</span><span class="p">,</span>
+        <span class="mi">13</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+        <span class="mi">14</span><span class="p">:</span> <span class="mf">15.0</span>
+    <span class="p">}[</span><span class="n">page_number</span><span class="p">]</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

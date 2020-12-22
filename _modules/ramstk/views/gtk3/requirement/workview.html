@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.requirement.workview &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.requirement.workview</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.views.gtk3.requirement.workview.py is part of the RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2020 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;The RAMSTK GTK3 Requirement Work View.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.configuration</span> <span class="kn">import</span> <span class="n">RAMSTKUserConfiguration</span>
+<span class="kn">from</span> <span class="nn">ramstk.logger</span> <span class="kn">import</span> <span class="n">RAMSTKLogManager</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3</span> <span class="kn">import</span> <span class="n">Gdk</span><span class="p">,</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.widgets</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RAMSTKButton</span><span class="p">,</span> <span class="n">RAMSTKCheckButton</span><span class="p">,</span> <span class="n">RAMSTKComboBox</span><span class="p">,</span> <span class="n">RAMSTKDateSelect</span><span class="p">,</span>
+    <span class="n">RAMSTKEntry</span><span class="p">,</span> <span class="n">RAMSTKPanel</span><span class="p">,</span> <span class="n">RAMSTKTextView</span><span class="p">,</span> <span class="n">RAMSTKWorkView</span>
+<span class="p">)</span>
+
+<span class="c1"># RAMSTK Local Imports</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">ATTRIBUTE_KEYS</span>
+
+
+<div class="viewcode-block" id="GeneralDataPanel"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.requirement.html#ramstk.views.gtk3.requirement.workview.GeneralDataPanel">[docs]</a><span class="k">class</span> <span class="nc">GeneralDataPanel</span><span class="p">(</span><span class="n">RAMSTKPanel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Panel to display general data about the selected Requirement.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the Requirement General Data panel.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Initialize private dict instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_keys</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ATTRIBUTE_KEYS</span>
+
+        <span class="c1"># Initialize private list instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_labels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Requirement Code:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Requirement Description:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Requirement Type:&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Specification:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Page Number:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Figure Number:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Priority:&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Owner:&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Validated Date:&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;General Information&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Initialize public dict instance attributes.</span>
+
+        <span class="c1"># Initialize public list instance attributes.</span>
+
+        <span class="c1"># Initialize public scalar instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnValidateDate</span><span class="p">:</span> <span class="n">RAMSTKButton</span> <span class="o">=</span> <span class="n">RAMSTKButton</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkDerived</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Requirement is derived.&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkValidated</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">(</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Requirement is validated.&quot;</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbOwner</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbRequirementType</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                                                 <span class="n">simple</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbPriority</span><span class="p">:</span> <span class="n">RAMSTKComboBox</span> <span class="o">=</span> <span class="n">RAMSTKComboBox</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtCode</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtFigNum</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtName</span><span class="p">:</span> <span class="n">RAMSTKTextView</span> <span class="o">=</span> <span class="n">RAMSTKTextView</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">TextBuffer</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPageNum</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtSpecification</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtValidatedDate</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">RAMSTKEntry</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_updater</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;derived&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkDerived</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">txtName</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="s1">&#39;figure_number&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">txtFigNum</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="s1">&#39;page_number&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">txtPageNum</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+            <span class="s1">&#39;specification&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">txtSpecification</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+            <span class="s1">&#39;validated&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkValidated</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+            <span class="s1">&#39;validated_date&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">txtValidatedDate</span><span class="o">.</span><span class="n">do_update</span><span class="p">,</span> <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtCode</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtName</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbRequirementType</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkDerived</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtSpecification</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtPageNum</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtFigNum</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbPriority</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbOwner</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkValidated</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtValidatedDate</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Make a fixed type panel.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_properties</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_make_panel_fixed</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_set_callbacks</span><span class="p">()</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_edit</span><span class="p">,</span> <span class="s1">&#39;mvw_editing_requirement&#39;</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_clear_panel</span><span class="p">,</span> <span class="s1">&#39;request_clear_workviews&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_load_code</span><span class="p">,</span> <span class="s1">&#39;succeed_create_requirement_code&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_load_panel</span><span class="p">,</span> <span class="s1">&#39;selected_requirement&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GeneralDataPanel.do_load_priorities"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.requirement.html#ramstk.views.gtk3.requirement.workview.GeneralDataPanel.do_load_priorities">[docs]</a>    <span class="k">def</span> <span class="nf">do_load_priorities</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the priority RAMSTKComboBox().</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_priorities</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;1&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;2&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;3&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;4&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;5&quot;</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbPriority</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="n">_priorities</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GeneralDataPanel.do_load_requirement_types"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.requirement.html#ramstk.views.gtk3.requirement.workview.GeneralDataPanel.do_load_requirement_types">[docs]</a>    <span class="k">def</span> <span class="nf">do_load_requirement_types</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">requirement_types</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the requirement types RAMSTKComboBox().</span>
+
+<span class="sd">        :param requirement_types:</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_requirement_types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># pylint: disable=unused-variable</span>
+        <span class="k">for</span> <span class="n">__</span><span class="p">,</span> <span class="n">_key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">requirement_types</span><span class="p">):</span>
+            <span class="n">_requirement_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">requirement_types</span><span class="p">[</span><span class="n">_key</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbRequirementType</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="n">entries</span><span class="o">=</span><span class="n">_requirement_types</span><span class="p">,</span>
+                                              <span class="n">simple</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GeneralDataPanel.do_load_workgroups"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.requirement.html#ramstk.views.gtk3.requirement.workview.GeneralDataPanel.do_load_workgroups">[docs]</a>    <span class="k">def</span> <span class="nf">do_load_workgroups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workgroups</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the workgroups RAMSTKComboBox().</span>
+
+<span class="sd">        :param workgroups:</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_owners</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">_index</span><span class="p">,</span> <span class="n">_key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">workgroups</span><span class="p">):</span>
+            <span class="n">_owners</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">workgroups</span><span class="p">[</span><span class="n">_key</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbOwner</span><span class="o">.</span><span class="n">do_load_combo</span><span class="p">(</span><span class="n">_owners</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_do_clear_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Clear the contents of the panel widgets.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtCode</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtName</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbRequirementType</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkDerived</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;toggled&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtSpecification</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPageNum</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtFigNum</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbPriority</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbOwner</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkValidated</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;toggled&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtValidatedDate</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_load_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requirement_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the Requirement code RAMSTKEntry().</span>
+
+<span class="sd">        :param requirement_code: the Requirement code to load.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtCode</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">requirement_code</span><span class="p">),</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_load_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load data into the Requirement General Data page widgets.</span>
+
+<span class="sd">        :param attributes: the Requirement attributes to load into the</span>
+<span class="sd">            Work View widgets.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;requirement_id&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtCode</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;requirement_code&#39;</span><span class="p">]),</span>
+                               <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtName</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]),</span>
+                               <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkDerived</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;derived&#39;</span><span class="p">]),</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;toggled&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbRequirementType</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;requirement_type&#39;</span><span class="p">]),</span>
+                                          <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtSpecification</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;specification&#39;</span><span class="p">]),</span>
+                                        <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPageNum</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;page_number&#39;</span><span class="p">]),</span>
+                                  <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtFigNum</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;figure_number&#39;</span><span class="p">]),</span>
+                                 <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbPriority</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;priority&#39;</span><span class="p">]),</span>
+                                   <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbOwner</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;owner&#39;</span><span class="p">]),</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkValidated</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;validated&#39;</span><span class="p">]),</span>
+                                    <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;toggled&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;validated&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtValidatedDate</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;validated_date&#39;</span><span class="p">]),</span>
+                                            <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">txtValidatedDate</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;changed&#39;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_do_select_date</span><span class="p">(</span><span class="n">__button</span><span class="p">:</span> <span class="n">RAMSTKButton</span><span class="p">,</span> <span class="n">__event</span><span class="p">:</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span>
+                        <span class="n">entry</span><span class="p">:</span> <span class="n">RAMSTKEntry</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Request to launch a date selection dialog.</span>
+
+<span class="sd">        This method is used to select the validation date for the Requirement.</span>
+
+<span class="sd">        :param __button: the ramstk.RAMSTKButton() that called this method.</span>
+<span class="sd">        :type __button: :class:`ramstk.gui.gtk.ramstk.RAMSTKButton`</span>
+<span class="sd">        :param __event: the Gdk.Event() that called this method.</span>
+<span class="sd">        :type __event: :class:`Gdk.Event`</span>
+<span class="sd">        :param entry: the Gtk.Entry() that the new date should be displayed in.</span>
+<span class="sd">        :type entry: :class:`Gtk.Entry`</span>
+<span class="sd">        :return: _date; the date in ISO-8601 (YYYY-mm-dd) format.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_dialog</span><span class="p">:</span> <span class="n">RAMSTKDateSelect</span> <span class="o">=</span> <span class="n">RAMSTKDateSelect</span><span class="p">()</span>
+
+        <span class="n">_date</span> <span class="o">=</span> <span class="n">_dialog</span><span class="o">.</span><span class="n">do_run</span><span class="p">()</span>
+        <span class="n">_dialog</span><span class="o">.</span><span class="n">do_destroy</span><span class="p">()</span>
+
+        <span class="n">entry</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">_date</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">_date</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the callback methods and functions for the panel widgets.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnValidateDate</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;released&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">btnValidateDate</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;button-release-event&#39;</span><span class="p">,</span>
+                                                       <span class="bp">self</span><span class="o">.</span><span class="n">_do_select_date</span><span class="p">,</span>
+                                                       <span class="bp">self</span><span class="o">.</span><span class="n">txtValidatedDate</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkDerived</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;toggled&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chkDerived</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;toggled&#39;</span><span class="p">,</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_toggled</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_requirement&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkValidated</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;toggled&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chkValidated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;toggled&#39;</span><span class="p">,</span>
+                                                   <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_toggled</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span>
+                                                   <span class="s1">&#39;wvw_editing_requirement&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbRequirementType</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbRequirementType</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_requirement&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbPriority</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbPriority</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_requirement&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbOwner</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbOwner</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_combo</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_requirement&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtCode</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtCode</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_entry</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_requirement&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtName</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtName</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;focus-out-event&#39;</span><span class="p">,</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_entry</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_requirement&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtSpecification</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtSpecification</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_entry</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_requirement&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtPageNum</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtPageNum</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_entry</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_requirement&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtFigNum</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtFigNum</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_entry</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_requirement&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtValidatedDate</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtValidatedDate</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="s1">&#39;changed&#39;</span><span class="p">,</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_changed_entry</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_requirement&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the properties of the panel widgets.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s1">&#39;bold&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_title</span><span class="p">})</span>
+
+        <span class="c1"># ----- BUTTONS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btnValidateDate</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">height</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkDerived</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">tooltip</span><span class="o">=</span><span class="n">_</span><span class="p">(</span>
+            <span class="s2">&quot;Indicates whether or not the selected requirement is derived.&quot;</span><span class="p">),</span>
+                                          <span class="n">width</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>  <span class="c1"># noqa</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkValidated</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">tooltip</span><span class="o">=</span><span class="n">_</span><span class="p">(</span>
+            <span class="s2">&quot;Indicates whether or not the selected requirement is validated.&quot;</span><span class="p">),</span>
+                                            <span class="n">width</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>  <span class="c1"># noqa</span>
+
+        <span class="c1"># ----- COMBOBOXES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbPriority</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+        <span class="c1"># ----- ENTRIES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtCode</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span>
+            <span class="n">width</span><span class="o">=</span><span class="mi">125</span><span class="p">,</span>
+            <span class="n">tooltip</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;A unique code for the selected requirement.&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtName</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span>
+            <span class="n">height</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span>
+            <span class="n">tooltip</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The description of the selected requirement.&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtValidatedDate</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span>
+            <span class="n">tooltip</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;The date the selected requirement was validated.&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="AnalysisPanel"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.requirement.html#ramstk.views.gtk3.requirement.workview.AnalysisPanel">[docs]</a><span class="k">class</span> <span class="nc">AnalysisPanel</span><span class="p">(</span><span class="n">RAMSTKPanel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Meta-Class for requirement analysis panels.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the Requirement analysis panel.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_edit</span><span class="p">,</span> <span class="s1">&#39;mvw_editing_requirement&#39;</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_clear_panel</span><span class="p">,</span> <span class="s1">&#39;request_clear_workviews&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_load_panel</span><span class="p">,</span> <span class="s1">&#39;selected_requirement&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AnalysisPanel.do_set_callbacks"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.requirement.html#ramstk.views.gtk3.requirement.workview.AnalysisPanel.do_set_callbacks">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the callback methods and functions for the panel widgets.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_index</span><span class="p">,</span> <span class="n">_checkbutton</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span><span class="p">):</span>
+            <span class="n">_checkbutton</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span><span class="s1">&#39;toggled&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">_checkbutton</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="s1">&#39;toggled&#39;</span><span class="p">,</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_toggled</span><span class="p">,</span> <span class="n">_index</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_requirement&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AnalysisPanel.do_set_properties"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.requirement.html#ramstk.views.gtk3.requirement.workview.AnalysisPanel.do_set_properties">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the properties of the panel widgets.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s1">&#39;bold&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_title</span><span class="p">})</span>
+
+        <span class="k">for</span> <span class="n">_checkbutton</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span><span class="p">:</span>
+            <span class="n">_checkbutton</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">height</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_do_clear_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Clear the contents of the panel widgets.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_checkbutton</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span><span class="p">:</span>
+            <span class="n">_checkbutton</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;toggled&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_load_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the Requirements clarity panel.</span>
+
+<span class="sd">        :param attributes: the Requirement attributes to load into the Work</span>
+<span class="sd">            View widgets.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;requirement_id&#39;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">_index</span><span class="p">,</span> <span class="n">_checkbutton</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span><span class="p">):</span>
+            <span class="n">_checkbutton</span><span class="o">.</span><span class="n">do_update</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span>
+                <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;q_clarity_</span><span class="si">{0:d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_index</span><span class="p">)]),</span>
+                                   <span class="n">signal</span><span class="o">=</span><span class="s1">&#39;toggled&#39;</span><span class="p">)</span>  <span class="c1"># noqa</span></div>
+
+
+<div class="viewcode-block" id="ClarityPanel"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.requirement.html#ramstk.views.gtk3.requirement.workview.ClarityPanel">[docs]</a><span class="k">class</span> <span class="nc">ClarityPanel</span><span class="p">(</span><span class="n">AnalysisPanel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Panel to display clarity questions about the selected Requirement.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the Requirement clarity panel.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Initialize private dict instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_keys</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_clarity_0&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_clarity_1&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_clarity_2&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_clarity_3&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_clarity_4&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_clarity_5&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_clarity_6&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">7</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_clarity_7&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">8</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_clarity_8&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Initialize private list instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_labels</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;1. The requirement clearly states what is needed or &quot;</span>
+              <span class="s2">&quot;desired.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;2. The requirement is unambiguous and not open to &quot;</span>
+              <span class="s2">&quot;interpretation.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;3. All terms that can have more than one meaning are &quot;</span>
+              <span class="s2">&quot;qualified so that the desired meaning is readily &quot;</span>
+              <span class="s2">&quot;apparent.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;4. Diagrams, drawings, etc. are used to increase &quot;</span>
+              <span class="s2">&quot;understanding of the requirement.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;5. The requirement is free from spelling and &quot;</span>
+              <span class="s2">&quot;grammatical errors.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;6. The requirement is written in non-technical &quot;</span>
+              <span class="s2">&quot;language using the vocabulary of the stakeholder.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;7. Stakeholders understand the requirement as written.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;8. The requirement is clear enough to be turned over &quot;</span>
+              <span class="s2">&quot;to an independent group and still be understood.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;9. The requirement avoids stating how the problem is &quot;</span>
+              <span class="s2">&quot;to be solved or what techniques are to be used.&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Clarity of Requirement&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Initialize public dict instance attributes.</span>
+
+        <span class="c1"># Initialize public list instance attributes.</span>
+
+        <span class="c1"># Initialize public scalar instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ0</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ1</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ2</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ3</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ4</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ5</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ6</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ7</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ8</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_updater</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;q_clarity_0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ0</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;q_clarity_1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ1</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="s1">&#39;q_clarity_2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ2</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+            <span class="s1">&#39;q_clarity_3&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ3</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+            <span class="s1">&#39;q_clarity_4&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ4</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+            <span class="s1">&#39;q_clarity_5&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ5</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+            <span class="s1">&#39;q_clarity_6&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ6</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>
+            <span class="s1">&#39;q_clarity_7&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ7</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>
+            <span class="s1">&#39;q_clarity_8&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ8</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ0</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ1</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ2</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ3</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ4</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ5</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ6</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ7</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkClarityQ8</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Make a fixed type panel.</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_make_panel_fixed</span><span class="p">(</span><span class="n">justify</span><span class="o">=</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Justification</span><span class="o">.</span><span class="n">LEFT</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_callbacks</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="CompletenessPanel"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.requirement.html#ramstk.views.gtk3.requirement.workview.CompletenessPanel">[docs]</a><span class="k">class</span> <span class="nc">CompletenessPanel</span><span class="p">(</span><span class="n">AnalysisPanel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Panel to display completeness questions about selected Requirement.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the Requirement completeness panel.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Initialize private dict instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_keys</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_complete_0&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_complete_1&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_complete_2&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_complete_3&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_complete_4&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_complete_5&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_complete_6&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">7</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_complete_7&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">8</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_complete_8&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">9</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_complete_9&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Initialize private list instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_labels</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;1. Performance objectives are properly documented from the &quot;</span>
+              <span class="s2">&quot;user&#39;s point of view.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;2. No necessary information is missing from the requirement.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;3. The requirement has been assigned a priority.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;4. The requirement is realistic given the technology that will &quot;</span>
+              <span class="s2">&quot;be used to implement the system.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;5. The requirement is feasible to implement given the defined &quot;</span>
+              <span class="s2">&quot;project time frame, scope, structure and budget.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;6. If the requirement describes something as a &#39;standard&#39; the &quot;</span>
+              <span class="s2">&quot;specific source is cited.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;7. The requirement is relevant to the problem and its &quot;</span>
+              <span class="s2">&quot;solution.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;8. The requirement contains no implied design details.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;9. The requirement contains no implied implementation &quot;</span>
+              <span class="s2">&quot;constraints.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;10. The requirement contains no implied project management &quot;</span>
+              <span class="s2">&quot;constraints.&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Completeness of Requirement&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Initialize public dict instance attributes.</span>
+
+        <span class="c1"># Initialize public list instance attributes.</span>
+
+        <span class="c1"># Initialize public scalar instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ0</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ1</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ2</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ3</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ4</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ5</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ6</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ7</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ8</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ9</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_updater</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;q_complete_0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ0</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;q_complete_1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ1</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="s1">&#39;q_complete_2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ2</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="s1">&#39;q_complete_3&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ3</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+            <span class="s1">&#39;q_complete_4&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ4</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+            <span class="s1">&#39;q_complete_5&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ5</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+            <span class="s1">&#39;q_complete_6&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ6</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+            <span class="s1">&#39;q_complete_7&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ7</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>
+            <span class="s1">&#39;q_complete_8&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ8</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>
+            <span class="s1">&#39;q_complete_9&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ9</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ0</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ1</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ2</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ3</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ4</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ5</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ6</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ7</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ8</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkCompleteQ9</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Make a fixed type panel.</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_make_panel_fixed</span><span class="p">(</span><span class="n">justify</span><span class="o">=</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Justification</span><span class="o">.</span><span class="n">LEFT</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_callbacks</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ConsistencyPanel"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.requirement.html#ramstk.views.gtk3.requirement.workview.ConsistencyPanel">[docs]</a><span class="k">class</span> <span class="nc">ConsistencyPanel</span><span class="p">(</span><span class="n">AnalysisPanel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Panel to display consistency questions about selected Requirement.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the Requirement consistency panel.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Initialize private dict instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_keys</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_consistent_0&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_consistent_1&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_consistent_2&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_consistent_3&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_consistent_4&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_consistent_5&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_consistent_6&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">7</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_consistent_7&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">8</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_consistent_8&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Initialize private list instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_labels</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;1. The requirement describes a single need or want; &quot;</span>
+              <span class="s2">&quot;it could not be broken into several different &quot;</span>
+              <span class="s2">&quot;requirements.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;2. The requirement requires non-standard hardware or &quot;</span>
+              <span class="s2">&quot;must use software to implement.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;3. The requirement can be implemented within known &quot;</span>
+              <span class="s2">&quot;constraints.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;4. The requirement provides an adequate basis for &quot;</span>
+              <span class="s2">&quot;design and testing.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;5. The requirement adequately supports the business &quot;</span>
+              <span class="s2">&quot;goal of the project.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;6. The requirement does not conflict with some &quot;</span>
+              <span class="s2">&quot;constraint, policy or regulation.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;7. The requirement does not conflict with another &quot;</span>
+              <span class="s2">&quot;requirement.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;8. The requirement is not a duplicate of another &quot;</span>
+              <span class="s2">&quot;requirement.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;9. The requirement is in scope for the project.&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Consistency of Requirement&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Initialize public dict instance attributes.</span>
+
+        <span class="c1"># Initialize public list instance attributes.</span>
+
+        <span class="c1"># Initialize public scalar instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ0</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ1</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ2</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ3</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ4</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ5</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ6</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ7</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ8</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_updater</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;q_consistent_0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ0</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;q_consistent_1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ1</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="s1">&#39;q_consistent_2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ2</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="s1">&#39;q_consistent_3&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ3</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+            <span class="s1">&#39;q_consistent_4&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ4</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+            <span class="s1">&#39;q_consistent_5&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ5</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+            <span class="s1">&#39;q_consistent_6&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ6</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+            <span class="s1">&#39;q_consistent_7&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ7</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>
+            <span class="s1">&#39;q_consistent_8&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ8</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ0</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ1</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ2</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ3</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ4</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ5</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ6</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ7</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkConsistentQ8</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Make a fixed type panel.</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_make_panel_fixed</span><span class="p">(</span><span class="n">justify</span><span class="o">=</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Justification</span><span class="o">.</span><span class="n">LEFT</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_callbacks</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="VerifiabilityPanel"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.requirement.html#ramstk.views.gtk3.requirement.workview.VerifiabilityPanel">[docs]</a><span class="k">class</span> <span class="nc">VerifiabilityPanel</span><span class="p">(</span><span class="n">AnalysisPanel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Panel to display verifiability questions about selected Requirement.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the Requirement verifiability panel.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Initialize private dict instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_keys</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_verifiable_0&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_verifiable_1&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_verifiable_2&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_verifiable_3&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_verifiable_4&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;q_verifiable_5&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Initialize private list instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_labels</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;1. The requirement is verifiable by testing, demonstration, &quot;</span>
+              <span class="s2">&quot;review, or analysis.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;2. The requirement lacks &#39;weasel words&#39; (e.g. various, mostly, &quot;</span>
+              <span class="s2">&quot;suitable, integrate, maybe, consistent, robust, modular, &quot;</span>
+              <span class="s2">&quot;user-friendly, superb, good).&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;3. Any performance criteria are quantified such that they are &quot;</span>
+              <span class="s2">&quot;testable.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;4. Independent testing would be able to determine whether the &quot;</span>
+              <span class="s2">&quot;requirement has been satisfied.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;5. The task(s) that will validate and verify the final design &quot;</span>
+              <span class="s2">&quot;satisfies the requirement have been identified.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;6. The identified V&amp;amp;V task(s) have been added to the &quot;</span>
+              <span class="s2">&quot;validation plan (e.g., DVP)&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Verifiability of Requirement&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Initialize public dict instance attributes.</span>
+
+        <span class="c1"># Initialize public list instance attributes.</span>
+
+        <span class="c1"># Initialize public scalar instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkVerifiableQ0</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkVerifiableQ1</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkVerifiableQ2</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkVerifiableQ3</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkVerifiableQ4</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chkVerifiableQ5</span><span class="p">:</span> <span class="n">RAMSTKCheckButton</span> <span class="o">=</span> <span class="n">RAMSTKCheckButton</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_updater</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;q_verifiable_0&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkVerifiableQ0</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;q_verifiable_1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkVerifiableQ1</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="s1">&#39;q_verifiable_2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkVerifiableQ2</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="s1">&#39;q_verifiable_3&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkVerifiableQ3</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+            <span class="s1">&#39;q_verifiable_4&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkVerifiableQ4</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+            <span class="s1">&#39;q_verifiable_5&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chkVerifiableQ5</span><span class="p">,</span> <span class="s1">&#39;toggled&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_widgets</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkVerifiableQ0</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkVerifiableQ1</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkVerifiableQ2</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkVerifiableQ3</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkVerifiableQ4</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chkVerifiableQ5</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Make a fixed type panel.</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_make_panel_fixed</span><span class="p">(</span><span class="n">justify</span><span class="o">=</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Justification</span><span class="o">.</span><span class="n">LEFT</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_callbacks</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GeneralData"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.requirement.html#ramstk.views.gtk3.requirement.workview.GeneralData">[docs]</a><span class="k">class</span> <span class="nc">GeneralData</span><span class="p">(</span><span class="n">RAMSTKWorkView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Display general Requirement attribute data in the RAMSTK Work Book.</span>
+
+<span class="sd">    The Requirement Work View displays all the general data attributes for the</span>
+<span class="sd">    selected Requirement.  The attributes of a requirement Work View are:</span>
+
+<span class="sd">    :cvar str _module: the name of the module.</span>
+<span class="sd">    :cvar str _tablabel: the text to display on the tab&#39;s label.</span>
+<span class="sd">    :cvar str _tabtooltip: the text to display as the tab&#39;s tooltip.</span>
+
+<span class="sd">    :ivar list _lst_callbacks: the list of callback methods for the view&#39;s</span>
+<span class="sd">        toolbar buttons and pop-up menu.  The methods are listed in the order</span>
+<span class="sd">        they appear on the toolbar and pop-up menu.</span>
+<span class="sd">    :ivar list _lst_icons: the list of icons for the view&#39;s toolbar buttons</span>
+<span class="sd">        and pop-up menu.  The icons are listed in the order they appear on the</span>
+<span class="sd">        toolbar and pop-up menu.</span>
+<span class="sd">    :ivar list _lst_mnu_labels: the list of labels for the view&#39;s pop-up</span>
+<span class="sd">        menu.  The labels are listed in the order they appear in the menu.</span>
+<span class="sd">    :ivar list _lst_tooltips: the list of tooltips for the view&#39;s</span>
+<span class="sd">        toolbar buttons and pop-up menu.  The tooltips are listed in the</span>
+<span class="sd">        order they appear on the toolbar or pop-up menu.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Define private dict class attributes.</span>
+
+    <span class="c1"># Define private list class attributes.</span>
+
+    <span class="c1"># Define private scalar class attributes.</span>
+    <span class="n">_module</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;requirement&#39;</span>
+    <span class="n">_tablabel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;General</span><span class="se">\n</span><span class="s2">Data&quot;</span><span class="p">)</span>
+    <span class="n">_tabtooltip</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
+        <span class="s2">&quot;Displays general information for the selected Requirement.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Define public dict class attributes.</span>
+
+    <span class="c1"># Define public list class attributes.</span>
+
+    <span class="c1"># Define public scalar class attributes.</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="n">RAMSTKUserConfiguration</span><span class="p">,</span>
+                 <span class="n">logger</span><span class="p">:</span> <span class="n">RAMSTKLogManager</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the Requirement Work View general data page.</span>
+
+<span class="sd">        :param configuration: the RAMSTKUserConfiguration class instance.</span>
+<span class="sd">        :type configuration:</span>
+<span class="sd">            :class:`ramstk.configuration.RAMSTKUserConfiguration`</span>
+<span class="sd">        :param logger: the RAMSTKLogManager class instance.</span>
+<span class="sd">        :type logger: :class:`ramstk.logger.RAMSTKLogManager`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_icons</span><span class="p">[</span><span class="s1">&#39;create_code&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_ICON_DIR</span>
+            <span class="o">+</span> <span class="s1">&#39;/32x32/create_code.png&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_callbacks</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_request_create_code</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_icons</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;create_code&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_mnu_labels</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Create Code&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Automatically create code for the selected requirement.&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pnlGeneralData</span><span class="p">:</span> <span class="n">RAMSTKPanel</span> <span class="o">=</span> <span class="n">GeneralDataPanel</span><span class="p">()</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__make_ui</span><span class="p">()</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_set_cursor_active</span><span class="p">,</span> <span class="s1">&#39;succeed_create_code&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_set_cursor_active</span><span class="p">,</span> <span class="s1">&#39;succeed_update_requirement&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_set_cursor_active_on_fail</span><span class="p">,</span>
+                      <span class="s1">&#39;fail_create_requirement_code&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_set_cursor_active_on_fail</span><span class="p">,</span>
+                      <span class="s1">&#39;fail_update_requirement&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__make_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Build the user interface for the Requirement General Data tab.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_make_layout</span><span class="p">()</span>
+
+        <span class="c1"># Add the validation date dialog launcher button to the right of the</span>
+        <span class="c1"># validated date RAMSTKEntry.</span>
+        <span class="n">_fixed</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Fixed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pnlGeneralData</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span>
+        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_children</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_children</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">_entry</span><span class="p">:</span> <span class="n">RAMSTKEntry</span> <span class="o">=</span> <span class="n">_fixed</span><span class="o">.</span><span class="n">get_children</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">_x_pos</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">_fixed</span><span class="o">.</span><span class="n">child_get_property</span><span class="p">(</span><span class="n">_entry</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">205</span>
+        <span class="n">_y_pos</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">_fixed</span><span class="o">.</span><span class="n">child_get_property</span><span class="p">(</span><span class="n">_entry</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">)</span>
+        <span class="n">_fixed</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pnlGeneralData</span><span class="o">.</span><span class="n">btnValidateDate</span><span class="p">,</span> <span class="n">_x_pos</span><span class="p">,</span> <span class="n">_y_pos</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pnlGeneralData</span><span class="o">.</span><span class="n">do_load_priorities</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pnlGeneralData</span><span class="o">.</span><span class="n">do_load_requirement_types</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_REQUIREMENT_TYPE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pnlGeneralData</span><span class="o">.</span><span class="n">do_load_workgroups</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_WORKGROUPS</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pack_end</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pnlGeneralData</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_do_request_create_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__button</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ToolButton</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Request that requirement codes be built.</span>
+
+<span class="sd">        :param __button: the Gtk.ToolButton() that called this method.</span>
+<span class="sd">        :type __button: :py:class:`Gtk.ToolButton`</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pnlGeneralData</span><span class="o">.</span><span class="n">cmbRequirementType</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cursor_busy</span><span class="p">()</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_create_requirement_code&#39;</span><span class="p">,</span>
+                        <span class="n">node_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span><span class="p">,</span>
+                        <span class="n">prefix</span><span class="o">=</span><span class="n">_prefix</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RequirementAnalysis"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.requirement.html#ramstk.views.gtk3.requirement.workview.RequirementAnalysis">[docs]</a><span class="k">class</span> <span class="nc">RequirementAnalysis</span><span class="p">(</span><span class="n">RAMSTKWorkView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Display Requirement attribute data in the RAMSTK Work Book.</span>
+
+<span class="sd">    The Requirement Analysis Work View displays all the analysis questions and</span>
+<span class="sd">    answers for the selected Requirement. The attributes of a Requirement</span>
+<span class="sd">    Analysis Work View are:</span>
+
+<span class="sd">    :cvar str _module: the name of the module.</span>
+<span class="sd">    :cvar str _tablabel: the text to display on the tab&#39;s label.</span>
+<span class="sd">    :cvar str _tabtooltip: the text to display as the tab&#39;s tooltip.</span>
+
+<span class="sd">    :ivar list _lst_callbacks: the list of callback methods for the view&#39;s</span>
+<span class="sd">        toolbar buttons and pop-up menu.  The methods are listed in the order</span>
+<span class="sd">        they appear on the toolbar and pop-up menu.</span>
+<span class="sd">    :ivar list _lst_icons: the list of icons for the view&#39;s toolbar buttons</span>
+<span class="sd">        and pop-up menu.  The icons are listed in the order they appear on the</span>
+<span class="sd">        toolbar and pop-up menu.</span>
+<span class="sd">    :ivar list _lst_mnu_labels: the list of labels for the view&#39;s pop-up</span>
+<span class="sd">        menu.  The labels are listed in the order they appear in the menu.</span>
+<span class="sd">    :ivar list _lst_tooltips: the list of tooltips for the view&#39;s</span>
+<span class="sd">        toolbar buttons and pop-up menu.  The tooltips are listed in the</span>
+<span class="sd">        order they appear on the toolbar or pop-up menu.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Define private dict class attributes.</span>
+
+    <span class="c1"># Define private list class attributes.</span>
+
+    <span class="c1"># Define private scalar class attributes.</span>
+    <span class="n">_module</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;requirement&#39;</span>
+    <span class="n">_tablabel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&lt;span weight=&#39;bold&#39;&gt;&quot;</span> <span class="o">+</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Analysis&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&lt;/span&gt;&quot;</span>
+    <span class="n">_tabtooltip</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Analyzes the selected requirement.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Define public dict class attributes.</span>
+
+    <span class="c1"># Define public list class attributes.</span>
+
+    <span class="c1"># Define public scalar class attributes.</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="n">RAMSTKUserConfiguration</span><span class="p">,</span>
+                 <span class="n">logger</span><span class="p">:</span> <span class="n">RAMSTKLogManager</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the Requirements analysis work view.</span>
+
+<span class="sd">        :param configuration: the RAMSTKUserConfiguration class instance.</span>
+<span class="sd">        :type configuration:</span>
+<span class="sd">            :class:`ramstk.configuration.RAMSTKUserConfiguration`</span>
+<span class="sd">        :param logger: the RAMSTKLogManager class instance.</span>
+<span class="sd">        :type logger: :class:`ramstk.logger.RAMSTKLogManager`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pnlClarity</span><span class="p">:</span> <span class="n">RAMSTKPanel</span> <span class="o">=</span> <span class="n">ClarityPanel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pnlCompleteness</span><span class="p">:</span> <span class="n">RAMSTKPanel</span> <span class="o">=</span> <span class="n">CompletenessPanel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pnlConsistency</span><span class="p">:</span> <span class="n">RAMSTKPanel</span> <span class="o">=</span> <span class="n">ConsistencyPanel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pnlVerifiability</span><span class="p">:</span> <span class="n">RAMSTKPanel</span> <span class="o">=</span> <span class="n">VerifiabilityPanel</span><span class="p">()</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__make_ui</span><span class="p">()</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_set_cursor_active</span><span class="p">,</span> <span class="s1">&#39;succeed_update_requirement&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_set_cursor_active_on_fail</span><span class="p">,</span>
+                      <span class="s1">&#39;fail_update_requirement&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__make_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Build the user interface for the Requirement Analysis tab.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_vpaned_left</span><span class="p">,</span> <span class="n">_vpaned_right</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_make_layout_llrr</span><span class="p">()</span>
+
+        <span class="n">_vpaned_left</span><span class="o">.</span><span class="n">pack1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pnlClarity</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">_vpaned_left</span><span class="o">.</span><span class="n">pack2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pnlCompleteness</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">_vpaned_right</span><span class="o">.</span><span class="n">pack1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pnlConsistency</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">_vpaned_right</span><span class="o">.</span><span class="n">pack2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pnlVerifiability</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

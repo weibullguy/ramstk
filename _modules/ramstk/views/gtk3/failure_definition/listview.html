@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.failure_definition.listview &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.failure_definition.listview</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.views.gtk3.failure_definition.listview.py is part of the RAMSTK</span>
+<span class="c1">#       Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2020 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;The RAMSTK Failure Definition list view module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">import</span> <span class="nn">treelib</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.configuration</span> <span class="kn">import</span> <span class="n">RAMSTKUserConfiguration</span>
+<span class="kn">from</span> <span class="nn">ramstk.logger</span> <span class="kn">import</span> <span class="n">RAMSTKLogManager</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3</span> <span class="kn">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.widgets</span> <span class="kn">import</span> <span class="n">RAMSTKListView</span><span class="p">,</span> <span class="n">RAMSTKPanel</span>
+
+
+<div class="viewcode-block" id="FailureDefinitionPanel"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.failure_definition.html#ramstk.views.gtk3.failure_definition.listview.FailureDefinitionPanel">[docs]</a><span class="k">class</span> <span class="nc">FailureDefinitionPanel</span><span class="p">(</span><span class="n">RAMSTKPanel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Panel to display list of failure definitions.&quot;&quot;&quot;</span>
+
+    <span class="c1"># Define private dictionary class attributes.</span>
+
+    <span class="c1"># Define private list class attributes.</span>
+
+    <span class="c1"># Define private scalar class attributes.</span>
+    <span class="n">_module</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;failure_definitions&#39;</span>
+
+    <span class="c1"># Define public dictionary class attributes.</span>
+
+    <span class="c1"># Define public list class attributes.</span>
+
+    <span class="c1"># Define public scalar class attributes.</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the failure definition panel.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Initialize private dictionary class attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_keys</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;definition&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">],</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_updater</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;revision_id&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;definition_id&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="s1">&#39;definition&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_row_loader</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;definition&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__do_load_failure_definition</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Initialize private list class attributes.</span>
+
+        <span class="c1"># Initialize private scalar class attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_title</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Failure Definition List&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Initialize public dictionary class attributes.</span>
+
+        <span class="c1"># Initialize public list class attributes.</span>
+
+        <span class="c1"># Initialize public scalar class attributes.</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_make_panel_treeview</span><span class="p">()</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_load_panel</span><span class="p">,</span>
+                      <span class="s1">&#39;succeed_retrieve_failure_definitions&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_delete</span><span class="p">,</span> <span class="s1">&#39;succeed_delete_failure_definition&#39;</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_module_switch</span><span class="p">,</span> <span class="s1">&#39;lvwSwitchedPage&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FailureDefinitionPanel.do_set_callbacks"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.failure_definition.html#ramstk.views.gtk3.failure_definition.listview.FailureDefinitionPanel.do_set_callbacks">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set callbacks for the failure definition list view.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_callbacks</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cell_callbacks</span><span class="p">(</span><span class="s1">&#39;lvw_editing_failure_definition&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="FailureDefinitionPanel.do_set_properties"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.failure_definition.html#ramstk.views.gtk3.failure_definition.listview.FailureDefinitionPanel.do_set_properties">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set up the RAMSTKTreeView() for Failure Definitions.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s1">&#39;bold&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_title</span><span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">set_tooltip_text</span><span class="p">(</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Displays the list of failure definitions for the selected &quot;</span>
+              <span class="s2">&quot;revision.&quot;</span><span class="p">))</span>
+
+        <span class="n">_cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">get_columns</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_cells</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">_cell</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;editable&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">_cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">get_columns</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">get_cells</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">_cell</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;editable&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_on_module_switch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Respond to changes in selected Module View module (tab).</span>
+
+<span class="sd">        :param module: the name of the module that was just selected.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_model</span><span class="p">,</span> <span class="n">_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">selection</span><span class="o">.</span><span class="n">get_selected</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">module</span> <span class="o">==</span> <span class="s1">&#39;failure_definition&#39;</span> <span class="ow">and</span> <span class="n">_row</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_code</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">_row</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lst_col_order</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">_title</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Analyzing Failure Definition </span><span class="si">{0:s}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">_code</span><span class="p">))</span>
+
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_set_title&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">_title</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_on_row_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeSelection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Read attributes from newly selected RAMSTKTreeView() row.</span>
+
+<span class="sd">        This method is called whenever a view&#39;s RAMSTKTreeView() row is</span>
+<span class="sd">        activated/changed.</span>
+
+<span class="sd">        :param selection: the Gtk.TreeSelection() for the newly selected row.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_attributes</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_row_change</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">_attributes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span> <span class="o">=</span> <span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;definition_id&#39;</span><span class="p">]</span>
+
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;selected_failure_definition&#39;</span><span class="p">,</span>
+                            <span class="n">attributes</span><span class="o">=</span><span class="n">_attributes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_load_failure_definition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">treelib</span><span class="o">.</span><span class="n">Node</span><span class="p">,</span>
+                                     <span class="n">row</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeIter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeIter</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load a failure definition into the RAMSTKTreeView().</span>
+
+<span class="sd">        :param node: the treelib Node() with the definition data to load.</span>
+<span class="sd">        :param row: the parent row of the definition to load.</span>
+<span class="sd">        :return: _new_row; the row that was just populated with definition</span>
+<span class="sd">            data.</span>
+<span class="sd">        :rtype: :class:`Gtk.TreeIter`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_new_row</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="p">[[</span><span class="n">__</span><span class="p">,</span> <span class="n">_entity</span><span class="p">]]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>  <span class="c1"># pylint: disable=unused-variable</span>
+
+        <span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+
+        <span class="n">_attributes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_entity</span><span class="o">.</span><span class="n">revision_id</span><span class="p">,</span> <span class="n">_entity</span><span class="o">.</span><span class="n">definition_id</span><span class="p">,</span> <span class="n">_entity</span><span class="o">.</span><span class="n">definition</span>
+        <span class="p">]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_new_row</span> <span class="o">=</span> <span class="n">_model</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">_attributes</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">_new_row</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">_message</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span>
+                <span class="s2">&quot;An error occurred when loading failure definition </span><span class="si">{0:s}</span><span class="s2">.  &quot;</span>
+                <span class="s2">&quot;This might indicate it was missing it&#39;s data package, some &quot;</span>
+                <span class="s2">&quot;of the data in the package was missing, or some of the data &quot;</span>
+                <span class="s2">&quot;was the wrong type.  Row data was: </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">identifier</span><span class="p">),</span> <span class="n">_attributes</span><span class="p">)</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;do_log_warning_msg&#39;</span><span class="p">,</span>
+                            <span class="n">logger_name</span><span class="o">=</span><span class="s1">&#39;WARNING&#39;</span><span class="p">,</span>
+                            <span class="n">message</span><span class="o">=</span><span class="n">_message</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_new_row</span></div>
+
+
+<div class="viewcode-block" id="FailureDefinition"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.failure_definition.html#ramstk.views.gtk3.failure_definition.listview.FailureDefinition">[docs]</a><span class="k">class</span> <span class="nc">FailureDefinition</span><span class="p">(</span><span class="n">RAMSTKListView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Display failure definitions associated with the selected revision.</span>
+
+<span class="sd">    The attributes of the failure definition list view are:</span>
+
+<span class="sd">    :cvar _module: the name of the module.  Spaces are replaced with single</span>
+<span class="sd">        underscores if the name is more than one word.</span>
+<span class="sd">    :cvar _tablabel: the text to display on the view&#39;s tab.</span>
+<span class="sd">    :cvar _tabtooltip: the text to display in the tooltip for the view&#39;s tab.</span>
+
+<span class="sd">    :ivar _lst_mnu_labels: the list of labels for the view&#39;s pop-up</span>
+<span class="sd">        menu.  The labels are listed in the order they appear in the menu.</span>
+<span class="sd">    :ivar _lst_tooltips: the list of tooltips for the view&#39;s</span>
+<span class="sd">        toolbar buttons and pop-up menu.  The tooltips are listed in the</span>
+<span class="sd">        order they appear on the toolbar or pop-up menu.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Define private dictionary class attributes.</span>
+
+    <span class="c1"># Define private list class attributes.</span>
+
+    <span class="c1"># Define private scalar class attributes.</span>
+    <span class="n">_module</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;failure_definitions&#39;</span>
+    <span class="n">_tablabel</span> <span class="o">=</span> <span class="s2">&quot;&lt;span weight=&#39;bold&#39;&gt;&quot;</span> <span class="o">+</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Failure</span><span class="se">\n</span><span class="s2">Definitions&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&lt;/span&gt;&quot;</span>
+    <span class="n">_tabtooltip</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Displays failure definitions for the &quot;</span>
+                    <span class="s2">&quot;selected revision.&quot;</span><span class="p">)</span>
+    <span class="n">_view_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;list&#39;</span>
+
+    <span class="c1"># Define public dictionary class attributes.</span>
+
+    <span class="c1"># Define public list class attributes.</span>
+
+    <span class="c1"># Define public scalar class attributes.</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="n">RAMSTKUserConfiguration</span><span class="p">,</span>
+                 <span class="n">logger</span><span class="p">:</span> <span class="n">RAMSTKLogManager</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the List View for the failure definition package.</span>
+
+<span class="sd">        :param configuration: the RAMSTK Configuration class instance.</span>
+<span class="sd">        :param logger: the RAMSTKLogManager class instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_callbacks</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_request_delete</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_icons</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;remove&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_mnu_labels</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Add Definition&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Delete Selected&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Save Definition&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Save All Definitions&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Add a new failure definition.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Delete the currently selected failure definition.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Save changes to the currently selected failure definition&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Save changes to all failure definitions.&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pnlPanel</span> <span class="o">=</span> <span class="n">FailureDefinitionPanel</span><span class="p">()</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__make_ui</span><span class="p">()</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cursor_active</span><span class="p">,</span>
+                      <span class="s1">&#39;succeed_delete_failure_definition&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cursor_active</span><span class="p">,</span>
+                      <span class="s1">&#39;succeed_insert_failure_definition&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_insert</span><span class="p">,</span> <span class="s1">&#39;succeed_insert_failure_definition&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cursor_active</span><span class="p">,</span>
+                      <span class="s1">&#39;succeed_update_failure_definition&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cursor_active_on_fail</span><span class="p">,</span>
+                      <span class="s1">&#39;fail_delete_failure_definition&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cursor_active_on_fail</span><span class="p">,</span>
+                      <span class="s1">&#39;fail_insert_failure_definition&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cursor_active_on_fail</span><span class="p">,</span>
+                      <span class="s1">&#39;fail_update_failure_definition&#39;</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_set_record_id</span><span class="p">,</span> <span class="s1">&#39;selected_failure_definition&#39;</span><span class="p">)</span>
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="k">def</span> <span class="nf">_do_request_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__button</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ToolButton</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Request to delete the selected Failure Definition record.</span>
+
+<span class="sd">        :param __button: the Gtk.ToolButton() that called this method.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parent</span><span class="p">()</span><span class="o">.</span><span class="n">get_parent</span><span class="p">()</span><span class="o">.</span><span class="n">get_parent</span><span class="p">()</span><span class="o">.</span><span class="n">get_parent</span><span class="p">(</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">get_parent</span><span class="p">()</span>
+        <span class="n">_dialog</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_raise_dialog</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">_parent</span><span class="p">)</span>
+        <span class="n">_dialog</span><span class="o">.</span><span class="n">do_set_message</span><span class="p">(</span>
+            <span class="n">message</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;You are about to delete Failure Definition </span><span class="si">{0:d}</span><span class="s2"> and &quot;</span>
+                      <span class="s2">&quot;all data associated with it.  Is this really what you &quot;</span>
+                      <span class="s2">&quot;want to do?&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span><span class="p">))</span>
+        <span class="n">_dialog</span><span class="o">.</span><span class="n">do_set_message_type</span><span class="p">(</span><span class="n">message_type</span><span class="o">=</span><span class="s1">&#39;question&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">_dialog</span><span class="o">.</span><span class="n">do_run</span><span class="p">()</span> <span class="o">==</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">YES</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cursor_busy</span><span class="p">()</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_delete_failure_definition&#39;</span><span class="p">,</span>
+                            <span class="n">node_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span><span class="p">)</span>
+
+        <span class="n">_dialog</span><span class="o">.</span><span class="n">do_destroy</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_do_set_record_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the failure definition&#39;s record ID.</span>
+
+<span class="sd">        :param attributes: the attributes dict for the selected failure</span>
+<span class="sd">            definition.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;definition_id&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__make_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Build the user interface for the failure definition list view.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">make_ui</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pnlPanel</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pnlPanel</span><span class="o">.</span><span class="n">do_set_callbacks</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pnlPanel</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;button-press&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pnlPanel</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="s2">&quot;button_press_event&quot;</span><span class="p">,</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_button_press</span><span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

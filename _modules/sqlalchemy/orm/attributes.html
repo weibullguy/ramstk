@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>sqlalchemy.orm.attributes &#8212; RAMSTK 2.0.0 documentation</title>
-    <link rel="stylesheet" href="../../../_static/pydoctheme.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sqlalchemy.orm.attributes &#8212; RAMSTK 1.0.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pydoctheme.css" type="text/css" />
     
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
     
-    <script type="text/javascript" src="../../../_static/sidebar.js"></script>
+    <script src="../../../_static/sidebar.js"></script>
     
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -28,7 +29,7 @@
       <h3>Navigation</h3>
       <ul>
         <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
-        <li><a href="../../../index.html">RAMSTK 2.0.0 documentation</a> &#187;</li>
+        <li><a href="../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>
@@ -42,7 +43,7 @@
             
   <h1>Source code for sqlalchemy.orm.attributes</h1><div class="highlight"><pre>
 <span></span><span class="c1"># orm/attributes.py</span>
-<span class="c1"># Copyright (C) 2005-2019 the SQLAlchemy authors and contributors</span>
+<span class="c1"># Copyright (C) 2005-2020 the SQLAlchemy authors and contributors</span>
 <span class="c1"># &lt;see AUTHORS file&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># This module is part of SQLAlchemy and is released under</span>
@@ -59,37 +60,38 @@
 
 <span class="kn">import</span> <span class="nn">operator</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">collections</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">exc</span> <span class="k">as</span> <span class="n">orm_exc</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">interfaces</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">ATTR_EMPTY</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">ATTR_WAS_SET</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">CALLABLES_OK</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">INIT_OK</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">instance_dict</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">instance_state</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">instance_str</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">LOAD_AGAINST_COMMITTED</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">manager_of_class</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">NEVER_SET</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">NO_AUTOFLUSH</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">NO_CHANGE</span>  <span class="c1"># noqa</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">NO_RAISE</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">NO_VALUE</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">NON_PERSISTENT_OK</span>  <span class="c1"># noqa</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">PASSIVE_NO_FETCH</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">PASSIVE_NO_FETCH_RELATED</span>  <span class="c1"># noqa</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">PASSIVE_NO_INITIALIZE</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">PASSIVE_NO_RESULT</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">PASSIVE_OFF</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">PASSIVE_ONLY_PERSISTENT</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">PASSIVE_RETURN_NEVER_SET</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">RELATED_OBJECT_OK</span>  <span class="c1"># noqa</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">SQL_OK</span>  <span class="c1"># noqa</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">state_str</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">event</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">inspection</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">util</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">collections</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">exc</span> <span class="k">as</span> <span class="n">orm_exc</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">interfaces</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">ATTR_EMPTY</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">ATTR_WAS_SET</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">CALLABLES_OK</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">INIT_OK</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">instance_dict</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">instance_state</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">instance_str</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">LOAD_AGAINST_COMMITTED</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">manager_of_class</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">NEVER_SET</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">NO_AUTOFLUSH</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">NO_CHANGE</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">NO_RAISE</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">NO_VALUE</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">NON_PERSISTENT_OK</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">PASSIVE_CLASS_MISMATCH</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">PASSIVE_NO_FETCH</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">PASSIVE_NO_FETCH_RELATED</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">PASSIVE_NO_INITIALIZE</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">PASSIVE_NO_RESULT</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">PASSIVE_OFF</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">PASSIVE_ONLY_PERSISTENT</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">PASSIVE_RETURN_NEVER_SET</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">RELATED_OBJECT_OK</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">SQL_OK</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">state_str</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">event</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">inspection</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">util</span>
 
 
 <span class="nd">@inspection</span><span class="o">.</span><span class="n">_self_inspects</span>
@@ -111,14 +113,14 @@
 
 <span class="sd">        :class:`.MapperProperty`</span>
 
-<span class="sd">        :attr:`.Mapper.all_orm_descriptors`</span>
+<span class="sd">        :attr:`_orm.Mapper.all_orm_descriptors`</span>
 
-<span class="sd">        :attr:`.Mapper.attrs`</span>
+<span class="sd">        :attr:`_orm.Mapper.attrs`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">is_attribute</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">class_</span><span class="p">,</span>
         <span class="n">key</span><span class="p">,</span>
@@ -142,10 +144,16 @@
             <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="n">manager</span><span class="o">.</span><span class="n">_bases</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">base</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">dispatch</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">base</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">dispatch</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">base</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">dispatch</span><span class="o">.</span><span class="n">_active_history</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">dispatch</span><span class="o">.</span><span class="n">_active_history</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="nd">@util</span><span class="o">.</span><span class="n">memoized_property</span>
     <span class="k">def</span> <span class="nf">_supports_population</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">impl</span><span class="o">.</span><span class="n">supports_population</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_impl_uses_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">impl</span><span class="o">.</span><span class="n">uses_objects</span>
 
     <span class="k">def</span> <span class="nf">get_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">passive</span><span class="o">=</span><span class="n">PASSIVE_OFF</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">impl</span><span class="o">.</span><span class="n">get_history</span><span class="p">(</span>
@@ -164,12 +172,13 @@
 
 <span class="sd">        * If the attribute is a column-mapped property, i.e.</span>
 <span class="sd">          :class:`.ColumnProperty`, which is mapped directly</span>
-<span class="sd">          to a schema-level :class:`.Column` object, this attribute</span>
+<span class="sd">          to a schema-level :class:`_schema.Column` object, this attribute</span>
 <span class="sd">          will return the :attr:`.SchemaItem.info` dictionary associated</span>
-<span class="sd">          with the core-level :class:`.Column` object.</span>
+<span class="sd">          with the core-level :class:`_schema.Column` object.</span>
 
 <span class="sd">        * If the attribute is a :class:`.ColumnProperty` but is mapped to</span>
-<span class="sd">          any other kind of SQL expression other than a :class:`.Column`,</span>
+<span class="sd">          any other kind of SQL expression other than a</span>
+<span class="sd">          :class:`_schema.Column`,</span>
 <span class="sd">          the attribute will refer to the :attr:`.MapperProperty.info`</span>
 <span class="sd">          dictionary associated directly with the :class:`.ColumnProperty`,</span>
 <span class="sd">          assuming the SQL expression itself does not have its own ``.info``</span>
@@ -184,7 +193,7 @@
 <span class="sd">        * To access the :attr:`.MapperProperty.info` dictionary of the</span>
 <span class="sd">          :class:`.MapperProperty` unconditionally, including for a</span>
 <span class="sd">          :class:`.ColumnProperty` that&#39;s associated directly with a</span>
-<span class="sd">          :class:`.schema.Column`, the attribute can be referred to using</span>
+<span class="sd">          :class:`_schema.Column`, the attribute can be referred to using</span>
 <span class="sd">          :attr:`.QueryableAttribute.property` attribute, as</span>
 <span class="sd">          ``MyClass.someattribute.property.info``.</span>
 
@@ -201,7 +210,7 @@
     <span class="k">def</span> <span class="nf">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return an inspection instance representing the parent.</span>
 
-<span class="sd">        This will be either an instance of :class:`.Mapper`</span>
+<span class="sd">        This will be either an instance of :class:`_orm.Mapper`</span>
 <span class="sd">        or :class:`.AliasedInsp`, depending upon the nature</span>
 <span class="sd">        of the parent entity which this attribute is associated</span>
 <span class="sd">        with.</span>
@@ -218,7 +227,7 @@
 
     <span class="k">def</span> <span class="nf">_query_clause_element</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;like __clause_element__(), but called specifically</span>
-<span class="sd">        by :class:`.Query` to allow special behavior.&quot;&quot;&quot;</span>
+<span class="sd">        by :class:`_query.Query` to allow special behavior.&quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">comparator</span><span class="o">.</span><span class="n">_query_clause_element</span><span class="p">()</span>
 
@@ -259,22 +268,25 @@
     <span class="k">def</span> <span class="nf">hasparent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">optimistic</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">impl</span><span class="o">.</span><span class="n">hasparent</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">optimistic</span><span class="o">=</span><span class="n">optimistic</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comparator</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
-                <span class="s2">&quot;Neither </span><span class="si">%r</span><span class="s2"> object nor </span><span class="si">%r</span><span class="s2"> object associated with </span><span class="si">%s</span><span class="s2"> &quot;</span>
-                <span class="s2">&quot;has an attribute </span><span class="si">%r</span><span class="s2">&quot;</span>
-                <span class="o">%</span> <span class="p">(</span>
-                    <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-                    <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comparator</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="p">,</span>
-                    <span class="n">key</span><span class="p">,</span>
-                <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">util</span><span class="o">.</span><span class="n">raise_</span><span class="p">(</span>
+                <span class="ne">AttributeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Neither </span><span class="si">%r</span><span class="s2"> object nor </span><span class="si">%r</span><span class="s2"> object associated with </span><span class="si">%s</span><span class="s2"> &quot;</span>
+                    <span class="s2">&quot;has an attribute </span><span class="si">%r</span><span class="s2">&quot;</span>
+                    <span class="o">%</span> <span class="p">(</span>
+                        <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                        <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comparator</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="p">,</span>
+                        <span class="n">key</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
+                <span class="n">replace_context</span><span class="o">=</span><span class="n">err</span><span class="p">,</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
 
     <span class="nd">@util</span><span class="o">.</span><span class="n">memoized_property</span>
@@ -300,15 +312,15 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">impl</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
             <span class="n">instance_state</span><span class="p">(</span><span class="n">instance</span><span class="p">),</span> <span class="n">instance_dict</span><span class="p">(</span><span class="n">instance</span><span class="p">),</span> <span class="n">value</span><span class="p">,</span> <span class="kc">None</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__delete__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__delete__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">impl</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">instance_state</span><span class="p">(</span><span class="n">instance</span><span class="p">),</span> <span class="n">instance_dict</span><span class="p">(</span><span class="n">instance</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">owner</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">owner</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span>
 
@@ -336,7 +348,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">class_</span><span class="p">,</span>
             <span class="n">key</span><span class="p">,</span>
@@ -355,6 +367,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">doc</span>
 
         <span class="n">_is_internal_proxy</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="nd">@property</span>
+        <span class="k">def</span> <span class="nf">_impl_uses_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">original_property</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">impl</span><span class="o">.</span><span class="n">uses_objects</span>
+            <span class="p">)</span>
 
         <span class="nd">@property</span>
         <span class="k">def</span> <span class="nf">property</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -379,35 +398,58 @@
                 <span class="n">adapt_to_entity</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">owner</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">owner</span><span class="p">):</span>
+            <span class="n">retval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">descriptor</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">owner</span><span class="p">)</span>
+            <span class="c1"># detect if this is a plain Python @property, which just returns</span>
+            <span class="c1"># itself for class level access.  If so, then return us.</span>
+            <span class="c1"># Otherwise, return the object returned by the descriptor.</span>
+            <span class="k">if</span> <span class="n">retval</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">descriptor</span> <span class="ow">and</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">descriptor</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">owner</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">retval</span>
 
-        <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;Delegate __getattr__ to the original descriptor and/or</span>
 <span class="sd">            comparator.&quot;&quot;&quot;</span>
-
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">descriptor</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comparator</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
-                        <span class="s2">&quot;Neither </span><span class="si">%r</span><span class="s2"> object nor </span><span class="si">%r</span><span class="s2"> object associated with </span><span class="si">%s</span><span class="s2"> &quot;</span>
-                        <span class="s2">&quot;has an attribute </span><span class="si">%r</span><span class="s2">&quot;</span>
-                        <span class="o">%</span> <span class="p">(</span>
-                            <span class="nb">type</span><span class="p">(</span><span class="n">descriptor</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-                            <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comparator</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-                            <span class="bp">self</span><span class="p">,</span>
-                            <span class="n">attribute</span><span class="p">,</span>
-                        <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">attribute</span> <span class="o">==</span> <span class="s2">&quot;comparator&quot;</span><span class="p">:</span>
+                    <span class="n">util</span><span class="o">.</span><span class="n">raise_</span><span class="p">(</span>
+                        <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;comparator&quot;</span><span class="p">),</span> <span class="n">replace_context</span><span class="o">=</span><span class="n">err</span>
                     <span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># comparator itself might be unreachable</span>
+                    <span class="n">comparator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comparator</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">err2</span><span class="p">:</span>
+                    <span class="n">util</span><span class="o">.</span><span class="n">raise_</span><span class="p">(</span>
+                        <span class="ne">AttributeError</span><span class="p">(</span>
+                            <span class="s2">&quot;Neither </span><span class="si">%r</span><span class="s2"> object nor unconfigured comparator &quot;</span>
+                            <span class="s2">&quot;object associated with </span><span class="si">%s</span><span class="s2"> has an attribute </span><span class="si">%r</span><span class="s2">&quot;</span>
+                            <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">descriptor</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+                        <span class="p">),</span>
+                        <span class="n">replace_context</span><span class="o">=</span><span class="n">err2</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">comparator</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">err3</span><span class="p">:</span>
+                        <span class="n">util</span><span class="o">.</span><span class="n">raise_</span><span class="p">(</span>
+                            <span class="ne">AttributeError</span><span class="p">(</span>
+                                <span class="s2">&quot;Neither </span><span class="si">%r</span><span class="s2"> object nor </span><span class="si">%r</span><span class="s2"> object &quot;</span>
+                                <span class="s2">&quot;associated with </span><span class="si">%s</span><span class="s2"> has an attribute </span><span class="si">%r</span><span class="s2">&quot;</span>
+                                <span class="o">%</span> <span class="p">(</span>
+                                    <span class="nb">type</span><span class="p">(</span><span class="n">descriptor</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                                    <span class="nb">type</span><span class="p">(</span><span class="n">comparator</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="p">,</span>
+                                    <span class="n">attribute</span><span class="p">,</span>
+                                <span class="p">)</span>
+                            <span class="p">),</span>
+                            <span class="n">replace_context</span><span class="o">=</span><span class="n">err3</span><span class="p">,</span>
+                        <span class="p">)</span>
 
     <span class="n">Proxy</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">descriptor</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s2">&quot;Proxy&quot;</span>
 
@@ -443,10 +485,10 @@
 
 <span class="sd">    .. versionadded:: 0.9.0</span>
 
-<span class="sd">    :var impl: The :class:`.AttributeImpl` which is the current event</span>
+<span class="sd">    :attribute impl: The :class:`.AttributeImpl` which is the current event</span>
 <span class="sd">     initiator.</span>
 
-<span class="sd">    :var op: The symbol :attr:`.OP_APPEND`, :attr:`.OP_REMOVE`,</span>
+<span class="sd">    :attribute op: The symbol :attr:`.OP_APPEND`, :attr:`.OP_REMOVE`,</span>
 <span class="sd">     :attr:`.OP_REPLACE`, or :attr:`.OP_BULK_REPLACE`, indicating the</span>
 <span class="sd">     source operation.</span>
 
@@ -454,12 +496,12 @@
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;impl&quot;</span><span class="p">,</span> <span class="s2">&quot;op&quot;</span><span class="p">,</span> <span class="s2">&quot;parent_token&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute_impl</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute_impl</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">impl</span> <span class="o">=</span> <span class="n">attribute_impl</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">op</span> <span class="o">=</span> <span class="n">op</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parent_token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">impl</span><span class="o">.</span><span class="n">parent_token</span>
 
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Event</span><span class="p">)</span>
             <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">impl</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">impl</span>
@@ -477,7 +519,7 @@
 <span class="k">class</span> <span class="nc">AttributeImpl</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;internal implementation for instrumented attributes.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">class_</span><span class="p">,</span>
         <span class="n">key</span><span class="p">,</span>
@@ -519,7 +561,7 @@
 <span class="sd">            The :paramref:`.AttributeImpl.extension` parameter is deprecated</span>
 <span class="sd">            and will be removed in a future release, corresponding to the</span>
 <span class="sd">            &quot;extension&quot; parameter on the :class:`.MapperProprty` classes</span>
-<span class="sd">            like :func:`.column_property` and :func:`.relationship`  The</span>
+<span class="sd">            like :func:`.column_property` and :func:`_orm.relationship`  The</span>
 <span class="sd">            events system is now used.</span>
 
 <span class="sd">        :param compare_function:</span>
@@ -591,7 +633,7 @@
         <span class="s2">&quot;accepts_scalar_loader&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_active_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -731,12 +773,15 @@
                 <span class="k">elif</span> <span class="n">value</span> <span class="ow">is</span> <span class="n">ATTR_WAS_SET</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="k">return</span> <span class="n">dict_</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-                    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
                         <span class="c1"># TODO: no test coverage here.</span>
-                        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-                            <span class="s2">&quot;Deferred loader for attribute &quot;</span>
-                            <span class="s2">&quot;</span><span class="si">%r</span><span class="s2"> failed to populate &quot;</span>
-                            <span class="s2">&quot;correctly&quot;</span> <span class="o">%</span> <span class="n">key</span>
+                        <span class="n">util</span><span class="o">.</span><span class="n">raise_</span><span class="p">(</span>
+                            <span class="ne">KeyError</span><span class="p">(</span>
+                                <span class="s2">&quot;Deferred loader for attribute &quot;</span>
+                                <span class="s2">&quot;</span><span class="si">%r</span><span class="s2"> failed to populate &quot;</span>
+                                <span class="s2">&quot;correctly&quot;</span> <span class="o">%</span> <span class="n">key</span>
+                            <span class="p">),</span>
+                            <span class="n">replace_context</span><span class="o">=</span><span class="n">err</span><span class="p">,</span>
                         <span class="p">)</span>
                 <span class="k">elif</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">ATTR_EMPTY</span><span class="p">:</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_committed_value</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">dict_</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
@@ -809,7 +854,7 @@
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;_replace_token&quot;</span><span class="p">,</span> <span class="s2">&quot;_append_token&quot;</span><span class="p">,</span> <span class="s2">&quot;_remove_token&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">arg</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">arg</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ScalarAttributeImpl</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_replace_token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_append_token</span> <span class="o">=</span> <span class="n">Event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">OP_REPLACE</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_remove_token</span> <span class="o">=</span> <span class="n">Event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">OP_REMOVE</span><span class="p">)</span>
@@ -1077,7 +1122,7 @@
         <span class="s2">&quot;_duck_typed_as&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">class_</span><span class="p">,</span>
         <span class="n">key</span><span class="p">,</span>
@@ -1596,7 +1641,7 @@
 <span class="sd">    attribute.</span>
 
 <span class="sd">    The easiest way to get a :class:`.History` object for a particular</span>
-<span class="sd">    attribute on an object is to use the :func:`.inspect` function::</span>
+<span class="sd">    attribute on an object is to use the :func:`_sa.inspect` function::</span>
 
 <span class="sd">        from sqlalchemy import inspect</span>
 
@@ -1615,7 +1660,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span> <span class="o">!=</span> <span class="n">HISTORY_BLANK</span>
 
     <span class="n">__nonzero__</span> <span class="o">=</span> <span class="fm">__bool__</span>
@@ -2050,6 +2095,7 @@
     <span class="n">state</span><span class="o">.</span><span class="n">_modified_event</span><span class="p">(</span><span class="n">dict_</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">NO_VALUE</span><span class="p">,</span> <span class="n">is_userland</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -2059,15 +2105,15 @@
     
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -2085,8 +2131,8 @@
     </div>
 
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2007 - 2019, Doyle Rowland.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
     </div>
   </body>
 </html>

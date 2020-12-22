@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.hazard_analysis.workview &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.hazard_analysis.workview</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.views.gtk3.hazard_analysis.workview.py is part of the RAMSTK</span>
+<span class="c1">#       Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2020 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;The RAMSTK GTK3 Function Work View.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+<span class="kn">from</span> <span class="nn">treelib</span> <span class="kn">import</span> <span class="n">Tree</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.configuration</span> <span class="kn">import</span> <span class="n">RAMSTKUserConfiguration</span>
+<span class="kn">from</span> <span class="nn">ramstk.logger</span> <span class="kn">import</span> <span class="n">RAMSTKLogManager</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3</span> <span class="kn">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.widgets</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RAMSTKMessageDialog</span><span class="p">,</span> <span class="n">RAMSTKPanel</span><span class="p">,</span> <span class="n">RAMSTKWorkView</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="HazOpsPanel"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.hazard_analysis.html#ramstk.views.gtk3.hazard_analysis.workview.HazOpsPanel">[docs]</a><span class="k">class</span> <span class="nc">HazOpsPanel</span><span class="p">(</span><span class="n">RAMSTKPanel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The panel to display the hazards analysis for the selected Function.&quot;&quot;&quot;</span>
+
+    <span class="c1"># Define private dictionary class attributes.</span>
+
+    <span class="c1"># Define private list class attributes.</span>
+
+    <span class="c1"># Define private scalar class attributes.</span>
+    <span class="n">_module</span> <span class="o">=</span> <span class="s1">&#39;hazards&#39;</span>
+
+    <span class="c1"># Define public dictionary class attributes.</span>
+
+    <span class="c1"># Define public list class attributes.</span>
+
+    <span class="c1"># Define public scalar class attributes.</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the Function Hazard Analysis panel.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Initialize private dict instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_keys</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;potential_hazard&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">],</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;potential_cause&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">],</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;assembly_effect&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">],</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;assembly_severity&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">],</span>
+            <span class="mi">7</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;assembly_probability&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">],</span>
+            <span class="mi">9</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;assembly_mitigation&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">],</span>
+            <span class="mi">10</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;assembly_severity_f&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">],</span>
+            <span class="mi">11</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;assembly_probability_f&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">],</span>
+            <span class="mi">13</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;system_effect&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">],</span>
+            <span class="mi">14</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;system_severity&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">],</span>
+            <span class="mi">15</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;system_probability&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">],</span>
+            <span class="mi">17</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;system_mitigation&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">],</span>
+            <span class="mi">18</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;system_severity_f&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">],</span>
+            <span class="mi">19</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;system_probability_f&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">],</span>
+            <span class="mi">21</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;remarks&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">],</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_attribute_updater</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;revision_id&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;function_id&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="s1">&#39;hazard_id&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="s1">&#39;potential_hazard&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+            <span class="s1">&#39;potential_cause&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+            <span class="s1">&#39;assembly_effect&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+            <span class="s1">&#39;assembly_severity&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+            <span class="s1">&#39;assembly_probability&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>
+            <span class="s1">&#39;assembly_hri&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>
+            <span class="s1">&#39;assembly_mitigation&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span>
+            <span class="s1">&#39;assembly_severity_f&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>
+            <span class="s1">&#39;assembly_probability_f&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">11</span><span class="p">],</span>
+            <span class="s1">&#39;assembly_hri_f&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">12</span><span class="p">],</span>
+            <span class="s1">&#39;system_effect&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">13</span><span class="p">],</span>
+            <span class="s1">&#39;system_severity&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">14</span><span class="p">],</span>
+            <span class="s1">&#39;system_probability&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span>
+            <span class="s1">&#39;system_hri&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">16</span><span class="p">],</span>
+            <span class="s1">&#39;system_mitigation&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">17</span><span class="p">],</span>
+            <span class="s1">&#39;system_severity_f&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">18</span><span class="p">],</span>
+            <span class="s1">&#39;system_probability_f&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">19</span><span class="p">],</span>
+            <span class="s1">&#39;system_hri_f&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span>
+            <span class="s1">&#39;remarks&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">21</span><span class="p">],</span>
+            <span class="s1">&#39;function_1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">22</span><span class="p">],</span>
+            <span class="s1">&#39;function_2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">23</span><span class="p">],</span>
+            <span class="s1">&#39;function_3&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">24</span><span class="p">],</span>
+            <span class="s1">&#39;function_4&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">25</span><span class="p">],</span>
+            <span class="s1">&#39;function_5&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">26</span><span class="p">],</span>
+            <span class="s1">&#39;result_1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">27</span><span class="p">],</span>
+            <span class="s1">&#39;result_2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">28</span><span class="p">],</span>
+            <span class="s1">&#39;result_3&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">29</span><span class="p">],</span>
+            <span class="s1">&#39;result_4&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span>
+            <span class="s1">&#39;result_5&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">31</span><span class="p">],</span>
+            <span class="s1">&#39;user_blob_1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>
+            <span class="s1">&#39;user_blob_2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">33</span><span class="p">],</span>
+            <span class="s1">&#39;user_blob_3&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">34</span><span class="p">],</span>
+            <span class="s1">&#39;user_float_1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">35</span><span class="p">],</span>
+            <span class="s1">&#39;user_float_2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">36</span><span class="p">],</span>
+            <span class="s1">&#39;user_float_3&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">37</span><span class="p">],</span>
+            <span class="s1">&#39;user_int_1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">38</span><span class="p">],</span>
+            <span class="s1">&#39;user_int_2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">39</span><span class="p">],</span>
+            <span class="s1">&#39;user_int_3&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;edited&#39;</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dic_row_loader</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;hazard&#39;</span><span class="p">:</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_do_load_treerow</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Initialize private list instance attributes.</span>
+
+        <span class="c1"># Initialize private scalar instance attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Hazards Analysis&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Initialize public dict instance attributes.</span>
+
+        <span class="c1"># Initialize public list instance attributes.</span>
+
+        <span class="c1"># Initialize public scalar instance attributes.</span>
+
+        <span class="c1"># Make a fixed type panel.</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_make_panel_treeview</span><span class="p">()</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_load_panel</span><span class="p">,</span> <span class="s1">&#39;succeed_retrieve_hazards&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_load_panel</span><span class="p">,</span> <span class="s1">&#39;succeed_get_hazard_tree&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_delete</span><span class="p">,</span> <span class="s1">&#39;succeed_delete_hazard&#39;</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_clear_panel</span><span class="p">,</span> <span class="s1">&#39;request_clear_workviews&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_insert</span><span class="p">,</span> <span class="s1">&#39;succeed_insert_hazard&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="HazOpsPanel.do_load_severity"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.hazard_analysis.html#ramstk.views.gtk3.hazard_analysis.workview.HazOpsPanel.do_load_severity">[docs]</a>    <span class="k">def</span> <span class="nf">do_load_severity</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">criticalities</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the Gtk.CellRendererCombo() containing severities.</span>
+
+<span class="sd">        :param criticalities: the dict containing the hazard severity</span>
+<span class="sd">            categories and values.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">18</span><span class="p">]:</span>
+            <span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">get_cell_model</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">_key</span> <span class="ow">in</span> <span class="n">criticalities</span><span class="p">:</span>
+                <span class="n">_model</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">criticalities</span><span class="p">[</span><span class="n">_key</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="p">))</span></div>
+
+<div class="viewcode-block" id="HazOpsPanel.do_load_hazards"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.hazard_analysis.html#ramstk.views.gtk3.hazard_analysis.workview.HazOpsPanel.do_load_hazards">[docs]</a>    <span class="k">def</span> <span class="nf">do_load_hazards</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hazards</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the Gtk.CellRendererCombos() containing hazards.</span>
+
+<span class="sd">        :param hazards: the dict containing the hazards and hazard types</span>
+<span class="sd">            to be considered.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">get_cell_model</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">_key</span> <span class="ow">in</span> <span class="n">hazards</span><span class="p">:</span>
+            <span class="n">_hazard</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">, </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hazards</span><span class="p">[</span><span class="n">_key</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">hazards</span><span class="p">[</span><span class="n">_key</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">_model</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">_hazard</span><span class="p">,</span> <span class="p">))</span></div>
+
+<div class="viewcode-block" id="HazOpsPanel.do_load_probability"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.hazard_analysis.html#ramstk.views.gtk3.hazard_analysis.workview.HazOpsPanel.do_load_probability">[docs]</a>    <span class="k">def</span> <span class="nf">do_load_probability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">probabilities</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the Gtk.CellRendererCombos() containing probabilities.</span>
+
+<span class="sd">        :param probabilities: the list of hazard probabilities.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">19</span><span class="p">]:</span>
+            <span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">get_cell_model</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">_probability</span> <span class="ow">in</span> <span class="n">probabilities</span><span class="p">:</span>
+                <span class="n">_model</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">_probability</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">))</span></div>
+
+<div class="viewcode-block" id="HazOpsPanel.do_set_callbacks"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.hazard_analysis.html#ramstk.views.gtk3.hazard_analysis.workview.HazOpsPanel.do_set_callbacks">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the callback methods and functions for the panel widgets.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_lst_col_order</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">dic_handler_id</span><span class="p">[</span>
+            <span class="s1">&#39;changed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">selection</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_row_change</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">_lst_col_order</span><span class="p">[</span><span class="mi">3</span><span class="p">:]:</span>
+            <span class="n">_cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">get_column</span><span class="p">(</span><span class="n">_lst_col_order</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">get_cells</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">_cell</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;edited&#39;</span><span class="p">,</span>
+                                 <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_cell_edit</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="s1">&#39;wvw_editing_hazard&#39;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="n">_cell</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;toggled&#39;</span><span class="p">,</span>
+                                 <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_cell_edit</span><span class="p">,</span> <span class="s1">&#39;new text&#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span>
+                                 <span class="s1">&#39;wvw_editing_hazard&#39;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_do_clear_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Clear the contents of the panel widgets.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+        <span class="n">_model</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_on_insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Wrap the do_load_panel() method when an element is inserted.</span>
+
+<span class="sd">        The do_set_cursor_active() method responds to the same message,</span>
+<span class="sd">        but one less argument in it&#39;s call.  This results in a PyPubSub</span>
+<span class="sd">        error and is the reason this wrapper method is needed.</span>
+
+<span class="sd">        :param tree: the module&#39;s treelib Tree().</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_load_panel</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_on_row_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeSelection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Handle events for the HazOps Tree View RAMSTKTreeView().</span>
+
+<span class="sd">        This method is called whenever a Tree View row is activated.</span>
+
+<span class="sd">        :param selection: the HazOps RAMSTKTreeview Gtk.TreeSelection().</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_attributes</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_row_change</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">_attributes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parent_id</span> <span class="o">=</span> <span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;function_id&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span> <span class="o">=</span> <span class="n">_attributes</span><span class="p">[</span><span class="s1">&#39;hazard_id&#39;</span><span class="p">]</span>
+
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;selected_hazard&#39;</span><span class="p">,</span>
+                <span class="n">attributes</span><span class="o">=</span><span class="n">_attributes</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__do_set_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the properties of the panel widgets.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s1">&#39;bold&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_title</span><span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tvwTreeView</span><span class="o">.</span><span class="n">set_tooltip_text</span><span class="p">(</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Displays the Hazards Analysis for the currently selected &quot;</span>
+              <span class="s2">&quot;Function.&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="HazOps"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.hazard_analysis.html#ramstk.views.gtk3.hazard_analysis.workview.HazOps">[docs]</a><span class="k">class</span> <span class="nc">HazOps</span><span class="p">(</span><span class="n">RAMSTKWorkView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Display HazOps attribute data in the Work Book.</span>
+
+<span class="sd">    The WorkView displays all the attributes for the Hazards Analysis (HazOps).</span>
+<span class="sd">    The attributes of a HazOps Work View are:</span>
+
+<span class="sd">    :cvar str _module: the name of the module.</span>
+
+<span class="sd">    :ivar list _lst_callbacks: the list of callback methods for the view&#39;s</span>
+<span class="sd">        toolbar buttons and pop-up menu.  The methods are listed in the order</span>
+<span class="sd">        they appear on the toolbar and pop-up menu.</span>
+<span class="sd">    :ivar list _lst_icons: the list of icons for the view&#39;s toolbar buttons</span>
+<span class="sd">        and pop-up menu.  The icons are listed in the order they appear on the</span>
+<span class="sd">        toolbar and pop-up menu.</span>
+<span class="sd">    :ivar list _lst_mnu_labels: the list of labels for the view&#39;s pop-up</span>
+<span class="sd">        menu.  The labels are listed in the order they appear in the menu.</span>
+<span class="sd">    :ivar list _lst_tooltips: the list of tooltips for the view&#39;s</span>
+<span class="sd">        toolbar buttons and pop-up menu.  The tooltips are listed in the</span>
+<span class="sd">        order they appear on the toolbar or pop-up menu.</span>
+<span class="sd">    :ivar int _hazard_id: the ID of the currently selected hazard.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Define private dict class attributes.</span>
+
+    <span class="c1"># Define private list class attributes.</span>
+
+    <span class="c1"># Define private scalar class attributes.</span>
+    <span class="n">_module</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;hazard&#39;</span>
+    <span class="n">_tablabel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;HazOps&quot;</span><span class="p">)</span>
+    <span class="n">_tabtooltip</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Displays the HazOps analysis for the selected &quot;</span>
+                         <span class="s2">&quot;Function.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Define public dict class attributes.</span>
+
+    <span class="c1"># Define public list class attributes.</span>
+
+    <span class="c1"># Define public scalar class attributes.</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="n">RAMSTKUserConfiguration</span><span class="p">,</span>
+                 <span class="n">logger</span><span class="p">:</span> <span class="n">RAMSTKLogManager</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the Work View for the HazOps.</span>
+
+<span class="sd">        :param configuration: the RAMSTKUserConfiguration class instance.</span>
+<span class="sd">        :param logger: the RAMSTKLogManager class instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_callbacks</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_request_insert_sibling</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_callbacks</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_request_delete</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_callbacks</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_request_calculate</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_icons</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_icons</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;remove&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_icons</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;calculate&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_mnu_labels</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Add Hazard&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Delete Selected Hazard&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Calculate HazOp&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Save Selected Hazard&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Save All Hazards&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Add a new hazard to the HazOps analysis.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Delete the selected hazard from the selected function.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Calculate the HazOps analysis.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Save changes to the selected hazard.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Save changes to all hazards.&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pnlPanel</span><span class="p">:</span> <span class="n">RAMSTKPanel</span> <span class="o">=</span> <span class="n">HazOpsPanel</span><span class="p">()</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__make_ui</span><span class="p">()</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cursor_active</span><span class="p">,</span> <span class="s1">&#39;succeed_calculate_hazard&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cursor_active</span><span class="p">,</span> <span class="s1">&#39;succeed_delete_hazard&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cursor_active</span><span class="p">,</span> <span class="s1">&#39;succeed_insert_hazard&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cursor_active</span><span class="p">,</span> <span class="s1">&#39;succeed_update_hazard&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cursor_active_on_fail</span><span class="p">,</span>
+                      <span class="s1">&#39;fail_delete_hazard&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cursor_active_on_fail</span><span class="p">,</span>
+                      <span class="s1">&#39;fail_insert_hazard&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cursor_active_on_fail</span><span class="p">,</span>
+                      <span class="s1">&#39;fail_update_function&#39;</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_set_record_id</span><span class="p">,</span> <span class="s1">&#39;selected_hazard&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_select_function</span><span class="p">,</span> <span class="s1">&#39;selected_function&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="HazOps.do_request_delete"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.hazard_analysis.html#ramstk.views.gtk3.hazard_analysis.workview.HazOps.do_request_delete">[docs]</a>    <span class="k">def</span> <span class="nf">do_request_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__button</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ToolButton</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Request to delete the selected hazard from the HazOps.</span>
+
+<span class="sd">        :param __button: the Gtk.ToolButton() that called this method.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parent</span><span class="p">()</span><span class="o">.</span><span class="n">get_parent</span><span class="p">()</span><span class="o">.</span><span class="n">get_parent</span><span class="p">()</span><span class="o">.</span><span class="n">get_parent</span><span class="p">()</span>
+        <span class="n">_prompt</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;You are about to delete Hazard </span><span class="si">{0}</span><span class="s2"> and all &quot;</span>
+                    <span class="s2">&quot;data associated with it.  Is this really what &quot;</span>
+                    <span class="s2">&quot;you want to do?&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span><span class="p">)</span>
+        <span class="n">_dialog</span> <span class="o">=</span> <span class="n">RAMSTKMessageDialog</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">_parent</span><span class="p">)</span>
+        <span class="n">_dialog</span><span class="o">.</span><span class="n">do_set_message</span><span class="p">(</span><span class="n">_prompt</span><span class="p">)</span>
+        <span class="n">_dialog</span><span class="o">.</span><span class="n">do_set_message_type</span><span class="p">(</span><span class="s1">&#39;question&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">_dialog</span><span class="o">.</span><span class="n">do_run</span><span class="p">()</span> <span class="o">==</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">YES</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cursor_busy</span><span class="p">()</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;request_delete_hazard&#39;</span><span class="p">,</span>
+                <span class="n">node_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">_dialog</span><span class="o">.</span><span class="n">do_destroy</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_do_request_calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__button</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ToolButton</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Request to calculate the HazOps HRI.</span>
+
+<span class="sd">        :param __button: the Gtk.ToolButton() that called this method.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_set_cursor_busy</span><span class="p">()</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="s1">&#39;request_calculate_fha&#39;</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_set_record_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the record ID when a hazard is selected.</span>
+
+<span class="sd">        :param attributes: the hazard dict for the selected hazard ID.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_id</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;hazard_id&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_on_select_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the parent ID when a function is selected.</span>
+
+<span class="sd">        :param attributes: the function dict for the selected function ID.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parent_id</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;function_id&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__make_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Build the user interface for the Function Hazard Analysis tab.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">make_tab_label</span><span class="p">(</span>
+            <span class="n">tablabel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tablabel</span><span class="p">,</span>
+            <span class="n">tooltip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tabtooltip</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">make_toolbuttons</span><span class="p">(</span>
+            <span class="n">icons</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_icons</span><span class="p">,</span>
+            <span class="n">tooltips</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_tooltips</span><span class="p">,</span>
+            <span class="n">callbacks</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lst_callbacks</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_embed_treeview_panel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pnlPanel</span><span class="o">.</span><span class="n">do_set_callbacks</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pnlPanel</span><span class="o">.</span><span class="n">do_load_severity</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_SEVERITY</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pnlPanel</span><span class="o">.</span><span class="n">do_load_hazards</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_HAZARDS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pnlPanel</span><span class="o">.</span><span class="n">do_load_probability</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_FAILURE_PROBABILITY</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

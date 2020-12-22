@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.function package &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ramstk.views.gtk3.hardware package" href="ramstk.views.gtk3.hardware.html" />
+    <link rel="prev" title="ramstk.views.gtk3.fmea package" href="ramstk.views.gtk3.fmea.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../contributing.html" >Contributing</a> &#187;</li>
+          <li><a href="modules.html" >ramstk</a> &#187;</li>
+          <li><a href="ramstk.html" >ramstk package</a> &#187;</li>
+          <li><a href="ramstk.views.html" >ramstk.views package</a> &#187;</li>
+          <li><a href="ramstk.views.gtk3.html" accesskey="U">ramstk.views.gtk3 package</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="ramstk-views-gtk3-function-package">
+<h1>ramstk.views.gtk3.function package<a class="headerlink" href="#ramstk-views-gtk3-function-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-ramstk.views.gtk3.function.listview">
+<span id="ramstk-views-gtk3-function-listview-module"></span><h2>ramstk.views.gtk3.function.listview module<a class="headerlink" href="#module-ramstk.views.gtk3.function.listview" title="Permalink to this headline">¶</a></h2>
+<p>The RAMSTK Function List View Module.</p>
+<dl class="py class">
+<dt id="ramstk.views.gtk3.function.listview.FunctionHardware">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.function.listview.</code><code class="sig-name descname">FunctionHardware</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">configuration</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.configuration.RAMSTKUserConfiguration" title="ramstk.configuration.RAMSTKUserConfiguration">ramstk.configuration.RAMSTKUserConfiguration</a></span></em>, <em class="sig-param"><span class="n">logger</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.logger.RAMSTKLogManager" title="ramstk.logger.RAMSTKLogManager">ramstk.logger.RAMSTKLogManager</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/views/gtk3/function/listview.html#FunctionHardware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.function.listview.FunctionHardware" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKListView" title="ramstk.views.gtk3.widgets.baseview.RAMSTKListView"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.widgets.baseview.RAMSTKListView</span></code></a></p>
+<p>Display all the Function::Hardware matrix for the selected Revision.</p>
+<p>The attributes of the Function::Hardware Matrix View are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_module</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – the name of the module.</p></li>
+<li><p><strong>_lst_callbacks</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the list of callback methods for the view’s
+toolbar buttons and pop-up menu.  The methods are listed in the order
+they appear on the toolbar and pop-up menu.</p></li>
+<li><p><strong>_lst_icons</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the list of icons for the view’s toolbar buttons
+and pop-up menu.  The icons are listed in the order they appear on the
+toolbar and pop-up menu.</p></li>
+<li><p><strong>_lst_mnu_labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the list of labels for the view’s pop-up
+menu.  The labels are listed in the order they appear in the menu.</p></li>
+<li><p><strong>_lst_tooltips</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the list of tooltips for the view’s
+toolbar buttons and pop-up menu.  The tooltips are listed in the
+order they appear on the toolbar or pop-up menu.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.views.gtk3.function.moduleview">
+<span id="ramstk-views-gtk3-function-moduleview-module"></span><h2>ramstk.views.gtk3.function.moduleview module<a class="headerlink" href="#module-ramstk.views.gtk3.function.moduleview" title="Permalink to this headline">¶</a></h2>
+<p>RAMSTK Function GTK3 module view.</p>
+<dl class="py class">
+<dt id="ramstk.views.gtk3.function.moduleview.FunctionPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.function.moduleview.</code><code class="sig-name descname">FunctionPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/function/moduleview.html#FunctionPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.function.moduleview.FunctionPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel" title="ramstk.views.gtk3.widgets.panel.RAMSTKPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.widgets.panel.RAMSTKPanel</span></code></a></p>
+<p>Panel to display hierarchy of functions.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.function.moduleview.ModuleView">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.function.moduleview.</code><code class="sig-name descname">ModuleView</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">configuration</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.configuration.RAMSTKUserConfiguration" title="ramstk.configuration.RAMSTKUserConfiguration">ramstk.configuration.RAMSTKUserConfiguration</a></span></em>, <em class="sig-param"><span class="n">logger</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.logger.RAMSTKLogManager" title="ramstk.logger.RAMSTKLogManager">ramstk.logger.RAMSTKLogManager</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/views/gtk3/function/moduleview.html#ModuleView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.function.moduleview.ModuleView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKModuleView" title="ramstk.views.gtk3.widgets.baseview.RAMSTKModuleView"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.widgets.baseview.RAMSTKModuleView</span></code></a></p>
+<p>Display Function attribute data in the RAMSTK Module Book.</p>
+<p>The Function Module View displays all the Functions associated with the
+connected RAMSTK Program in a flat list.  The attributes of a Function
+Module View are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_module</strong> – the name of the module.</p></li>
+<li><p><strong>_lst_mnu_labels</strong> – the list of labels for the view’s pop-up
+menu.  The labels are listed in the order they appear in the menu.</p></li>
+<li><p><strong>_lst_tooltips</strong> – the list of tooltips for the view’s
+toolbar buttons and pop-up menu.  The tooltips are listed in the
+order they appear on the toolbar or pop-up menu.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ramstk.views.gtk3.function.moduleview.ModuleView.do_request_delete">
+<code class="sig-name descname">do_request_delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_ModuleView__button</span><span class="p">:</span> <span class="n">gi.overrides.Gtk.ToolButton</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/function/moduleview.html#ModuleView.do_request_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.function.moduleview.ModuleView.do_request_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request to delete selected record from the RAMSTKFunction table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>__button</strong> – the Gtk.ToolButton() that called this method.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.views.gtk3.function.workview">
+<span id="ramstk-views-gtk3-function-workview-module"></span><h2>ramstk.views.gtk3.function.workview module<a class="headerlink" href="#module-ramstk.views.gtk3.function.workview" title="Permalink to this headline">¶</a></h2>
+<p>The RAMSTK GTK3 Function Work View.</p>
+<dl class="py class">
+<dt id="ramstk.views.gtk3.function.workview.GeneralData">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.function.workview.</code><code class="sig-name descname">GeneralData</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">configuration</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.configuration.RAMSTKUserConfiguration" title="ramstk.configuration.RAMSTKUserConfiguration">ramstk.configuration.RAMSTKUserConfiguration</a></span></em>, <em class="sig-param"><span class="n">logger</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.logger.RAMSTKLogManager" title="ramstk.logger.RAMSTKLogManager">ramstk.logger.RAMSTKLogManager</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/views/gtk3/function/workview.html#GeneralData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.function.workview.GeneralData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKWorkView" title="ramstk.views.gtk3.widgets.baseview.RAMSTKWorkView"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.widgets.baseview.RAMSTKWorkView</span></code></a></p>
+<p>Display general Function attribute data in the RAMSTK Work Book.</p>
+<p>The Function Work View displays all the general data attributes for the
+selected Function. The attributes of a Function General Data Work View are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_module</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – the name of the module.</p></li>
+<li><p><strong>_tablabel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – the text to display on the tab’s label.</p></li>
+<li><p><strong>_tabtooltip</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – the text to display as the tab’s tooltip.</p></li>
+<li><p><strong>_lst_callbacks</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the list of callback methods for the view’s
+toolbar buttons and pop-up menu.  The methods are listed in the order
+they appear on the toolbar and pop-up menu.</p></li>
+<li><p><strong>_lst_icons</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the list of icons for the view’s toolbar buttons
+and pop-up menu.  The icons are listed in the order they appear on the
+toolbar and pop-up menu.</p></li>
+<li><p><strong>_lst_mnu_labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the list of labels for the view’s pop-up
+menu.  The labels are listed in the order they appear in the menu.</p></li>
+<li><p><strong>_lst_tooltips</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the list of tooltips for the view’s
+toolbar buttons and pop-up menu.  The tooltips are listed in the
+order they appear on the toolbar or pop-up menu.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="ramstk.views.gtk3.function.workview.GeneralData.do_request_delete">
+<code class="sig-name descname">do_request_delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_GeneralData__button</span><span class="p">:</span> <span class="n">gi.overrides.Gtk.ToolButton</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/function/workview.html#GeneralData.do_request_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.function.workview.GeneralData.do_request_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request to delete selected record from the RAMSTKFunction table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>__button</strong> – the Gtk.ToolButton() that called this method.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.function.workview.GeneralDataPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.function.workview.</code><code class="sig-name descname">GeneralDataPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/function/workview.html#GeneralDataPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.function.workview.GeneralDataPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel" title="ramstk.views.gtk3.widgets.panel.RAMSTKPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.widgets.panel.RAMSTKPanel</span></code></a></p>
+<p>The panel to display general data about the selected Function.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.views.gtk3.function">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ramstk.views.gtk3.function" title="Permalink to this headline">¶</a></h2>
+<p>The RAMSTK GTK3 revision package.</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">ramstk.views.gtk3.function package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.function.listview">ramstk.views.gtk3.function.listview module</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.function.moduleview">ramstk.views.gtk3.function.moduleview module</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.function.workview">ramstk.views.gtk3.function.workview module</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.function">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ramstk.views.gtk3.fmea.html"
+                        title="previous chapter">ramstk.views.gtk3.fmea package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ramstk.views.gtk3.hardware.html"
+                        title="next chapter">ramstk.views.gtk3.hardware package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/ramstk.views.gtk3.function.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ramstk.views.gtk3.hardware.html" title="ramstk.views.gtk3.hardware package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ramstk.views.gtk3.fmea.html" title="ramstk.views.gtk3.fmea package"
+             accesskey="P">previous</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

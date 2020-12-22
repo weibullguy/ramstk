@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Revision Module &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Usage Profile" href="usage_profile.html" />
+    <link rel="prev" title="RAMSTK Work Stream Modules" href="modules.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../usage.html" >&lt;no title&gt;</a> &#187;</li>
+          <li><a href="index.html" >RAMSTK User Guide</a> &#187;</li>
+          <li><a href="modules.html" accesskey="U">RAMSTK Work Stream Modules</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="revision-module">
+<h1>Revision Module<a class="headerlink" href="#revision-module" title="Permalink to this headline">¶</a></h1>
+<p>The Revision module is the only <cite>RAMSTK</cite> module <strong>required</strong> to be used.  All
+other <cite>RAMSTK</cite> modules are optional and are relative to the Revision module.  A
+Revision could be used to represent many things depending on your needs.  A
+Revision could represent:</p>
+<ul class="simple">
+<li><p>Model Year</p></li>
+<li><p>Configuration</p></li>
+<li><p>Variant</p></li>
+</ul>
+<p>It’s certainly possible to have one <cite>RAMSTK</cite> Program database for each model
+year, configuration, variant, etc. in which case there would only be one
+Revision in each database.  Regardless of how you choose to structure your
+work flow, a Revision represents a collection of work streams and their data
+specific to that Revision.</p>
+<div class="section" id="module-book">
+<h2>Module Book<a class="headerlink" href="#module-book" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-default">
+<img alt="../_images/revision_module_book.png" src="../_images/revision_module_book.png" />
+</div>
+<p>When the Revision tab is selected in the Module Book, a flat list of all the
+Revisions associated with the open RAMSTK Program database is displayed.  The
+attributes displayed for each Revision are determined by the settings in the
+<a class="reference internal" href="overview.html#sec-ramstk-user-configuration"><span class="std std-ref">User Configuration</span></a> file.  The following attributes are
+available for display in the Revision tab of the Module Book.</p>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text"><strong>Revision Attributes Available to Module Book</strong></span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 77%" />
+<col style="width: 23%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Editable</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Revision ID</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Predicted Availability</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>Mission Availability</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Total Cost</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>Active Failure Rate</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Dormant Failure Rate</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>Mission Failure Rate</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Predicted Failure Rate</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>Software Failure Rate</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mean Maintenance Time</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>Mean Corrective Maintenance Time</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mean Predictive Maintenance Time</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>Mission MTBF</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Predicted MTBF</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>Mean Time to Repair</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Revision Name</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>Mission Reliability</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Predicted Reliability</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>Remarks</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>Revision Code</p></td>
+<td><p>Yes</p></td>
+</tr>
+</tbody>
+</table>
+<p>Selecting the Revision you wish to work with from the displayed list will
+load the other work stream modules with their revision-specific data.  This
+will also cause the Revision module Work Book to display the attributes of
+the selected Revision.</p>
+<div class="section" id="adding-and-removing-revisions">
+<h3>Adding and Removing Revisions<a class="headerlink" href="#adding-and-removing-revisions" title="Permalink to this headline">¶</a></h3>
+<p>To add a new Revision to the open <cite>RAMSTK</cite> Program database, press the ‘Add’
+button to the left of the revision list.</p>
+<p>To remove the currently selected Revision from the open <cite>RAMSTK</cite> Program
+database, press the ‘Remove’ button to the left of the revision list.  You
+will be presented with a dialog confirming you want to delete the selected
+Revision and all associated data.  This includes all the revision-specific
+data for every work stream as well.  Confirm your intentions to complete the
+removal.</p>
+</div>
+<div class="section" id="saving-revisions">
+<h3>Saving Revisions<a class="headerlink" href="#saving-revisions" title="Permalink to this headline">¶</a></h3>
+<p>To save changes to the currently selected Revision, press the ‘Save’ button
+to the left of the revision list.  All pending changes are committed to the
+open <cite>RAMSTK</cite> Program database.</p>
+<p>To save changes to all Revisions, press the ‘Save All’ button to the left of
+the revision list.  All pending changes to all Revisions are committed to the
+open <cite>RAMSTK</cite> Program database.</p>
+</div>
+</div>
+<div class="section" id="work-book">
+<h2>Work Book<a class="headerlink" href="#work-book" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-default">
+<img alt="../_images/revision_work_book.png" src="../_images/revision_work_book.png" />
+</div>
+<p>The Revision module Work Book only has a General Data page.  The
+following attributes are displayed in the Revision’s General Data page.</p>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text"><strong>Revision Attributes in the Work Book</strong></span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 57%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Editable</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Name</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>Description</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>Remarks</p></td>
+<td><p>Yes</p></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="id1">
+<h3>Saving Revisions<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>To save changes to the currently selected Revision, press the ‘Save’ button
+to the left of the work space.  All pending changes are committed to the
+open <cite>RAMSTK</cite> Program database.</p>
+<p>To save changes to all Revisions, press the ‘Save All’ button to the left of
+the work space.  All pending changes to all Revisions are committed to the
+open <cite>RAMSTK</cite> Program database.</p>
+</div>
+</div>
+<div class="section" id="list-matrices-book">
+<h2>List &amp; Matrices Book<a class="headerlink" href="#list-matrices-book" title="Permalink to this headline">¶</a></h2>
+<p>There are two lists associated with the Revision work stream.  These are the
+<a class="reference internal" href="usage_profile.html#sec-usage-profile"><span class="std std-ref">Usage Profile</span></a> and <a class="reference internal" href="failure_definition.html#sec-failure-definitions"><span class="std std-ref">Failure Definitions</span></a>.</p>
+<p>There are no matrices associated with the Revision work stream.</p>
+</div>
+<div class="section" id="analyzing-the-revision">
+<h2>Analyzing the Revision<a class="headerlink" href="#analyzing-the-revision" title="Permalink to this headline">¶</a></h2>
+<p>There are no analyses associated with the Revision module.  The RAMS metrics
+displayed with the Revision are the top-level (system) Hardware work stream
+results.</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Revision Module</a><ul>
+<li><a class="reference internal" href="#module-book">Module Book</a><ul>
+<li><a class="reference internal" href="#adding-and-removing-revisions">Adding and Removing Revisions</a></li>
+<li><a class="reference internal" href="#saving-revisions">Saving Revisions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#work-book">Work Book</a><ul>
+<li><a class="reference internal" href="#id1">Saving Revisions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#list-matrices-book">List &amp; Matrices Book</a></li>
+<li><a class="reference internal" href="#analyzing-the-revision">Analyzing the Revision</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="modules.html"
+                        title="previous chapter">RAMSTK Work Stream Modules</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="usage_profile.html"
+                        title="next chapter">Usage Profile</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user/revision.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="usage_profile.html" title="Usage Profile"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="RAMSTK Work Stream Modules"
+             accesskey="P">previous</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

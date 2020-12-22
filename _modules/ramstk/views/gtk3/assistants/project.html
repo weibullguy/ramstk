@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.assistants.project &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.assistants.project</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.views.gtk3.assistants.project.py is part of The RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2020 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;The RAMSTK Open Project Assistant Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.configuration</span> <span class="kn">import</span> <span class="n">RAMSTKUserConfiguration</span>
+<span class="kn">from</span> <span class="nn">ramstk.db.base</span> <span class="kn">import</span> <span class="n">BaseDatabase</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3</span> <span class="kn">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">_</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.widgets.dialog</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RAMSTKDatabaseSelect</span><span class="p">,</span> <span class="n">RAMSTKDialog</span><span class="p">,</span> <span class="n">RAMSTKMessageDialog</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3.widgets.label</span> <span class="kn">import</span> <span class="n">RAMSTKLabel</span>
+
+
+<div class="viewcode-block" id="CreateProject"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.assistants.html#ramstk.views.gtk3.assistants.project.CreateProject">[docs]</a><span class="k">class</span> <span class="nc">CreateProject</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;The class used to create a new RAMSTK Project database.&quot;&quot;&quot;</span>
+
+    <span class="n">RAMSTK_USER_CONFIGURATION</span><span class="p">:</span> <span class="n">RAMSTKUserConfiguration</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__button</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ToolButton</span><span class="p">,</span>
+                 <span class="n">configuration</span><span class="p">:</span> <span class="n">RAMSTKUserConfiguration</span><span class="p">,</span>
+                 <span class="n">parent</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the Create Project Assistant.</span>
+
+<span class="sd">        :param __button: the Gtk.ToolButton() that launched this class.</span>
+<span class="sd">        :param configuration: the RAMSTKUserConfiguration class instance.</span>
+<span class="sd">        :param parent: the parent window associated with the dialog.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">parent</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span> <span class="o">=</span> <span class="n">configuration</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_request_create_project</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_do_confirm_overwrite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Raise dialog to confirm overwriting existing RAMSTK database.</span>
+
+<span class="sd">        :param database: the name of the existing database that is to be</span>
+<span class="sd">            confirmed for overwrite.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_dialog</span> <span class="o">=</span> <span class="n">RAMSTKDialog</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;RAMSTK - Confirm Overwrite&quot;</span><span class="p">),</span>
+                               <span class="n">dlgbuttons</span><span class="o">=</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">STOCK_YES</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">YES</span><span class="p">,</span>
+                                           <span class="n">Gtk</span><span class="o">.</span><span class="n">STOCK_NO</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">NO</span><span class="p">),</span>
+                               <span class="n">dlgparent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="p">)</span>
+
+        <span class="n">_label</span> <span class="o">=</span> <span class="n">RAMSTKLabel</span><span class="p">(</span>
+            <span class="n">_</span><span class="p">(</span><span class="s2">&quot;RAMSTK Program database already exists:&quot;</span>
+              <span class="s2">&quot;</span><span class="se">\n\n\t\t</span><span class="si">{0:s}</span><span class="se">\n\n</span><span class="s2">Overwrite?&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">database</span><span class="p">))</span>
+        <span class="n">_label</span><span class="o">.</span><span class="n">do_set_properties</span><span class="p">(</span><span class="n">width</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">height</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">bold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">_dialog</span><span class="o">.</span><span class="n">vbox</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">_label</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">_dialog</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">_dialog</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="o">==</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">YES</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">[</span>
+                <span class="s1">&#39;database&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">database</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">[</span><span class="s1">&#39;database&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="n">_dialog</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_do_request_create_project</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Request to create a new RAMSTK Project Database.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_database</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">_exists</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">_dialog</span> <span class="o">=</span> <span class="n">RAMSTKDatabaseSelect</span><span class="p">(</span>
+            <span class="n">dlgtitle</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Select RAMSTK Program &quot;</span>
+                      <span class="s2">&quot;Database on the </span><span class="si">{0:s}</span><span class="s2"> Server&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span>
+                          <span class="n">RAMSTK_PROG_INFO</span><span class="p">[</span><span class="s1">&#39;dialect&#39;</span><span class="p">])),</span>
+            <span class="n">dlgparent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="p">,</span>
+            <span class="n">dao</span><span class="o">=</span><span class="n">BaseDatabase</span><span class="p">(),</span>
+            <span class="n">database</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">)</span>
+
+        <span class="n">_database</span><span class="p">,</span> <span class="n">_exists</span> <span class="o">=</span> <span class="n">_dialog</span><span class="o">.</span><span class="n">do_run</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
+        <span class="k">if</span> <span class="n">_exists</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_confirm_overwrite</span><span class="p">(</span><span class="n">_database</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">[</span>
+                <span class="s1">&#39;database&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_database</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">[</span><span class="s1">&#39;database&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;request_create_program&#39;</span><span class="p">,</span>
+                <span class="n">program_db</span><span class="o">=</span><span class="n">BaseDatabase</span><span class="p">(),</span>
+                <span class="n">database</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">)</span>
+
+        <span class="n">_dialog</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="OpenProject"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.assistants.html#ramstk.views.gtk3.assistants.project.OpenProject">[docs]</a><span class="k">class</span> <span class="nc">OpenProject</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Assistant to guide user through process of creating RAMSTK Project.&quot;&quot;&quot;</span>
+
+    <span class="n">RAMSTK_USER_CONFIGURATION</span><span class="p">:</span> <span class="n">RAMSTKUserConfiguration</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__button</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ToolButton</span><span class="p">,</span>
+                 <span class="n">configuration</span><span class="p">:</span> <span class="n">RAMSTKUserConfiguration</span><span class="p">,</span>
+                 <span class="n">parent</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the Create Project Assistant.</span>
+
+<span class="sd">        :param __button: the Gtk.ToolButton() that launched an instance of this</span>
+<span class="sd">            class.</span>
+<span class="sd">        :param configuration: the RAMSTKUserConfiguration class instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">parent</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span> <span class="o">=</span> <span class="n">configuration</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_request_open_project</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_do_request_open_project</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Open or connect to a RAMSTK Program database.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">loaded</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__project_is_open</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_dialog</span> <span class="o">=</span> <span class="n">RAMSTKDatabaseSelect</span><span class="p">(</span>
+                <span class="n">dlgtitle</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Select RAMSTK Program &quot;</span>
+                          <span class="s2">&quot;Database on the </span><span class="si">{0:s}</span><span class="s2"> Server&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                              <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span>
+                              <span class="n">RAMSTK_PROG_INFO</span><span class="p">[</span><span class="s1">&#39;dialect&#39;</span><span class="p">])),</span>
+                <span class="n">dlgparent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="p">,</span>
+                <span class="n">dao</span><span class="o">=</span><span class="n">BaseDatabase</span><span class="p">(),</span>
+                <span class="n">database</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">[</span>
+                <span class="s1">&#39;database&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_dialog</span><span class="o">.</span><span class="n">do_run</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="n">_dialog</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+
+            <span class="n">pub</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span>
+                <span class="s1">&#39;request_open_program&#39;</span><span class="p">,</span>
+                <span class="n">program_db</span><span class="o">=</span><span class="n">BaseDatabase</span><span class="p">(),</span>
+                <span class="n">database</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">RAMSTK_USER_CONFIGURATION</span><span class="o">.</span><span class="n">RAMSTK_PROG_INFO</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__project_is_open</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Raise dialog explaining a project is already open.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_prompt</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;A database is already open.  Only one database can &quot;</span>
+                    <span class="s2">&quot;be open at a time in RAMSTK.  You must close the &quot;</span>
+                    <span class="s2">&quot;currently open RAMSTK database before a new &quot;</span>
+                    <span class="s2">&quot;database can be opened.&quot;</span><span class="p">)</span>
+        <span class="n">_dialog</span> <span class="o">=</span> <span class="n">RAMSTKMessageDialog</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="p">)</span>
+        <span class="n">_dialog</span><span class="o">.</span><span class="n">do_set_message</span><span class="p">(</span><span class="n">_prompt</span><span class="p">)</span>
+        <span class="n">_dialog</span><span class="o">.</span><span class="n">do_set_message_type</span><span class="p">(</span><span class="s1">&#39;information&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">_dialog</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="o">==</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span>
+            <span class="n">_dialog</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

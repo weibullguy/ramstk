@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.logger &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    
+    <script src="../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.logger</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.logger.py is part of The RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2019 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;RAMSTK Logger Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">pubsub</span> <span class="kn">import</span> <span class="n">pub</span>
+
+<span class="n">LOGFORMAT</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span>
+    <span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(name)s</span><span class="s1"> - </span><span class="si">%(lineno)s</span><span class="s1"> : </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="RAMSTKLogManager"><a class="viewcode-back" href="../../api/ramstk.html#ramstk.logger.RAMSTKLogManager">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKLogManager</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Class to manage logging of RAMSTK messages.&quot;&quot;&quot;</span>
+    <span class="n">loggers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an instance of the LogManager.</span>
+
+<span class="sd">        :param log_file: the absolute path to the log file to use with this</span>
+<span class="sd">            log manager.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span> <span class="o">=</span> <span class="n">log_file</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span>
+                      <span class="s1">&#39;fail_connect_program_database&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_delete_environment&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span>
+                      <span class="s1">&#39;fail_delete_failure_definition&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_delete_fmea&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_delete_function&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_delete_hazard&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_delete_mission&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_delete_mission_phase&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_delete_revision&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_insert_action&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_insert_cause&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_insert_control&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_insert_environment&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span>
+                      <span class="s1">&#39;fail_insert_failure_definition&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_insert_mechanism&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_insert_mission&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_insert_mission_phase&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_insert_mode&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_insert_function&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_insert_hazard&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_insert_hardware&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_insert_validation&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_insert_stakeholder&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_insert_revision&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_insert_requirement&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_insert_opload&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_insert_opstress&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_insert_record&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_insert_test_method&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_update_fmea&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_update_function&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_update_hardware&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_update_record&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_update_requirement&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_log_fail_message</span><span class="p">,</span> <span class="s1">&#39;fail_update_revision&#39;</span><span class="p">)</span>
+
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_log_debug</span><span class="p">,</span> <span class="s1">&#39;do_log_debug_msg&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_log_info</span><span class="p">,</span> <span class="s1">&#39;do_log_info_msg&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_log_warning</span><span class="p">,</span> <span class="s1">&#39;do_log_warning_msg&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_log_error</span><span class="p">,</span> <span class="s1">&#39;do_log_error_msg&#39;</span><span class="p">)</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_log_critical</span><span class="p">,</span> <span class="s1">&#39;do_log_critical_msg&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Create a logger for the pypubsub fail_* messages.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_create_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;WARN&quot;</span><span class="p">)</span>
+
+    <span class="c1">#// TODO: Update fail messages to pass error_message</span>
+    <span class="c1">#//</span>
+    <span class="c1">#// The logger._do_log_fail_message() method takes the argument</span>
+    <span class="c1">#// error_message.  Several data managers broadcast error_msg instead.</span>
+    <span class="c1">#// These need to be updated so all fail_XX_XX messages broadcast an</span>
+    <span class="c1">#// error_message.</span>
+    <span class="k">def</span> <span class="nf">_do_log_fail_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Log PyPubSub broadcast fail messages.</span>
+
+<span class="sd">        :param error_message: the error message that was part of the</span>
+<span class="sd">            broadcast package.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">[</span><span class="vm">__name__</span><span class="p">]</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">error_message</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_console_handler</span><span class="p">(</span><span class="n">log_level</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">logging</span><span class="o">.</span><span class="n">Handler</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create the log handler for console output.</span>
+
+<span class="sd">        :return: _c_handler</span>
+<span class="sd">        :rtype: :class:`logging.Handler`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_c_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+        <span class="n">_c_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span>
+        <span class="n">_c_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">LOGFORMAT</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_c_handler</span>
+
+    <span class="k">def</span> <span class="nf">_get_file_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_level</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">logging</span><span class="o">.</span><span class="n">Handler</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create the log handler for file output.</span>
+
+<span class="sd">        :return: _f_handler</span>
+<span class="sd">        :rtype: :class:`logging.Handler`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_f_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_file</span><span class="p">)</span>
+        <span class="n">_f_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span>
+        <span class="n">_f_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">LOGFORMAT</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_f_handler</span>
+
+<div class="viewcode-block" id="RAMSTKLogManager.do_create_logger"><a class="viewcode-back" href="../../api/ramstk.html#ramstk.logger.RAMSTKLogManager.do_create_logger">[docs]</a>    <span class="k">def</span> <span class="nf">do_create_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                         <span class="n">logger_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                         <span class="n">log_level</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                         <span class="n">to_tty</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create a logger instance.</span>
+
+<span class="sd">        :param logger_name: the name of the logger used in the application.</span>
+<span class="sd">        :param log_level: the level of messages to log.</span>
+<span class="sd">        :param to_tty: boolean indicating whether this logger will</span>
+<span class="sd">            also dump messages to the terminal.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logger_name</span><span class="p">)</span>
+        <span class="n">_logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span>
+
+        <span class="n">_logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_file_handler</span><span class="p">(</span><span class="n">log_level</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">to_tty</span><span class="p">:</span>
+            <span class="n">_logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_console_handler</span><span class="p">(</span><span class="n">log_level</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">[</span><span class="n">logger_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_logger</span></div>
+
+<div class="viewcode-block" id="RAMSTKLogManager.do_log_debug"><a class="viewcode-back" href="../../api/ramstk.html#ramstk.logger.RAMSTKLogManager.do_log_debug">[docs]</a>    <span class="k">def</span> <span class="nf">do_log_debug</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Log DEBUG level messages.</span>
+
+<span class="sd">        :param logger_name: the name of the logger used in the application.</span>
+<span class="sd">        :param message: the message to log.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">[</span><span class="n">logger_name</span><span class="p">]</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">[</span><span class="n">logger_name</span><span class="p">]</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKLogManager.do_log_exception"><a class="viewcode-back" href="../../api/ramstk.html#ramstk.logger.RAMSTKLogManager.do_log_exception">[docs]</a>    <span class="k">def</span> <span class="nf">do_log_exception</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">exception</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Log EXCEPTIONS.</span>
+
+<span class="sd">        :param logger_name: the name of the logger used in the application.</span>
+<span class="sd">        :param exception: the exception to log.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">[</span><span class="n">logger_name</span><span class="p">]</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">[</span><span class="n">logger_name</span><span class="p">]</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">exception</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKLogManager.do_log_info"><a class="viewcode-back" href="../../api/ramstk.html#ramstk.logger.RAMSTKLogManager.do_log_info">[docs]</a>    <span class="k">def</span> <span class="nf">do_log_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Log INFO level messages.</span>
+
+<span class="sd">        :param logger_name: the name of the logger used in the application.</span>
+<span class="sd">        :param message: the message to log.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">[</span><span class="n">logger_name</span><span class="p">]</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">[</span><span class="n">logger_name</span><span class="p">]</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKLogManager.do_log_warning"><a class="viewcode-back" href="../../api/ramstk.html#ramstk.logger.RAMSTKLogManager.do_log_warning">[docs]</a>    <span class="k">def</span> <span class="nf">do_log_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Log WARN level messages.</span>
+
+<span class="sd">        :param logger_name: the name of the logger used in the application.</span>
+<span class="sd">        :param message: the message to log.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">[</span><span class="n">logger_name</span><span class="p">]</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">[</span><span class="n">logger_name</span><span class="p">]</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKLogManager.do_log_error"><a class="viewcode-back" href="../../api/ramstk.html#ramstk.logger.RAMSTKLogManager.do_log_error">[docs]</a>    <span class="k">def</span> <span class="nf">do_log_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Log ERROR level messages.</span>
+
+<span class="sd">        :param logger_name: the name of the logger used in the application.</span>
+<span class="sd">        :param message: the message to log.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">[</span><span class="n">logger_name</span><span class="p">]</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">[</span><span class="n">logger_name</span><span class="p">]</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RAMSTKLogManager.do_log_critical"><a class="viewcode-back" href="../../api/ramstk.html#ramstk.logger.RAMSTKLogManager.do_log_critical">[docs]</a>    <span class="k">def</span> <span class="nf">do_log_critical</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Log CRITICAL level messages.</span>
+
+<span class="sd">        :param logger_name: the name of the logger used in the application.</span>
+<span class="sd">        :param message: the message to log.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">[</span><span class="n">logger_name</span><span class="p">]</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

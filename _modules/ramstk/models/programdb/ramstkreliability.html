@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.models.programdb.ramstkreliability &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.models.programdb.ramstkreliability</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.data.storage.RAMSTKReliability.py is part of The RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2017 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;RAMSTKReliability Table Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">relationship</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.db</span> <span class="kn">import</span> <span class="n">RAMSTK_BASE</span>
+<span class="kn">from</span> <span class="nn">ramstk.models</span> <span class="kn">import</span> <span class="n">RAMSTKBaseTable</span>
+
+
+<div class="viewcode-block" id="RAMSTKReliability"><a class="viewcode-back" href="../../../../api/ramstk.models.programdb.html#ramstk.models.programdb.ramstkreliability.RAMSTKReliability">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKReliability</span><span class="p">(</span><span class="n">RAMSTK_BASE</span><span class="p">,</span> <span class="n">RAMSTKBaseTable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class to represent ramstk_reliability table in RAMSTK Program database.</span>
+
+<span class="sd">    This table shares a One-to-One relationship with ramstk_hardware.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__defaults__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;add_adj_factor&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;availability_logistics&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s1">&#39;availability_mission&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s1">&#39;avail_log_variance&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;avail_mis_variance&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;failure_distribution_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;hazard_rate_dormant&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;hazard_rate_logistics&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;hazard_rate_method_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;hazard_rate_mission&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;hazard_rate_model&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;hazard_rate_percent&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;hazard_rate_software&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;hazard_rate_specified&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;hazard_rate_type_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;hr_active_variance&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;hr_dormant_variance&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;hr_logistics_variance&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;hr_mission_variance&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;hr_specified_variance&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;lambda_b&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;location_parameter&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;mtbf_logistics&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;mtbf_mission&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;mtbf_specified&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;mtbf_logistics_variance&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;mtbf_mission_variance&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;mtbf_specified_variance&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;mult_adj_factor&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s1">&#39;quality_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;reliability_goal&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;reliability_goal_measure_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;reliability_logistics&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s1">&#39;reliability_mission&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s1">&#39;reliability_log_variance&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;reliability_miss_variance&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;scale_parameter&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;shape_parameter&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;survival_analysis_id&#39;</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;ramstk_reliability&#39;</span>
+    <span class="n">__table_args__</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;extend_existing&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+
+    <span class="n">hardware_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_hardware_id&#39;</span><span class="p">,</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;ramstk_hardware.fld_hardware_id&#39;</span><span class="p">),</span>
+        <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">add_adj_factor</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_add_adj_factor&#39;</span><span class="p">,</span>
+                            <span class="n">Float</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;add_adj_factor&#39;</span><span class="p">])</span>
+    <span class="n">availability_logistics</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_availability_logistics&#39;</span><span class="p">,</span>
+        <span class="n">Float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;availability_logistics&#39;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">availability_mission</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_availability_mission&#39;</span><span class="p">,</span>
+        <span class="n">Float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;availability_mission&#39;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">avail_log_variance</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_avail_log_variance&#39;</span><span class="p">,</span>
+                                <span class="n">Float</span><span class="p">,</span>
+                                <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;avail_log_variance&#39;</span><span class="p">])</span>
+    <span class="n">avail_mis_variance</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_avail_mis_variance&#39;</span><span class="p">,</span>
+                                <span class="n">Float</span><span class="p">,</span>
+                                <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;avail_mis_variance&#39;</span><span class="p">])</span>
+    <span class="n">failure_distribution_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_failure_distribution_id&#39;</span><span class="p">,</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;failure_distribution_id&#39;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">hazard_rate_active</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_hazard_rate_active&#39;</span><span class="p">,</span>
+                                <span class="n">Float</span><span class="p">,</span>
+                                <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">])</span>
+    <span class="n">hazard_rate_dormant</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_hazard_rate_dormant&#39;</span><span class="p">,</span>
+                                 <span class="n">Float</span><span class="p">,</span>
+                                 <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;hazard_rate_dormant&#39;</span><span class="p">])</span>
+    <span class="n">hazard_rate_logistics</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_hazard_rate_logistics&#39;</span><span class="p">,</span>
+        <span class="n">Float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;hazard_rate_logistics&#39;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">hazard_rate_method_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_hazard_rate_method_id&#39;</span><span class="p">,</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;hazard_rate_method_id&#39;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">hazard_rate_mission</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_hazard_rate_mission&#39;</span><span class="p">,</span>
+                                 <span class="n">Float</span><span class="p">,</span>
+                                 <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;hazard_rate_mission&#39;</span><span class="p">])</span>
+    <span class="n">hazard_rate_model</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_hazard_rate_model&#39;</span><span class="p">,</span>
+        <span class="n">String</span><span class="p">(</span><span class="mi">512</span><span class="p">),</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;hazard_rate_model&#39;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">hazard_rate_percent</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_hazard_rate_percent&#39;</span><span class="p">,</span>
+                                 <span class="n">Float</span><span class="p">,</span>
+                                 <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;hazard_rate_percent&#39;</span><span class="p">])</span>
+    <span class="n">hazard_rate_software</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_hazard_rate_software&#39;</span><span class="p">,</span>
+        <span class="n">Float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;hazard_rate_software&#39;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">hazard_rate_specified</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_hazard_rate_specified&#39;</span><span class="p">,</span>
+        <span class="n">Float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;hazard_rate_specified&#39;</span><span class="p">])</span>
+    <span class="n">hazard_rate_type_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_hazard_rate_type_id&#39;</span><span class="p">,</span>
+                                 <span class="n">Integer</span><span class="p">,</span>
+                                 <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;hazard_rate_type_id&#39;</span><span class="p">])</span>
+    <span class="n">hr_active_variance</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_hr_active_variance&#39;</span><span class="p">,</span>
+                                <span class="n">Float</span><span class="p">,</span>
+                                <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;hr_active_variance&#39;</span><span class="p">])</span>
+    <span class="n">hr_dormant_variance</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_hr_dormant_variance&#39;</span><span class="p">,</span>
+                                 <span class="n">Float</span><span class="p">,</span>
+                                 <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;hr_dormant_variance&#39;</span><span class="p">])</span>
+    <span class="n">hr_logistics_variance</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_hr_log_variance&#39;</span><span class="p">,</span>
+        <span class="n">Float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;hr_logistics_variance&#39;</span><span class="p">])</span>
+    <span class="n">hr_mission_variance</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_hr_mis_variance&#39;</span><span class="p">,</span>
+                                 <span class="n">Float</span><span class="p">,</span>
+                                 <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;hr_mission_variance&#39;</span><span class="p">])</span>
+    <span class="n">hr_specified_variance</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_hr_spec_variance&#39;</span><span class="p">,</span>
+        <span class="n">Float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;hr_specified_variance&#39;</span><span class="p">])</span>
+    <span class="n">lambda_b</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_lambda_b&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;lambda_b&#39;</span><span class="p">])</span>
+    <span class="n">location_parameter</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_location_parameter&#39;</span><span class="p">,</span>
+                                <span class="n">Float</span><span class="p">,</span>
+                                <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;location_parameter&#39;</span><span class="p">])</span>
+    <span class="n">mtbf_logistics</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_mtbf_logistics&#39;</span><span class="p">,</span>
+                            <span class="n">Float</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;mtbf_logistics&#39;</span><span class="p">])</span>
+    <span class="n">mtbf_mission</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_mtbf_mission&#39;</span><span class="p">,</span>
+                          <span class="n">Float</span><span class="p">,</span>
+                          <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;mtbf_mission&#39;</span><span class="p">])</span>
+    <span class="n">mtbf_specified</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_mtbf_specified&#39;</span><span class="p">,</span>
+                            <span class="n">Float</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;mtbf_specified&#39;</span><span class="p">])</span>
+    <span class="n">mtbf_logistics_variance</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_mtbf_log_variance&#39;</span><span class="p">,</span>
+        <span class="n">Float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;mtbf_logistics_variance&#39;</span><span class="p">])</span>
+    <span class="n">mtbf_mission_variance</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_mtbf_mis_variance&#39;</span><span class="p">,</span>
+        <span class="n">Float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;mtbf_mission_variance&#39;</span><span class="p">])</span>
+    <span class="n">mtbf_specified_variance</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_mtbf_spec_variance&#39;</span><span class="p">,</span>
+        <span class="n">Float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;mtbf_specified_variance&#39;</span><span class="p">])</span>
+    <span class="n">mult_adj_factor</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_mult_adj_factor&#39;</span><span class="p">,</span>
+                             <span class="n">Float</span><span class="p">,</span>
+                             <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;mult_adj_factor&#39;</span><span class="p">])</span>
+    <span class="n">quality_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_quality_id&#39;</span><span class="p">,</span>
+                        <span class="n">Integer</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;quality_id&#39;</span><span class="p">])</span>
+    <span class="n">reliability_goal</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_reliability_goal&#39;</span><span class="p">,</span>
+                              <span class="n">Float</span><span class="p">,</span>
+                              <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;reliability_goal&#39;</span><span class="p">])</span>
+    <span class="n">reliability_goal_measure_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_reliability_goal_measure_id&#39;</span><span class="p">,</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;reliability_goal_measure_id&#39;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">reliability_logistics</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_reliability_logistics&#39;</span><span class="p">,</span>
+        <span class="n">Float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;reliability_logistics&#39;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">reliability_mission</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_reliability_mission&#39;</span><span class="p">,</span>
+                                 <span class="n">Float</span><span class="p">,</span>
+                                 <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;reliability_mission&#39;</span><span class="p">])</span>
+    <span class="n">reliability_log_variance</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_reliability_log_variance&#39;</span><span class="p">,</span>
+        <span class="n">Float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;reliability_log_variance&#39;</span><span class="p">])</span>
+    <span class="n">reliability_miss_variance</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_reliability_mis_variance&#39;</span><span class="p">,</span>
+        <span class="n">Float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;reliability_miss_variance&#39;</span><span class="p">])</span>
+    <span class="n">scale_parameter</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_scale_parameter&#39;</span><span class="p">,</span>
+                             <span class="n">Float</span><span class="p">,</span>
+                             <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;scale_parameter&#39;</span><span class="p">])</span>
+    <span class="n">shape_parameter</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_shape_parameter&#39;</span><span class="p">,</span>
+                             <span class="n">Float</span><span class="p">,</span>
+                             <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;shape_parameter&#39;</span><span class="p">])</span>
+    <span class="n">survival_analysis_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_survival_analysis_id&#39;</span><span class="p">,</span>
+                                  <span class="n">Integer</span><span class="p">,</span>
+                                  <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;survival_analysis_id&#39;</span><span class="p">])</span>
+
+    <span class="c1"># Define the relationships to other tables in the RAMSTK Program database.</span>
+    <span class="n">hardware</span><span class="p">:</span> <span class="n">relationship</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span>
+        <span class="s1">&#39;RAMSTKHardware&#39;</span><span class="p">,</span>
+        <span class="n">back_populates</span><span class="o">=</span><span class="s1">&#39;reliability&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="RAMSTKReliability.get_attributes"><a class="viewcode-back" href="../../../../api/ramstk.models.programdb.html#ramstk.models.programdb.ramstkreliability.RAMSTKReliability.get_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve RAMSTKReliability attributes from RAMSTK Program database.</span>
+
+<span class="sd">        :return: {hardware_id, add_adj_factor, availability_logistics,</span>
+<span class="sd">                  availability_mission, avail_log_variance, avail_mis_variance,</span>
+<span class="sd">                  failure_distribution_id, hazard_rate_active,</span>
+<span class="sd">                  hazard_rate_dormant, hazard_rate_logistics,</span>
+<span class="sd">                  hazard_rate_method_id, hazard_rate_mission,</span>
+<span class="sd">                  hazard_rate_model, hazard_rate_percent, hazard_rate_software,</span>
+<span class="sd">                  hazard_rate_specified, hazard_rate_type_id,</span>
+<span class="sd">                  hr_active_variance, hr_dormant_variance,</span>
+<span class="sd">                  hr_logistics_variance, hr_mission_variance,</span>
+<span class="sd">                  hr_specified_variance, location_parameter, mtbf_logistics,</span>
+<span class="sd">                  mtbf_mission, mtbf_specified, mtbf_log_variance,</span>
+<span class="sd">                  mtbf_miss_variance, mtbf_spec_variance, mult_adj_factor,</span>
+<span class="sd">                  quality_id, reliability_goal, reliability_goal_measure_id,</span>
+<span class="sd">                  reliability_logistics, reliability_mission,</span>
+<span class="sd">                  reliability_log_variance, reliability_miss_variance,</span>
+<span class="sd">                  scale_parameter, shape_parameter, survival_analysis_id,</span>
+<span class="sd">                  lambda_b} pairs.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_attributes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;hardware_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hardware_id</span><span class="p">,</span>
+            <span class="s1">&#39;add_adj_factor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_adj_factor</span><span class="p">,</span>
+            <span class="s1">&#39;availability_logistics&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">availability_logistics</span><span class="p">,</span>
+            <span class="s1">&#39;availability_mission&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">availability_mission</span><span class="p">,</span>
+            <span class="s1">&#39;avail_log_variance&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">avail_log_variance</span><span class="p">,</span>
+            <span class="s1">&#39;avail_mis_variance&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">avail_mis_variance</span><span class="p">,</span>
+            <span class="s1">&#39;failure_distribution_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">failure_distribution_id</span><span class="p">,</span>
+            <span class="s1">&#39;hazard_rate_active&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hazard_rate_active</span><span class="p">,</span>
+            <span class="s1">&#39;hazard_rate_dormant&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hazard_rate_dormant</span><span class="p">,</span>
+            <span class="s1">&#39;hazard_rate_logistics&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hazard_rate_logistics</span><span class="p">,</span>
+            <span class="s1">&#39;hazard_rate_method_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hazard_rate_method_id</span><span class="p">,</span>
+            <span class="s1">&#39;hazard_rate_mission&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hazard_rate_mission</span><span class="p">,</span>
+            <span class="s1">&#39;hazard_rate_model&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hazard_rate_model</span><span class="p">,</span>
+            <span class="s1">&#39;hazard_rate_percent&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hazard_rate_percent</span><span class="p">,</span>
+            <span class="s1">&#39;hazard_rate_software&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hazard_rate_software</span><span class="p">,</span>
+            <span class="s1">&#39;hazard_rate_specified&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hazard_rate_specified</span><span class="p">,</span>
+            <span class="s1">&#39;hazard_rate_type_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hazard_rate_type_id</span><span class="p">,</span>
+            <span class="s1">&#39;hr_active_variance&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hr_active_variance</span><span class="p">,</span>
+            <span class="s1">&#39;hr_dormant_variance&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hr_dormant_variance</span><span class="p">,</span>
+            <span class="s1">&#39;hr_logistics_variance&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hr_logistics_variance</span><span class="p">,</span>
+            <span class="s1">&#39;hr_mission_variance&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hr_mission_variance</span><span class="p">,</span>
+            <span class="s1">&#39;hr_specified_variance&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hr_specified_variance</span><span class="p">,</span>
+            <span class="s1">&#39;lambda_b&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda_b</span><span class="p">,</span>
+            <span class="s1">&#39;location_parameter&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">location_parameter</span><span class="p">,</span>
+            <span class="s1">&#39;mtbf_logistics&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtbf_logistics</span><span class="p">,</span>
+            <span class="s1">&#39;mtbf_mission&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtbf_mission</span><span class="p">,</span>
+            <span class="s1">&#39;mtbf_specified&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtbf_specified</span><span class="p">,</span>
+            <span class="s1">&#39;mtbf_logistics_variance&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtbf_logistics_variance</span><span class="p">,</span>
+            <span class="s1">&#39;mtbf_mission_variance&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtbf_mission_variance</span><span class="p">,</span>
+            <span class="s1">&#39;mtbf_specified_variance&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtbf_specified_variance</span><span class="p">,</span>
+            <span class="s1">&#39;mult_adj_factor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mult_adj_factor</span><span class="p">,</span>
+            <span class="s1">&#39;quality_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality_id</span><span class="p">,</span>
+            <span class="s1">&#39;reliability_goal&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reliability_goal</span><span class="p">,</span>
+            <span class="s1">&#39;reliability_goal_measure_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reliability_goal_measure_id</span><span class="p">,</span>
+            <span class="s1">&#39;reliability_logistics&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reliability_logistics</span><span class="p">,</span>
+            <span class="s1">&#39;reliability_mission&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reliability_mission</span><span class="p">,</span>
+            <span class="s1">&#39;reliability_log_variance&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reliability_log_variance</span><span class="p">,</span>
+            <span class="s1">&#39;reliability_miss_variance&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reliability_miss_variance</span><span class="p">,</span>
+            <span class="s1">&#39;scale_parameter&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_parameter</span><span class="p">,</span>
+            <span class="s1">&#39;shape_parameter&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape_parameter</span><span class="p">,</span>
+            <span class="s1">&#39;survival_analysis_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">survival_analysis_id</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">_attributes</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

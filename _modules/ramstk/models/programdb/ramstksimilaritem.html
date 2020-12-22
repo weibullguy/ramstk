@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.models.programdb.ramstksimilaritem &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.models.programdb.ramstksimilaritem</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.data.storage.programdb.RAMSTKSimilarItem.py is part of The</span>
+<span class="c1">#       RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2017 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;RAMSTKSimilarItem Table.&quot;&quot;&quot;</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="c1"># noinspection PyPackageRequirements</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span>
+<span class="c1"># noinspection PyPackageRequirements</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">relationship</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.db</span> <span class="kn">import</span> <span class="n">RAMSTK_BASE</span>
+<span class="kn">from</span> <span class="nn">ramstk.models</span> <span class="kn">import</span> <span class="n">RAMSTKBaseTable</span>
+
+
+<span class="c1"># pylint: disable=R0902</span>
+<div class="viewcode-block" id="RAMSTKSimilarItem"><a class="viewcode-back" href="../../../../api/ramstk.models.programdb.html#ramstk.models.programdb.ramstksimilaritem.RAMSTKSimilarItem">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKSimilarItem</span><span class="p">(</span><span class="n">RAMSTK_BASE</span><span class="p">,</span> <span class="n">RAMSTKBaseTable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class to represent ramstk_similar_item table in RAMSTK Program database.</span>
+
+<span class="sd">    This table shares a Many-to-One relationship with ramstk_hardware.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__defaults__</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;change_description_1&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;change_description_2&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;change_description_3&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;change_description_4&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;change_description_5&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;change_description_6&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;change_description_7&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;change_description_8&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;change_description_9&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;change_description_10&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;change_factor_1&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s1">&#39;change_factor_2&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s1">&#39;change_factor_3&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s1">&#39;change_factor_4&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s1">&#39;change_factor_5&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s1">&#39;change_factor_6&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s1">&#39;change_factor_7&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s1">&#39;change_factor_8&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s1">&#39;change_factor_9&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s1">&#39;change_factor_10&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s1">&#39;environment_from_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;environment_to_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;function_1&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;function_2&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;function_3&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;function_4&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;function_5&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;similar_item_method_id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s1">&#39;parent_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;quality_from_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;quality_to_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;result_1&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;result_2&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;result_3&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;result_4&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;result_5&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;temperature_from&#39;</span><span class="p">:</span> <span class="mf">30.0</span><span class="p">,</span>
+        <span class="s1">&#39;temperature_to&#39;</span><span class="p">:</span> <span class="mf">30.0</span><span class="p">,</span>
+        <span class="s1">&#39;user_blob_1&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;user_blob_2&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;user_blob_3&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;user_blob_4&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;user_blob_5&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;user_float_1&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;user_float_2&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;user_float_3&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;user_float_4&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;user_float_5&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s1">&#39;user_int_1&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;user_int_2&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;user_int_3&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;user_int_4&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;user_int_5&#39;</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;ramstk_similar_item&#39;</span>
+    <span class="n">__table_args__</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;extend_existing&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+
+    <span class="n">revision_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_revision_id&#39;</span><span class="p">,</span>
+                         <span class="n">Integer</span><span class="p">,</span>
+                         <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;ramstk_revision.fld_revision_id&#39;</span><span class="p">),</span>
+                         <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">hardware_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_hardware_id&#39;</span><span class="p">,</span>
+                         <span class="n">Integer</span><span class="p">,</span>
+                         <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;ramstk_hardware.fld_hardware_id&#39;</span><span class="p">),</span>
+                         <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                         <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">change_description_1</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_change_description_1&#39;</span><span class="p">,</span>
+                                  <span class="n">String</span><span class="p">,</span>
+                                  <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;change_description_1&#39;</span><span class="p">])</span>
+    <span class="n">change_description_2</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_change_description_2&#39;</span><span class="p">,</span>
+                                  <span class="n">String</span><span class="p">,</span>
+                                  <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;change_description_2&#39;</span><span class="p">])</span>
+    <span class="n">change_description_3</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_change_description_3&#39;</span><span class="p">,</span>
+                                  <span class="n">String</span><span class="p">,</span>
+                                  <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;change_description_3&#39;</span><span class="p">])</span>
+    <span class="n">change_description_4</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_change_description_4&#39;</span><span class="p">,</span>
+                                  <span class="n">String</span><span class="p">,</span>
+                                  <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;change_description_4&#39;</span><span class="p">])</span>
+    <span class="n">change_description_5</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_change_description_5&#39;</span><span class="p">,</span>
+                                  <span class="n">String</span><span class="p">,</span>
+                                  <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;change_description_5&#39;</span><span class="p">])</span>
+    <span class="n">change_description_6</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_change_description_6&#39;</span><span class="p">,</span>
+                                  <span class="n">String</span><span class="p">,</span>
+                                  <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;change_description_6&#39;</span><span class="p">])</span>
+    <span class="n">change_description_7</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_change_description_7&#39;</span><span class="p">,</span>
+                                  <span class="n">String</span><span class="p">,</span>
+                                  <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;change_description_7&#39;</span><span class="p">])</span>
+    <span class="n">change_description_8</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_change_description_8&#39;</span><span class="p">,</span>
+                                  <span class="n">String</span><span class="p">,</span>
+                                  <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;change_description_8&#39;</span><span class="p">])</span>
+    <span class="n">change_description_9</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_change_description_9&#39;</span><span class="p">,</span>
+                                  <span class="n">String</span><span class="p">,</span>
+                                  <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;change_description_9&#39;</span><span class="p">])</span>
+    <span class="n">change_description_10</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_change_description_10&#39;</span><span class="p">,</span>
+        <span class="n">String</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;change_description_10&#39;</span><span class="p">])</span>
+    <span class="n">change_factor_1</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_change_factor_1&#39;</span><span class="p">,</span>
+                             <span class="n">Float</span><span class="p">,</span>
+                             <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;change_factor_1&#39;</span><span class="p">])</span>
+    <span class="n">change_factor_2</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_change_factor_2&#39;</span><span class="p">,</span>
+                             <span class="n">Float</span><span class="p">,</span>
+                             <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;change_factor_2&#39;</span><span class="p">])</span>
+    <span class="n">change_factor_3</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_change_factor_3&#39;</span><span class="p">,</span>
+                             <span class="n">Float</span><span class="p">,</span>
+                             <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;change_factor_3&#39;</span><span class="p">])</span>
+    <span class="n">change_factor_4</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_change_factor_4&#39;</span><span class="p">,</span>
+                             <span class="n">Float</span><span class="p">,</span>
+                             <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;change_factor_4&#39;</span><span class="p">])</span>
+    <span class="n">change_factor_5</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_change_factor_5&#39;</span><span class="p">,</span>
+                             <span class="n">Float</span><span class="p">,</span>
+                             <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;change_factor_5&#39;</span><span class="p">])</span>
+    <span class="n">change_factor_6</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_change_factor_6&#39;</span><span class="p">,</span>
+                             <span class="n">Float</span><span class="p">,</span>
+                             <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;change_factor_6&#39;</span><span class="p">])</span>
+    <span class="n">change_factor_7</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_change_factor_7&#39;</span><span class="p">,</span>
+                             <span class="n">Float</span><span class="p">,</span>
+                             <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;change_factor_7&#39;</span><span class="p">])</span>
+    <span class="n">change_factor_8</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_change_factor_8&#39;</span><span class="p">,</span>
+                             <span class="n">Float</span><span class="p">,</span>
+                             <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;change_factor_8&#39;</span><span class="p">])</span>
+    <span class="n">change_factor_9</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_change_factor_9&#39;</span><span class="p">,</span>
+                             <span class="n">Float</span><span class="p">,</span>
+                             <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;change_factor_9&#39;</span><span class="p">])</span>
+    <span class="n">change_factor_10</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_change_factor_10&#39;</span><span class="p">,</span>
+                              <span class="n">Float</span><span class="p">,</span>
+                              <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;change_factor_10&#39;</span><span class="p">])</span>
+    <span class="n">environment_from_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_environment_from_id&#39;</span><span class="p">,</span>
+                                 <span class="n">Integer</span><span class="p">,</span>
+                                 <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;environment_from_id&#39;</span><span class="p">])</span>
+    <span class="n">environment_to_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_environment_to_id&#39;</span><span class="p">,</span>
+                               <span class="n">Integer</span><span class="p">,</span>
+                               <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;environment_to_id&#39;</span><span class="p">])</span>
+    <span class="n">function_1</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_function_1&#39;</span><span class="p">,</span>
+                        <span class="n">String</span><span class="p">(</span><span class="mi">128</span><span class="p">),</span>
+                        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;function_1&#39;</span><span class="p">])</span>
+    <span class="n">function_2</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_function_2&#39;</span><span class="p">,</span>
+                        <span class="n">String</span><span class="p">(</span><span class="mi">128</span><span class="p">),</span>
+                        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;function_2&#39;</span><span class="p">])</span>
+    <span class="n">function_3</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_function_3&#39;</span><span class="p">,</span>
+                        <span class="n">String</span><span class="p">(</span><span class="mi">128</span><span class="p">),</span>
+                        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;function_3&#39;</span><span class="p">])</span>
+    <span class="n">function_4</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_function_4&#39;</span><span class="p">,</span>
+                        <span class="n">String</span><span class="p">(</span><span class="mi">128</span><span class="p">),</span>
+                        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;function_4&#39;</span><span class="p">])</span>
+    <span class="n">function_5</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_function_5&#39;</span><span class="p">,</span>
+                        <span class="n">String</span><span class="p">(</span><span class="mi">128</span><span class="p">),</span>
+                        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;function_5&#39;</span><span class="p">])</span>
+    <span class="n">similar_item_method_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="s1">&#39;fld_similar_item_method_id&#39;</span><span class="p">,</span>
+        <span class="n">Integer</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;similar_item_method_id&#39;</span><span class="p">])</span>
+    <span class="n">parent_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_parent_id&#39;</span><span class="p">,</span>
+                       <span class="n">Integer</span><span class="p">,</span>
+                       <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;parent_id&#39;</span><span class="p">])</span>
+    <span class="n">quality_from_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_quality_from_id&#39;</span><span class="p">,</span>
+                             <span class="n">Integer</span><span class="p">,</span>
+                             <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;quality_from_id&#39;</span><span class="p">])</span>
+    <span class="n">quality_to_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_quality_to_id&#39;</span><span class="p">,</span>
+                           <span class="n">Integer</span><span class="p">,</span>
+                           <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;quality_to_id&#39;</span><span class="p">])</span>
+    <span class="n">result_1</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_result_1&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;result_1&#39;</span><span class="p">])</span>
+    <span class="n">result_2</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_result_2&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;result_2&#39;</span><span class="p">])</span>
+    <span class="n">result_3</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_result_3&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;result_3&#39;</span><span class="p">])</span>
+    <span class="n">result_4</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_result_4&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;result_4&#39;</span><span class="p">])</span>
+    <span class="n">result_5</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_result_5&#39;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;result_5&#39;</span><span class="p">])</span>
+    <span class="n">temperature_from</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_temperature_from&#39;</span><span class="p">,</span>
+                              <span class="n">Float</span><span class="p">,</span>
+                              <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;temperature_from&#39;</span><span class="p">])</span>
+    <span class="n">temperature_to</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_temperature_to&#39;</span><span class="p">,</span>
+                            <span class="n">Float</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;temperature_to&#39;</span><span class="p">])</span>
+    <span class="n">user_blob_1</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_user_blob_1&#39;</span><span class="p">,</span>
+                         <span class="n">String</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;user_blob_1&#39;</span><span class="p">])</span>
+    <span class="n">user_blob_2</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_user_blob_2&#39;</span><span class="p">,</span>
+                         <span class="n">String</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;user_blob_2&#39;</span><span class="p">])</span>
+    <span class="n">user_blob_3</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_user_blob_3&#39;</span><span class="p">,</span>
+                         <span class="n">String</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;user_blob_3&#39;</span><span class="p">])</span>
+    <span class="n">user_blob_4</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_user_blob_4&#39;</span><span class="p">,</span>
+                         <span class="n">String</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;user_blob_4&#39;</span><span class="p">])</span>
+    <span class="n">user_blob_5</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_user_blob_5&#39;</span><span class="p">,</span>
+                         <span class="n">String</span><span class="p">,</span>
+                         <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;user_blob_5&#39;</span><span class="p">])</span>
+    <span class="n">user_float_1</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_user_float_1&#39;</span><span class="p">,</span>
+                          <span class="n">Float</span><span class="p">,</span>
+                          <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;user_float_1&#39;</span><span class="p">])</span>
+    <span class="n">user_float_2</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_user_float_2&#39;</span><span class="p">,</span>
+                          <span class="n">Float</span><span class="p">,</span>
+                          <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;user_float_2&#39;</span><span class="p">])</span>
+    <span class="n">user_float_3</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_user_float_3&#39;</span><span class="p">,</span>
+                          <span class="n">Float</span><span class="p">,</span>
+                          <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;user_float_3&#39;</span><span class="p">])</span>
+    <span class="n">user_float_4</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_user_float_4&#39;</span><span class="p">,</span>
+                          <span class="n">Float</span><span class="p">,</span>
+                          <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;user_float_4&#39;</span><span class="p">])</span>
+    <span class="n">user_float_5</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_user_float_5&#39;</span><span class="p">,</span>
+                          <span class="n">Float</span><span class="p">,</span>
+                          <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;user_float_5&#39;</span><span class="p">])</span>
+    <span class="n">user_int_1</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_user_int_1&#39;</span><span class="p">,</span>
+                        <span class="n">Integer</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;user_int_1&#39;</span><span class="p">])</span>
+    <span class="n">user_int_2</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_user_int_2&#39;</span><span class="p">,</span>
+                        <span class="n">Integer</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;user_int_2&#39;</span><span class="p">])</span>
+    <span class="n">user_int_3</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_user_int_3&#39;</span><span class="p">,</span>
+                        <span class="n">Integer</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;user_int_3&#39;</span><span class="p">])</span>
+    <span class="n">user_int_4</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_user_int_4&#39;</span><span class="p">,</span>
+                        <span class="n">Integer</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;user_int_4&#39;</span><span class="p">])</span>
+    <span class="n">user_int_5</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fld_user_int_5&#39;</span><span class="p">,</span>
+                        <span class="n">Integer</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="vm">__defaults__</span><span class="p">[</span><span class="s1">&#39;user_int_5&#39;</span><span class="p">])</span>
+
+    <span class="c1"># Define the relationships to other tables in the RAMSTK Program database.</span>
+    <span class="n">hardware</span><span class="p">:</span> <span class="n">relationship</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span>
+        <span class="s1">&#39;RAMSTKHardware&#39;</span><span class="p">,</span>
+        <span class="n">back_populates</span><span class="o">=</span><span class="s1">&#39;sia&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="RAMSTKSimilarItem.get_attributes"><a class="viewcode-back" href="../../../../api/ramstk.models.programdb.html#ramstk.models.programdb.ramstksimilaritem.RAMSTKSimilarItem.get_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve current values of RAMSTKSimilarItem data model attributes.</span>
+
+<span class="sd">        :return: {hardware_id, change_description_1, change_description_2,</span>
+<span class="sd">                  change_description_3, change_description_4,</span>
+<span class="sd">                  change_description_5, change_description_6,</span>
+<span class="sd">                  change_description_7, change_description_8,</span>
+<span class="sd">                  change_description_9, change_description_10, change_factor_1,</span>
+<span class="sd">                  change_factor_2, change_factor_3, change_factor_4,</span>
+<span class="sd">                  change_factor_5, change_factor_6, change_factor_7,</span>
+<span class="sd">                  change_factor_8, change_factor_9, change_factor_10,</span>
+<span class="sd">                  environment_from_id, environment_to_id, function_1,</span>
+<span class="sd">                  function_2, function_3, function_4, function_5,</span>
+<span class="sd">                  similar_item_method_id, parent_id, quality_from_id,</span>
+<span class="sd">                  quality_to_id, result_1, result_2, result_3, result_4,</span>
+<span class="sd">                  result_5, temperature_from, temperature_to, user_blob_1,</span>
+<span class="sd">                  user_blob_2, user_blob_3, user_blob_4, user_blob_5,</span>
+<span class="sd">                  user_float_1, user_float_2, user_float_3, user_float_4,</span>
+<span class="sd">                  user_float_5, user_int_1, user_int_2, user_int_3, user_int_4,</span>
+<span class="sd">                  user_int_5}</span>
+<span class="sd">        :rtype: tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_attributes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;hardware_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hardware_id</span><span class="p">,</span>
+            <span class="s1">&#39;change_description_1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_description_1</span><span class="p">,</span>
+            <span class="s1">&#39;change_description_2&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_description_2</span><span class="p">,</span>
+            <span class="s1">&#39;change_description_3&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_description_3</span><span class="p">,</span>
+            <span class="s1">&#39;change_description_4&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_description_4</span><span class="p">,</span>
+            <span class="s1">&#39;change_description_5&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_description_5</span><span class="p">,</span>
+            <span class="s1">&#39;change_description_6&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_description_6</span><span class="p">,</span>
+            <span class="s1">&#39;change_description_7&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_description_7</span><span class="p">,</span>
+            <span class="s1">&#39;change_description_8&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_description_8</span><span class="p">,</span>
+            <span class="s1">&#39;change_description_9&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_description_9</span><span class="p">,</span>
+            <span class="s1">&#39;change_description_10&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_description_10</span><span class="p">,</span>
+            <span class="s1">&#39;change_factor_1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_factor_1</span><span class="p">,</span>
+            <span class="s1">&#39;change_factor_2&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_factor_2</span><span class="p">,</span>
+            <span class="s1">&#39;change_factor_3&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_factor_3</span><span class="p">,</span>
+            <span class="s1">&#39;change_factor_4&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_factor_4</span><span class="p">,</span>
+            <span class="s1">&#39;change_factor_5&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_factor_5</span><span class="p">,</span>
+            <span class="s1">&#39;change_factor_6&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_factor_6</span><span class="p">,</span>
+            <span class="s1">&#39;change_factor_7&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_factor_7</span><span class="p">,</span>
+            <span class="s1">&#39;change_factor_8&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_factor_8</span><span class="p">,</span>
+            <span class="s1">&#39;change_factor_9&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_factor_9</span><span class="p">,</span>
+            <span class="s1">&#39;change_factor_10&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_factor_10</span><span class="p">,</span>
+            <span class="s1">&#39;environment_from_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">environment_from_id</span><span class="p">,</span>
+            <span class="s1">&#39;environment_to_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">environment_to_id</span><span class="p">,</span>
+            <span class="s1">&#39;function_1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_1</span><span class="p">,</span>
+            <span class="s1">&#39;function_2&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_2</span><span class="p">,</span>
+            <span class="s1">&#39;function_3&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_3</span><span class="p">,</span>
+            <span class="s1">&#39;function_4&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_4</span><span class="p">,</span>
+            <span class="s1">&#39;function_5&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_5</span><span class="p">,</span>
+            <span class="s1">&#39;similar_item_method_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">similar_item_method_id</span><span class="p">,</span>
+            <span class="s1">&#39;parent_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent_id</span><span class="p">,</span>
+            <span class="s1">&#39;quality_from_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality_from_id</span><span class="p">,</span>
+            <span class="s1">&#39;quality_to_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality_to_id</span><span class="p">,</span>
+            <span class="s1">&#39;result_1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_1</span><span class="p">,</span>
+            <span class="s1">&#39;result_2&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_2</span><span class="p">,</span>
+            <span class="s1">&#39;result_3&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_3</span><span class="p">,</span>
+            <span class="s1">&#39;result_4&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_4</span><span class="p">,</span>
+            <span class="s1">&#39;result_5&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_5</span><span class="p">,</span>
+            <span class="s1">&#39;temperature_from&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature_from</span><span class="p">,</span>
+            <span class="s1">&#39;temperature_to&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature_to</span><span class="p">,</span>
+            <span class="s1">&#39;user_blob_1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_blob_1</span><span class="p">,</span>
+            <span class="s1">&#39;user_blob_2&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_blob_2</span><span class="p">,</span>
+            <span class="s1">&#39;user_blob_3&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_blob_3</span><span class="p">,</span>
+            <span class="s1">&#39;user_blob_4&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_blob_4</span><span class="p">,</span>
+            <span class="s1">&#39;user_blob_5&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_blob_5</span><span class="p">,</span>
+            <span class="s1">&#39;user_float_1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_float_1</span><span class="p">,</span>
+            <span class="s1">&#39;user_float_2&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_float_2</span><span class="p">,</span>
+            <span class="s1">&#39;user_float_3&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_float_3</span><span class="p">,</span>
+            <span class="s1">&#39;user_float_4&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_float_4</span><span class="p">,</span>
+            <span class="s1">&#39;user_float_5&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_float_5</span><span class="p">,</span>
+            <span class="s1">&#39;user_int_1&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_int_1</span><span class="p">,</span>
+            <span class="s1">&#39;user_int_2&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_int_2</span><span class="p">,</span>
+            <span class="s1">&#39;user_int_3&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_int_3</span><span class="p">,</span>
+            <span class="s1">&#39;user_int_4&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_int_4</span><span class="p">,</span>
+            <span class="s1">&#39;user_int_5&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_int_5</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">_attributes</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

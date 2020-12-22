@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.widgets.matrixview &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <script src="../../../../../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../../../../../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../../../../../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ramstk.views.gtk3.widgets.matrixview</h1><div class="highlight"><pre>
+<span></span><span class="c1"># pylint: disable=non-parent-init-called</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ramstk.views.gtk3.widgets.matrix.py is part of The RAMSTK Project</span>
+<span class="c1">#</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1"># Copyright 2007 - 2017 Doyle Rowland doyle.rowland &lt;AT&gt; reliaqual &lt;DOT&gt; com</span>
+<span class="sd">&quot;&quot;&quot;The RAMSTKBaseMatrix Module.&quot;&quot;&quot;</span>
+
+<span class="c1"># Standard Library Imports</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+
+<span class="c1"># Third Party Imports</span>
+<span class="c1"># noinspection PyPackageRequirements</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># RAMSTK Package Imports</span>
+<span class="kn">from</span> <span class="nn">ramstk.views.gtk3</span> <span class="kn">import</span> <span class="n">GdkPixbuf</span><span class="p">,</span> <span class="n">GObject</span><span class="p">,</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">_</span>
+
+<span class="c1"># RAMSTK Local Imports</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">treeview</span>
+
+
+<span class="c1"># noinspection PyUnresolvedReferences</span>
+<div class="viewcode-block" id="RAMSTKMatrixView"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.matrixview.RAMSTKMatrixView">[docs]</a><span class="k">class</span> <span class="nc">RAMSTKMatrixView</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">TreeView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The RAMSTK base widget for displaying RAMSTK Matrix views.</span>
+
+<span class="sd">    The attributes of an RAMSTKBaseMatrix are:</span>
+
+<span class="sd">    :ivar int _n_columns: the number of columns in the matrix.</span>
+<span class="sd">    :ivar int _n_rows: the number rows in the matrix.</span>
+<span class="sd">    :ivar list dic_icons: dictionary of icons to use in the various</span>
+<span class="sd">        RAMSTKMatrix views.</span>
+<span class="sd">    :ivar matrix: the RAMSTKDataMatrix to display in the Matrix View.</span>
+<span class="sd">    :ivar matrixview: the Gtk.TreeView() displaying the RAMSTKDataMatrix.</span>
+<span class="sd">    :type matrixview: :class:`Gtk.TreeView`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># noinspection PyMissingConstructor</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize a RAMSTKMatrixView() instance.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">GObject</span><span class="o">.</span><span class="n">GObject</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># Initialize private dictionary attributes.</span>
+
+        <span class="c1"># Initialize private list attributes.</span>
+
+        <span class="c1"># Initialize private scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_matrix_type</span> <span class="o">=</span> <span class="n">module</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_columns</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_rows</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_revision_id</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Initialize public dictionary attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dic_icons</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Initialize public list attributes.</span>
+
+        <span class="c1"># Initialize public scalar attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_fixed_columns</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Subscribe to PyPubSub messages.</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_do_make_combo_cell</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRendererCombo</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Make a Gtk.CellRendererCombo().</span>
+
+<span class="sd">        :return: _cell</span>
+<span class="sd">        :rtype: :class:`Gtk.CellRendererCombo`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_cell</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRendererCombo</span><span class="p">()</span>
+        <span class="n">_cellmodel</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ListStore</span><span class="p">()</span>
+        <span class="n">_cellmodel</span><span class="o">.</span><span class="n">set_column_types</span><span class="p">([</span><span class="n">GObject</span><span class="o">.</span><span class="n">TYPE_STRING</span><span class="p">])</span>
+        <span class="n">_cellmodel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s2">&quot;&quot;</span><span class="p">])</span>
+        <span class="n">_cellmodel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Partial&quot;</span><span class="p">)])</span>
+        <span class="n">_cellmodel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Complete&quot;</span><span class="p">)])</span>
+        <span class="n">_cell</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;has-entry&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">_cell</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="n">_cellmodel</span><span class="p">)</span>
+        <span class="n">_cell</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;text-column&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_cell</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_resize_wrap</span><span class="p">(</span><span class="n">column</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeViewColumn</span><span class="p">,</span> <span class="n">__param</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+                     <span class="n">cell</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRenderer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Dynamically set the wrap-width property for a Gtk.CellRenderer().</span>
+
+<span class="sd">        This method is called when the column width is resized.</span>
+
+<span class="sd">        :param column: the Gtk.TreeViewColumn() being resized.</span>
+<span class="sd">        :type column: :class:`Gtk.TreeViewColumn`</span>
+<span class="sd">        :param GParamInt __param: the triggering parameter.</span>
+<span class="sd">        :param cell: the Gtk.CellRenderer() that needs to be resized.</span>
+<span class="sd">        :type cell: :class:`Gtk.CellRenderer`</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_width</span> <span class="o">=</span> <span class="n">column</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">_width</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">_width</span> <span class="o">+=</span> <span class="mi">10</span>
+
+        <span class="n">cell</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;wrap-width&#39;</span><span class="p">,</span> <span class="n">_width</span><span class="p">)</span>
+
+    <span class="c1"># pylint: disable=too-many-arguments</span>
+<div class="viewcode-block" id="RAMSTKMatrixView.do_edit_cell"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.matrixview.RAMSTKMatrixView.do_edit_cell">[docs]</a>    <span class="k">def</span> <span class="nf">do_edit_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRenderer</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                     <span class="n">row</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeIter</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                     <span class="n">idx_column</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Respond to `changed` signals for the Gtk.CellRendererCombo()s.</span>
+
+<span class="sd">        :param cell: the Gtk.CellRendererCombo() calling this method.</span>
+<span class="sd">        :type cell: :class:`Gtk.CellRendererCombo`</span>
+<span class="sd">        :param path: the path of the selected row in the RAMSTKMatrix.</span>
+<span class="sd">        :param row: the Gtk.TreeIter() for the Gtk.CellRendererCombo() in the</span>
+<span class="sd">            selected row in the RAMSTKMatrix.</span>
+<span class="sd">        :type row: :class:`Gtk.TreeIter`</span>
+<span class="sd">        :param position: the position of the cell in the RAMSTKMatrix.</span>
+<span class="sd">        :param idx_column: the column_item_id of the Matrix cell to be</span>
+<span class="sd">            edited.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_model</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_property</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">)</span>
+        <span class="n">_treemodel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+
+        <span class="n">_idx_row</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;Partial&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">_idx_row</span><span class="p">,</span> <span class="n">idx_column</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">_pixbuf</span> <span class="o">=</span> <span class="n">GdkPixbuf</span><span class="o">.</span><span class="n">Pixbuf</span><span class="o">.</span><span class="n">new_from_file_at_size</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dic_icons</span><span class="p">[</span><span class="s1">&#39;partial&#39;</span><span class="p">],</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">22</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">_model</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;Complete&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">_idx_row</span><span class="p">,</span> <span class="n">idx_column</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="n">_pixbuf</span> <span class="o">=</span> <span class="n">GdkPixbuf</span><span class="o">.</span><span class="n">Pixbuf</span><span class="o">.</span><span class="n">new_from_file_at_size</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dic_icons</span><span class="p">[</span><span class="s1">&#39;complete&#39;</span><span class="p">],</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">22</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">_idx_row</span><span class="p">,</span> <span class="n">idx_column</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">_pixbuf</span> <span class="o">=</span> <span class="n">GdkPixbuf</span><span class="o">.</span><span class="n">Pixbuf</span><span class="o">.</span><span class="n">new_from_file_at_size</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dic_icons</span><span class="p">[</span><span class="s1">&#39;none&#39;</span><span class="p">],</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">22</span><span class="p">)</span>
+
+        <span class="n">_treemodel</span><span class="p">[</span><span class="n">path</span><span class="p">][</span><span class="n">position</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">_pixbuf</span></div>
+
+<div class="viewcode-block" id="RAMSTKMatrixView.do_load_matrix"><a class="viewcode-back" href="../../../../../api/ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.matrixview.RAMSTKMatrixView.do_load_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">do_load_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load the RAMSTKMatrixView with the values from the data matrix.</span>
+
+<span class="sd">        :param matrix: the data to display in the RAMSTKMatrixView() widget.</span>
+<span class="sd">        :type matrix: :class:`pandas.DataFrame`</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span> <span class="o">=</span> <span class="n">matrix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_columns</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_rows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="k">for</span> <span class="n">_column</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_columns</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_column</span><span class="p">(</span><span class="n">_column</span><span class="p">)</span>
+
+        <span class="c1"># Remove the old Gtk.TreeModel() and add a new Gtk.ListStore() with</span>
+        <span class="c1"># the correct number and type of columns for the matrix to be loaded.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_model</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">_model</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ListStore</span><span class="p">()</span>
+        <span class="n">_model</span><span class="o">.</span><span class="n">set_column_types</span><span class="p">([</span><span class="n">GObject</span><span class="o">.</span><span class="n">TYPE_INT</span><span class="p">,</span> <span class="n">GObject</span><span class="o">.</span><span class="n">TYPE_STRING</span><span class="p">]</span>
+                                <span class="o">+</span> <span class="p">[</span><span class="n">GdkPixbuf</span><span class="o">.</span><span class="n">Pixbuf</span><span class="p">,</span> <span class="n">GObject</span><span class="o">.</span><span class="n">TYPE_STRING</span><span class="p">]</span>
+                                <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_columns</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+                                <span class="o">+</span> <span class="p">[</span><span class="n">GObject</span><span class="o">.</span><span class="n">TYPE_STRING</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_model</span><span class="p">(</span><span class="n">_model</span><span class="p">)</span>
+
+        <span class="c1"># The first column will contain a cell for the record ID and record</span>
+        <span class="c1"># code.  The record ID will not be visible, but can be used for</span>
+        <span class="c1"># program control.</span>
+        <span class="n">_id_cell</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRendererText</span><span class="p">()</span>
+        <span class="n">treeview</span><span class="o">.</span><span class="n">do_set_cell_properties</span><span class="p">(</span><span class="n">_id_cell</span><span class="p">,</span>
+                                        <span class="n">bg_color</span><span class="o">=</span><span class="s1">&#39;light gray&#39;</span><span class="p">,</span>
+                                        <span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">_code_cell</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRendererText</span><span class="p">()</span>
+        <span class="n">treeview</span><span class="o">.</span><span class="n">do_set_cell_properties</span><span class="p">(</span><span class="n">_code_cell</span><span class="p">,</span> <span class="n">bg_color</span><span class="o">=</span><span class="s1">&#39;light gray&#39;</span><span class="p">)</span>
+        <span class="n">_code_cell</span><span class="o">.</span><span class="n">set_alignment</span><span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="n">_column</span> <span class="o">=</span> <span class="n">treeview</span><span class="o">.</span><span class="n">do_make_column</span><span class="p">([</span><span class="n">_id_cell</span><span class="p">,</span> <span class="n">_code_cell</span><span class="p">])</span>
+        <span class="n">_column</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">_id_cell</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># noinspection PyArgumentList</span>
+        <span class="n">_column</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">_code_cell</span><span class="p">,</span> <span class="n">markup</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">append_column</span><span class="p">(</span><span class="n">_column</span><span class="p">)</span>
+
+        <span class="c1"># The remaining columns will be Gtk.CellRendererCombo()&#39;s for</span>
+        <span class="c1"># displaying the interaction between the row module and the column</span>
+        <span class="c1"># module.</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_columns</span> <span class="o">-</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">_heading</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span>
+
+            <span class="n">_cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_make_combo_cell</span><span class="p">()</span>
+            <span class="n">treeview</span><span class="o">.</span><span class="n">do_set_cell_properties</span><span class="p">(</span><span class="n">_cell</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">_cell</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;changed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_edit_cell</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">_heading</span><span class="p">)</span>
+
+            <span class="n">_pbcell</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRendererPixbuf</span><span class="p">()</span>
+            <span class="n">_pbcell</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;xalign&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+
+            <span class="n">_column</span> <span class="o">=</span> <span class="n">treeview</span><span class="o">.</span><span class="n">do_make_column</span><span class="p">([</span><span class="n">_pbcell</span><span class="p">,</span> <span class="n">_cell</span><span class="p">],</span>
+                                              <span class="n">heading</span><span class="o">=</span><span class="n">_heading</span><span class="p">)</span>
+            <span class="n">_label</span> <span class="o">=</span> <span class="n">_column</span><span class="o">.</span><span class="n">get_widget</span><span class="p">()</span>
+            <span class="n">_label</span><span class="o">.</span><span class="n">set_angle</span><span class="p">(</span><span class="mf">90.0</span><span class="p">)</span>
+            <span class="n">_column</span><span class="o">.</span><span class="n">set_widget</span><span class="p">(</span><span class="n">_label</span><span class="p">)</span>
+            <span class="c1"># noinspection PyArgumentList</span>
+            <span class="n">_column</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">_pbcell</span><span class="p">,</span> <span class="n">pixbuf</span><span class="o">=</span><span class="n">i</span> <span class="o">+</span> <span class="n">j</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">append_column</span><span class="p">(</span><span class="n">_column</span><span class="p">)</span>
+
+            <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Add one more column so the last column will not be extra wide.</span>
+        <span class="n">_cell</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRendererText</span><span class="p">()</span>
+        <span class="n">_column</span> <span class="o">=</span> <span class="n">treeview</span><span class="o">.</span><span class="n">do_make_column</span><span class="p">([</span><span class="n">_cell</span><span class="p">])</span>
+        <span class="n">_column</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">_cell</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">append_column</span><span class="p">(</span><span class="n">_column</span><span class="p">)</span>
+
+        <span class="c1"># Now we load the data into the RAMSTK Matrix View.</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">index</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">_data</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="s2">&quot;&lt;span weight=&#39;bold&#39;&gt;&quot;</span>
+                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;display_name&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&lt;/span&gt;&quot;</span>
+            <span class="p">]</span>
+
+            <span class="c1">#print(self.matrix.loc[i][2:])</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">:]):</span>
+                <span class="n">_pixbuf</span> <span class="o">=</span> <span class="n">GdkPixbuf</span><span class="o">.</span><span class="n">Pixbuf</span><span class="o">.</span><span class="n">new_from_file_at_size</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dic_icons</span><span class="p">[[</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="s1">&#39;partial&#39;</span><span class="p">,</span> <span class="s1">&#39;complete&#39;</span><span class="p">][</span><span class="n">j</span><span class="p">]],</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">22</span><span class="p">)</span>
+                <span class="n">_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_pixbuf</span><span class="p">)</span>
+                <span class="n">_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;Partial&#39;</span><span class="p">,</span> <span class="s1">&#39;Complete&#39;</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+
+            <span class="n">_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+            <span class="n">_model</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_data</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

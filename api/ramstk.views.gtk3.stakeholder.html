@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ramstk.views.gtk3.stakeholder package &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ramstk.views.gtk3.usage_profile package" href="ramstk.views.gtk3.usage_profile.html" />
+    <link rel="prev" title="ramstk.views.gtk3.similar_item package" href="ramstk.views.gtk3.similar_item.html" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="shortcut icon" type="image/png" href="../_static/favicon.png" />
+    <meta name="viewport" content="width=device-width,initial-scale=0.8">
+    
+    
+
+  </head><body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="responsive-menu"><a href="#sidebar-anchor" title="Navigation">&#9776;</a></li>
+        <li><a href="../index.html">RAMSTK 1.0.0 documentation</a> &#187;</li>
+          <li><a href="../contributing.html" >Contributing</a> &#187;</li>
+          <li><a href="modules.html" >ramstk</a> &#187;</li>
+          <li><a href="ramstk.html" >ramstk package</a> &#187;</li>
+          <li><a href="ramstk.views.html" >ramstk.views package</a> &#187;</li>
+          <li><a href="ramstk.views.gtk3.html" accesskey="U">ramstk.views.gtk3 package</a> &#187;</li> 
+      </ul>
+    </div>
+    
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="ramstk-views-gtk3-stakeholder-package">
+<h1>ramstk.views.gtk3.stakeholder package<a class="headerlink" href="#ramstk-views-gtk3-stakeholder-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-ramstk.views.gtk3.stakeholder.listview">
+<span id="ramstk-views-gtk3-stakeholder-listview-module"></span><h2>ramstk.views.gtk3.stakeholder.listview module<a class="headerlink" href="#module-ramstk.views.gtk3.stakeholder.listview" title="Permalink to this headline">¶</a></h2>
+<p>The RAMSTK Stakeholder Input list view.</p>
+<dl class="py class">
+<dt id="ramstk.views.gtk3.stakeholder.listview.StakeholderPanel">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.stakeholder.listview.</code><code class="sig-name descname">StakeholderPanel</code><a class="reference internal" href="../_modules/ramstk/views/gtk3/stakeholder/listview.html#StakeholderPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.stakeholder.listview.StakeholderPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.panel.RAMSTKPanel" title="ramstk.views.gtk3.widgets.panel.RAMSTKPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.widgets.panel.RAMSTKPanel</span></code></a></p>
+<p>Panel to display list of stakeholder inputs.</p>
+<dl class="py method">
+<dt id="ramstk.views.gtk3.stakeholder.listview.StakeholderPanel.do_load_affinity_groups">
+<code class="sig-name descname">do_load_affinity_groups</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">affinities</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a><span class="p">, </span>Tuple<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/stakeholder/listview.html#StakeholderPanel.do_load_affinity_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.stakeholder.listview.StakeholderPanel.do_load_affinity_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the affinity group list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>affinities</strong> – the dict containing the affinity groups and the
+group type (affinity in all cases).</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.views.gtk3.stakeholder.listview.StakeholderPanel.do_load_stakeholders">
+<code class="sig-name descname">do_load_stakeholders</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">stakeholders</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/stakeholder/listview.html#StakeholderPanel.do_load_stakeholders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.stakeholder.listview.StakeholderPanel.do_load_stakeholders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the stakeholder list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stakeholders</strong> – the dict containing the names of the stakeholders.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.views.gtk3.stakeholder.listview.StakeholderPanel.do_set_callbacks">
+<code class="sig-name descname">do_set_callbacks</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/stakeholder/listview.html#StakeholderPanel.do_set_callbacks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.stakeholder.listview.StakeholderPanel.do_set_callbacks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set callbacks for the stakeholder input list view.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ramstk.views.gtk3.stakeholder.listview.StakeholderPanel.do_set_properties">
+<code class="sig-name descname">do_set_properties</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span>Any<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/ramstk/views/gtk3/stakeholder/listview.html#StakeholderPanel.do_set_properties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.stakeholder.listview.StakeholderPanel.do_set_properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set properties of the RAMSTKPanel() widgets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ramstk.views.gtk3.stakeholder.listview.Stakeholders">
+<em class="property">class </em><code class="sig-prename descclassname">ramstk.views.gtk3.stakeholder.listview.</code><code class="sig-name descname">Stakeholders</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">configuration</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.configuration.RAMSTKUserConfiguration" title="ramstk.configuration.RAMSTKUserConfiguration">ramstk.configuration.RAMSTKUserConfiguration</a></span></em>, <em class="sig-param"><span class="n">logger</span><span class="p">:</span> <span class="n"><a class="reference internal" href="ramstk.html#ramstk.logger.RAMSTKLogManager" title="ramstk.logger.RAMSTKLogManager">ramstk.logger.RAMSTKLogManager</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/views/gtk3/stakeholder/listview.html#Stakeholders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.views.gtk3.stakeholder.listview.Stakeholders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ramstk.views.gtk3.widgets.html#ramstk.views.gtk3.widgets.baseview.RAMSTKListView" title="ramstk.views.gtk3.widgets.baseview.RAMSTKListView"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.views.gtk3.widgets.baseview.RAMSTKListView</span></code></a></p>
+<p>Display Stakeholder Inputs associated with the selected Revision.</p>
+<p>The Stakeholder List View displays all the stakeholder inputs associated
+with the selected Requirement.  The attributes of the Stakeholder List
+View are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_module</strong> – the name of the module.</p></li>
+<li><p><strong>_lst_callbacks</strong> – the list of callback methods for the view’s
+toolbar buttons and pop-up menu.  The methods are listed in the order
+they appear on the toolbar and pop-up menu.</p></li>
+<li><p><strong>_lst_icons</strong> – the list of icons for the view’s toolbar buttons
+and pop-up menu.  The icons are listed in the order they appear on the
+toolbar and pop-up menu.</p></li>
+<li><p><strong>_lst_mnu_labels</strong> – the list of labels for the view’s pop-up
+menu.  The labels are listed in the order they appear in the menu.</p></li>
+<li><p><strong>_lst_tooltips</strong> – the list of tooltips for the view’s
+toolbar buttons and pop-up menu.  The tooltips are listed in the
+order they appear on the toolbar or pop-up menu.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.views.gtk3.stakeholder">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ramstk.views.gtk3.stakeholder" title="Permalink to this headline">¶</a></h2>
+<p>The RAMSTK GTK3 stakeholder package.</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+    <a id="sidebar-anchor"></a>
+    
+
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">ramstk.views.gtk3.stakeholder package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.stakeholder.listview">ramstk.views.gtk3.stakeholder.listview module</a></li>
+<li><a class="reference internal" href="#module-ramstk.views.gtk3.stakeholder">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ramstk.views.gtk3.similar_item.html"
+                        title="previous chapter">ramstk.views.gtk3.similar_item package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ramstk.views.gtk3.usage_profile.html"
+                        title="next chapter">ramstk.views.gtk3.usage_profile package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/ramstk.views.gtk3.stakeholder.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ramstk.views.gtk3.usage_profile.html" title="ramstk.views.gtk3.usage_profile package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ramstk.views.gtk3.similar_item.html" title="ramstk.views.gtk3.similar_item package"
+             accesskey="P">previous</a> |</li>
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>
