@@ -1,2 +1,0 @@
-m2r
-sphinx_py3doc_enhanced_theme
