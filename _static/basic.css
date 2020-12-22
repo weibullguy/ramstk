@@ -769,10 +769,6 @@ div.doctest > div.highlight span.gp {  /* gp: Generic.Prompt */
     user-select: none;
 }
 
-div.doctest > div.highlight span.gp {  /* gp: Generic.Prompt */
-    user-select: none;
-}
-
 div.code-block-caption span.caption-number {
     padding: 0.1em 0.3em;
     font-style: italic;

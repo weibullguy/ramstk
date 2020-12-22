@@ -3,16 +3,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-<<<<<<< HEAD
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Coding Conventions &#8212; RAMSTK 1.0.0 documentation</title>
-||||||| merged common ancestors
-    <title>Coding Conventions &#8212; RAMSTK 2.0.0 documentation</title>
-    <link rel="stylesheet" href="_static/pydoctheme.css" type="text/css" />
-=======
-    <title>Coding Conventions &#8212; RAMSTK 1.0.0 documentation</title>
-    <link rel="stylesheet" href="_static/pydoctheme.css" type="text/css" />
->>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/pydoctheme.css" type="text/css" />
     
@@ -88,20 +80,10 @@ included in each section.</p>
 <li><p>Constants shall be:</p>
 <ul class="simple">
 <li><p>All UPPERCASE with spaces replaced by underscores (_).</p></li>
-<<<<<<< HEAD
 <li><p>Prefaced by RAMSTK_ to identify it as an RAMSTK constant.</p></li>
 <li><p>A minimum of twelve characters (RAMSTK_ is 7) and a maximum of 30 characters.</p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>pylintrc: const-rgx=RAMSTK_[A-Z_]{12,30}$
-||||||| merged common ancestors
-<li><p>Prefaced by <a href="#id15"><span class="problematic" id="id16">RAMSTK_</span></a> to identify it as an RAMSTK constant.</p></li>
-<li><p>A minimum of twelve characters (<a href="#id17"><span class="problematic" id="id18">RAMSTK_</span></a> is 7) and a maximum of 30 characters.</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">pylintrc</span><span class="o">:</span> <span class="kd">const</span><span class="o">-</span><span class="n">rgx</span><span class="o">=</span><span class="n">RAMSTK_</span><span class="o">[</span><span class="n">A</span><span class="o">-</span><span class="n">Z_</span><span class="o">]{</span><span class="mi">12</span><span class="o">,</span><span class="mi">30</span><span class="o">}</span><span class="n">$</span>
-=======
-<li><p>Prefaced by <a href="#id15"><span class="problematic" id="id16">RAMSTK_</span></a> to identify it as an RAMSTK constant.</p></li>
-<li><p>A minimum of twelve characters (<a href="#id17"><span class="problematic" id="id18">RAMSTK_</span></a> is 7) and a maximum of 30 characters.</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="c">pylintrc: const-rgx=RAMSTK_[A-Z_]{12,30}$</span>
->>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </pre></div>
 </div>
 </li>
@@ -111,17 +93,9 @@ included in each section.</p>
 <li><p>A minimum of three characters and a maximum of 30 characters.</p></li>
 <li><p>A descriptive name when used for program flow control (e.g., for or
 while loops).  For example, _index rather than i or _key rather than k.</p></li>
-<<<<<<< HEAD
 <li><p>Preceded by a single underscore when private in scope.</p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>pylintrc: variable-rgx=[a-z_][a-z_]{3,30}$
-||||||| merged common ancestors
-<li><p>Preceded by a single underscore when private in scope.</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">pylintrc</span><span class="o">:</span> <span class="n">variable</span><span class="o">-</span><span class="n">rgx</span><span class="o">=[</span><span class="n">a</span><span class="o">-</span><span class="n">z_</span><span class="o">][</span><span class="n">a</span><span class="o">-</span><span class="n">z_</span><span class="o">]{</span><span class="mi">3</span><span class="o">,</span><span class="mi">30</span><span class="o">}</span><span class="n">$</span>
-=======
-<li><p>Preceded by a single underscore when private in scope.</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="c">pylintrc: variable-rgx=[a-z_][a-z_]{3,30}$</span>
->>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </pre></div>
 </div>
 </li>
@@ -141,20 +115,10 @@ while loops).  For example, _index rather than i or _key rather than k.</p></li>
 <li><p>Alpha characters only.</p></li>
 <li><p>Prefaced by RAMSTK.</p></li>
 <li><p>A minimum of eight characters (RAMSTK is 3) and a maximum of 30 characters.</p></li>
-<<<<<<< HEAD
 <li><p>Suffixed by ‘Error’ when defining an exception class.</p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>pylintrc: module-rgx=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$
 pylintrc: class-rgx=RAMSTK[A-Z][a-z]{8,30}$
-||||||| merged common ancestors
-<li><p>Suffixed by ‘Error’ when defining an exception class.</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">pylintrc</span><span class="o">:</span> <span class="n">module</span><span class="o">-</span><span class="n">rgx</span><span class="o">=(([</span><span class="n">a</span><span class="o">-</span><span class="n">z_</span><span class="o">][</span><span class="n">a</span><span class="o">-</span><span class="n">z0</span><span class="o">-</span><span class="mi">9</span><span class="n">_</span><span class="o">]*)|([</span><span class="n">A</span><span class="o">-</span><span class="n">Z</span><span class="o">][</span><span class="n">a</span><span class="o">-</span><span class="n">zA</span><span class="o">-</span><span class="n">Z0</span><span class="o">-</span><span class="mi">9</span><span class="o">]+))</span><span class="n">$</span>
-<span class="n">pylintrc</span><span class="o">:</span> <span class="kd">class</span><span class="o">-</span><span class="n">rgx</span><span class="o">=</span><span class="n">RAMSTK</span><span class="o">[</span><span class="n">A</span><span class="o">-</span><span class="n">Z</span><span class="o">][</span><span class="n">a</span><span class="o">-</span><span class="n">z</span><span class="o">]{</span><span class="mi">8</span><span class="o">,</span><span class="mi">30</span><span class="o">}</span><span class="n">$</span>
-=======
-<li><p>Suffixed by ‘Error’ when defining an exception class.</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="c">pylintrc: module-rgx=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$</span>
-<span class="c">pylintrc: class-rgx=RAMSTK[A-Z][a-z]{8,30}$</span>
->>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </pre></div>
 </div>
 </li>
@@ -197,13 +161,7 @@ pylintrc: class-rgx=RAMSTK[A-Z][a-z]{8,30}$
 <span class="nb">str</span> <span class="n">to</span> <span class="n">indicate</span> <span class="n">a</span> <span class="n">scalar</span> <span class="n">string</span>
 </pre></div>
 </div>
-<<<<<<< HEAD
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>pylintrc: attr-rgx=[_a-z_?][a-z0-9_?]{3,30}$
-||||||| merged common ancestors
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">pylintrc</span><span class="o">:</span> <span class="n">attr</span><span class="o">-</span><span class="n">rgx</span><span class="o">=[</span><span class="n">_a</span><span class="o">-</span><span class="n">z_</span><span class="o">?][</span><span class="n">a</span><span class="o">-</span><span class="n">z0</span><span class="o">-</span><span class="mi">9</span><span class="n">_</span><span class="o">?]{</span><span class="mi">3</span><span class="o">,</span><span class="mi">30</span><span class="o">}</span><span class="n">$</span>
-=======
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="c">pylintrc: attr-rgx=[_a-z_?][a-z0-9_?]{3,30}$</span>
->>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </pre></div>
 </div>
 </li>
@@ -216,20 +174,10 @@ pylintrc: class-rgx=RAMSTK[A-Z][a-z]{8,30}$
 <ul class="simple">
 <li><p>All lowercase with underscores (_) replacing spaces.</p></li>
 <li><p>A minimum of five characters and a maximum of 50 characters.</p></li>
-<<<<<<< HEAD
 <li><p>Prefaced by a single underscore (_) if not a public function or method.</p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>pylintrc: function-rgx=[_a-z0-9][_a-z0-9]{5,50}$
 pylintrc: method-rgx=[_a-z0-9][_a-z0-9]{5,50}$
-||||||| merged common ancestors
-<li><p>Prefaced by a single underscore (_) if not a public function or method.</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">pylintrc</span><span class="o">:</span> <span class="kd">function</span><span class="o">-</span><span class="n">rgx</span><span class="o">=[</span><span class="n">_a</span><span class="o">-</span><span class="n">z0</span><span class="o">-</span><span class="mi">9</span><span class="o">][</span><span class="n">_a</span><span class="o">-</span><span class="n">z0</span><span class="o">-</span><span class="mi">9</span><span class="o">]{</span><span class="mi">5</span><span class="o">,</span><span class="mi">50</span><span class="o">}</span><span class="n">$</span>
-<span class="n">pylintrc</span><span class="o">:</span> <span class="n">method</span><span class="o">-</span><span class="n">rgx</span><span class="o">=[</span><span class="n">_a</span><span class="o">-</span><span class="n">z0</span><span class="o">-</span><span class="mi">9</span><span class="o">][</span><span class="n">_a</span><span class="o">-</span><span class="n">z0</span><span class="o">-</span><span class="mi">9</span><span class="o">]{</span><span class="mi">5</span><span class="o">,</span><span class="mi">50</span><span class="o">}</span><span class="n">$</span>
-=======
-<li><p>Prefaced by a single underscore (_) if not a public function or method.</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="c">pylintrc: function-rgx=[_a-z0-9][_a-z0-9]{5,50}$</span>
-<span class="c">pylintrc: method-rgx=[_a-z0-9][_a-z0-9]{5,50}$</span>
->>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </pre></div>
 </div>
 </li>
@@ -238,17 +186,9 @@ pylintrc: method-rgx=[_a-z0-9][_a-z0-9]{5,50}$
 <li><p>All lowercase with underscores (_) replacing spaces.</p></li>
 <li><p>A minimum of five characters and a maximum of 30 characters.</p></li>
 <li><p>Prefaced by a double underscore (__) if it is unused in the function
-<<<<<<< HEAD
 or methods (e.g., in widget callback methods).</p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>pylintrc: argument-rgx=[a-z0-9][_a-z0-9]{5,30}$
-||||||| merged common ancestors
-or methods (e.g., in widget callback methods).</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">pylintrc</span><span class="o">:</span> <span class="n">argument</span><span class="o">-</span><span class="n">rgx</span><span class="o">=[</span><span class="n">a</span><span class="o">-</span><span class="n">z0</span><span class="o">-</span><span class="mi">9</span><span class="o">][</span><span class="n">_a</span><span class="o">-</span><span class="n">z0</span><span class="o">-</span><span class="mi">9</span><span class="o">]{</span><span class="mi">5</span><span class="o">,</span><span class="mi">30</span><span class="o">}</span><span class="n">$</span>
-=======
-or methods (e.g., in widget callback methods).</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="c">pylintrc: argument-rgx=[a-z0-9][_a-z0-9]{5,30}$</span>
->>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </pre></div>
 </div>
 </li>
@@ -703,7 +643,6 @@ naming shall adhere to the following conventions:</p>
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-<<<<<<< HEAD
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
@@ -712,30 +651,12 @@ naming shall adhere to the following conventions:</p>
         <li class="right" >
           <a href="CONTRIBUTING.html" title="Contributing to the RAMS ToolKit (RAMSTK)"
              accesskey="P">previous</a> |</li>
-||||||| merged common ancestors
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-=======
-          <a href="DEVELOPMENT_ENV.html" title="Establishing a Development Environment"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="CONTRIBUTING.html" title="Contributing to the RAMS ToolKit (RAMSTK)"
-             accesskey="P">previous</a> |</li>
->>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
       </ul>
     </div>
 
     <div class="footer" role="contentinfo">
-<<<<<<< HEAD
         &#169; Copyright 2007 - 2020, Doyle Rowland.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
-||||||| merged common ancestors
-        &#169; Copyright 2007 - 2019, Doyle Rowland.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
-=======
-        &#169; Copyright 2007 - 2020, Doyle Rowland.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
->>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
     </div>
   </body>
 </html>
