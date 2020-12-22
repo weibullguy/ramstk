@@ -46,58 +46,6 @@
 <h1>Stress Analysis<a class="headerlink" href="#stress-analysis" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<span class="target" id="module-ramstk.analyses.Stress"></span><p>Component Stress Calculations Module.</p>
-<dl class="function">
-<dt id="ramstk.analyses.Stress.calculate_stress_ratio">
-<code class="descclassname">ramstk.analyses.Stress.</code><code class="descname">calculate_stress_ratio</code><span class="sig-paren">(</span><em>stress_operating</em>, <em>stress_rated</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/analyses/Stress.html#calculate_stress_ratio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.Stress.calculate_stress_ratio" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the operating electrical stress ratio of a device.</p>
-<p>Inputs can be floats, integers, or a combination.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">calculate_stress_ratio</span><span class="p">(</span><span class="mf">0.382</span><span class="p">,</span> <span class="mf">1.29</span><span class="p">)</span>
-<span class="go">0.2961240310077519</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">calculate_stress_ratio</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="go">0.5</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">calculate_stress_ratio</span><span class="p">(</span><span class="mf">0.382</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="go">0.191</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">calculate_stress_ratio</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.29</span><span class="p">)</span>
-<span class="go">0.7751937984496123</span>
-</pre></div>
-</div>
-<p>Rated stress must not be zero:
-&gt;&gt;&gt; calculate_stress_ratio(0.382, 0.o)
-Traceback (most recent call last):</p>
-<blockquote>
-<div><p>…</p>
-</div></blockquote>
-<p>ZeroDivisionError: float division by zero</p>
-<p>Stress inputs must not be strings:
-&gt;&gt;&gt;  calculate_stress_ratio(0.382, ‘3.2’)
-Traceback (most recent call last):</p>
-<blockquote>
-<div><p>…</p>
-</div></blockquote>
-<p>TypeError: unsupported operand type(s) for /: ‘float’ and ‘str’</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>stress_operating</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the device’s operating level of the stress.</p></li>
-<li><p><strong>stress_rated</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the devices’s rated stress.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>_stress_ratio; the ratio of operating stress to rated stress.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></p>
-</dd>
-<dt class="field-even">Raise</dt>
-<dd class="field-even"><p>TypeError if an input value is non-numerical.</p>
-</dd>
-<dt class="field-odd">Raise</dt>
-<dd class="field-odd"><p>ZeroDivisionError if the rated stress is zero.</p>
-</dd>
-</dl>
-</dd></dl>
-
 </div>
 
 
@@ -123,10 +71,10 @@ Traceback (most recent call last):</p>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -143,9 +91,6 @@ Traceback (most recent call last):</p>
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="../../history.html" title="Project History"
              accesskey="N">next</a> |</li>
         <li class="right" >
@@ -156,7 +101,7 @@ Traceback (most recent call last):</p>
 
     <div class="footer" role="contentinfo">
         &#169; Copyright 2007 - 2019, Doyle Rowland.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
     </div>
   </body>
 </html>

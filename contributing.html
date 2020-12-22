@@ -3,8 +3,16 @@
 <html>
   <head>
     <meta charset="utf-8" />
+<<<<<<< HEAD
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Contributing &#8212; RAMSTK 1.0.0 documentation</title>
+||||||| merged common ancestors
+    <title>Contributing &#8212; RAMSTK 2.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/pydoctheme.css" type="text/css" />
+=======
+    <title>Contributing &#8212; RAMSTK 1.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/pydoctheme.css" type="text/css" />
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/pydoctheme.css" type="text/css" />
     
@@ -18,8 +26,16 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+<<<<<<< HEAD
     <link rel="next" title="Contributing to the RAMS ToolKit (RAMSTK)" href="CONTRIBUTING.html" />
     <link rel="prev" title="The Validation Module" href="user/validation.html" />
+||||||| merged common ancestors
+    <link rel="next" title="RAMSTK Models" href="api/models/commondb.html" />
+    <link rel="prev" title="Usage" href="usage.html" />
+=======
+    <link rel="next" title="Contributing to the RAMS ToolKit (RAMSTK)" href="CONTRIBUTING.html" />
+    <link rel="prev" title="Usage" href="usage.html" />
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <link rel="shortcut icon" type="image/png" href="_static/favicon.png" />
     <meta name="viewport" content="width=device-width,initial-scale=0.8">
@@ -46,6 +62,7 @@
 <h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="how-to-contribute">
 <h2>How to Contribute<a class="headerlink" href="#how-to-contribute" title="Permalink to this headline">¶</a></h2>
+<<<<<<< HEAD
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contributing to the RAMS ToolKit (RAMSTK)</a><ul>
@@ -89,8 +106,997 @@
 <p>The coding standards below are probably out of date so you might review some of the existing code base to see how
 badly I haven’t followed my own standards.  I also open issues to document conventions and standards.  That’d be another
 good place to look.</p>
+||||||| merged common ancestors
+<p>See CONTRIBUTING.md in the docs directory.  This is likely out of date, so ask
+if you have any questions.</p>
+</div>
+<div class="section" id="coding-standards">
+<h2>Coding Standards<a class="headerlink" href="#coding-standards" title="Permalink to this headline">¶</a></h2>
+<p>See CODING_STDS.md in the docs directory.  This is probably out of date so you
+might review some of the existing code base to see how badly I haven’t followed
+my own standards.</p>
+</div>
+<div class="section" id="api-documentation">
+<h2>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="module-ramstk.RAMSTK">
+<span id="ramstk-module"></span><h3>RAMSTK Module<a class="headerlink" href="#module-ramstk.RAMSTK" title="Permalink to this headline">¶</a></h3>
+<p>This is the main program for the RAMSTK application.</p>
+<dl class="class">
+<dt id="ramstk.RAMSTK.Model">
+<em class="property">class </em><code class="descclassname">ramstk.RAMSTK.</code><code class="descname">Model</code><span class="sig-paren">(</span><em>sitedao</em>, <em>programdao</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/RAMSTK.html#Model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.RAMSTK.Model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>This is the RAMSTK data model class.</p>
+<p>The attributes of a RAMSTK data model are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>site_dao</strong> – the data access object used to communicate with the RAMSTK
+Common database.</p></li>
+<li><p><strong>program_dao</strong> – the data access object used to communicate with the
+RAMSTK Program database</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="ramstk.RAMSTK.Model.do_close_program">
+<code class="descname">do_close_program</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/RAMSTK.html#Model.do_close_program"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.RAMSTK.Model.do_close_program" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the open RAMSTK Program database.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ramstk.RAMSTK.Model.do_create_program">
+<code class="descname">do_create_program</code><span class="sig-paren">(</span><em>database</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/RAMSTK.html#Model.do_create_program"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.RAMSTK.Model.do_create_program" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new RAMSTK Program database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>database</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the RFC1738 URL path to the database to connect
+with.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(_error_code, _msg); the error code and associated message.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ramstk.RAMSTK.Model.do_delete_program">
+<code class="descname">do_delete_program</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/RAMSTK.html#Model.do_delete_program"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.RAMSTK.Model.do_delete_program" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete an existing RAMSTK Program database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ramstk.RAMSTK.Model.do_load_globals">
+<code class="descname">do_load_globals</code><span class="sig-paren">(</span><em>configuration</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/RAMSTK.html#Model.do_load_globals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.RAMSTK.Model.do_load_globals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the RAMSTK Program global constants.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="#ramstk.Configuration.Configuration" title="ramstk.Configuration.Configuration"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.Configuration.Configuration()</span></code></a>) – the currently active RAMSTK Program Configuration()
+object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>False if successful or True if an error is encountered.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ramstk.RAMSTK.Model.do_open_program">
+<code class="descname">do_open_program</code><span class="sig-paren">(</span><em>database</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/RAMSTK.html#Model.do_open_program"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.RAMSTK.Model.do_open_program" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open an RAMSTK Program database for analyses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>database</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the RFC1738 URL path to the database to connect
+with.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(_error_code, _msg); the error code and associated message.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ramstk.RAMSTK.Model.do_save_program">
+<code class="descname">do_save_program</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/RAMSTK.html#Model.do_save_program"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.RAMSTK.Model.do_save_program" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the open RAMSTK Program database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>(_error_code, _msg); the error code and associated message.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ramstk.RAMSTK.Model.do_validate_license">
+<code class="descname">do_validate_license</code><span class="sig-paren">(</span><em>license_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/RAMSTK.html#Model.do_validate_license"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.RAMSTK.Model.do_validate_license" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate the license and the license expiration date.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>license_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the license key for the current RAMSTK
+installation.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(_error_code, _msg)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="ramstk.RAMSTK.NoOptionError">
+<em class="property">exception </em><code class="descclassname">ramstk.RAMSTK.</code><code class="descname">NoOptionError</code><a class="reference internal" href="_modules/ramstk/RAMSTK.html#NoOptionError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.RAMSTK.NoOptionError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Raise error when no option is available in the configuration file.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ramstk.RAMSTK.RAMSTK">
+<em class="property">class </em><code class="descclassname">ramstk.RAMSTK.</code><code class="descname">RAMSTK</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/RAMSTK.html#RAMSTK"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.RAMSTK.RAMSTK" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Class representing the RAMSTK data controller.</p>
+<p>This is the master controller for the entire RAMSTK application.
+Attributes of a RAMSTK data controller are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dic_controllers</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – <p>dictionary of data controllers available in the
+running instance of RAMSTK. Keys are:</p>
+<blockquote>
+<div><p>’function’
+‘hardware’
+‘revision’
+‘requirement’
+‘validation’
+‘survival’
+‘matrices’
+‘fmea’
+‘stakeholder’
+‘hazard’
+‘similaritem’
+‘pof’
+‘growth’
+‘options’
+‘imports’</p>
+</div></blockquote>
+<p>Values are the instance of each RAMSTK data controller.</p>
+</p></li>
+<li><p><a class="reference internal" href="api/gui/gtk.mwi.html#ramstk.gui.gtk.ramstk.Book.RAMSTKBook.dic_books" title="ramstk.gui.gtk.ramstk.Book.RAMSTKBook.dic_books"><strong>dic_books</strong></a> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – <p>dictionary of GUI books used by the running instance
+of RAMSTK. Keys are:</p>
+<blockquote>
+<div><p>’listbook’
+‘modulebook’
+‘workbook’</p>
+</div></blockquote>
+<p>Values are the instance of each RAMSTK book.</p>
+</p></li>
+<li><p><strong>ramstk_model</strong> – the instance of <a class="reference internal" href="#ramstk.RAMSTK.Model" title="ramstk.RAMSTK.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.RAMSTK.Model</span></code></a> managed by
+this data controller.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="ramstk.RAMSTK.RAMSTK.RAMSTK_CONFIGURATION">
+<code class="descname">RAMSTK_CONFIGURATION</code><em class="property"> = &lt;ramstk.Configuration.Configuration object&gt;</em><a class="headerlink" href="#ramstk.RAMSTK.RAMSTK.RAMSTK_CONFIGURATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ramstk.RAMSTK.RAMSTK.request_do_close_program">
+<code class="descname">request_do_close_program</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/RAMSTK.html#RAMSTK.request_do_close_program"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.RAMSTK.RAMSTK.request_do_close_program" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request the open RAMSTK Program database be closed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>False if successful or True if an error is encountered.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ramstk.RAMSTK.RAMSTK.request_do_create_program">
+<code class="descname">request_do_create_program</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/RAMSTK.html#RAMSTK.request_do_create_program"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.RAMSTK.RAMSTK.request_do_create_program" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request a new RAMSTK Program database be created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>False if successful or True if an error is encountered.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ramstk.RAMSTK.RAMSTK.request_do_load_globals">
+<code class="descname">request_do_load_globals</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/RAMSTK.html#RAMSTK.request_do_load_globals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.RAMSTK.RAMSTK.request_do_load_globals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request to load all the global Configuration variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>False if successful or True if an error is encountered.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ramstk.RAMSTK.RAMSTK.request_do_open_program">
+<code class="descname">request_do_open_program</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/RAMSTK.html#RAMSTK.request_do_open_program"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.RAMSTK.RAMSTK.request_do_open_program" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request an RAMSTK Program database be opened for analyses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>False if successful or True if an error is encountered.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ramstk.RAMSTK.RAMSTK.request_do_save_program">
+<code class="descname">request_do_save_program</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/RAMSTK.html#RAMSTK.request_do_save_program"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.RAMSTK.RAMSTK.request_do_save_program" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request the open RAMSTK Program database be saved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>False if successful or True if an error is encountered.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ramstk.RAMSTK.RAMSTK.request_do_validate_license">
+<code class="descname">request_do_validate_license</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/RAMSTK.html#RAMSTK.request_do_validate_license"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.RAMSTK.RAMSTK.request_do_validate_license" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request the RAMSTK license be validated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>False if successful or True if an error is encountered.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="ramstk.RAMSTK._initialize_loggers">
+<code class="descclassname">ramstk.RAMSTK.</code><code class="descname">_initialize_loggers</code><span class="sig-paren">(</span><em>configuration</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/RAMSTK.html#_initialize_loggers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.RAMSTK._initialize_loggers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create loggers for the RAMSTK application.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="#ramstk.Configuration.Configuration" title="ramstk.Configuration.Configuration"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.Configuration.Configuration()</span></code></a>) – the RAMSTK Configuration() object instance holding all
+the configuration values for the current instance of
+RAMSTK.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(_debug_log, _user_log, _import_log)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ramstk.RAMSTK.main">
+<code class="descclassname">ramstk.RAMSTK.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/RAMSTK.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.RAMSTK.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Launch the RAMSTK application.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.Configuration">
+<span id="configuration-module"></span><h3>Configuration Module<a class="headerlink" href="#module-ramstk.Configuration" title="Permalink to this headline">¶</a></h3>
+<p>Configuration information and methods for RAMSTK.</p>
+<dl class="class">
+<dt id="ramstk.Configuration.Configuration">
+<em class="property">class </em><code class="descclassname">ramstk.Configuration.</code><code class="descname">Configuration</code><a class="reference internal" href="_modules/ramstk/Configuration.html#Configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Configuration.Configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>RAMSTK configuration class.</p>
+<p>Attributes of the Configuration class are:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>RAMSTK_FORMAT_FILE</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – <p>Dictionary containing the path to the format
+files to use for various widgets.  Keys for this dictionary are:</p>
+<blockquote>
+<div><ul>
+<li><p>revision</p></li>
+<li><p>function</p></li>
+<li><p>requirement</p></li>
+<li><p>hardware</p></li>
+<li><p>validation</p></li>
+<li><p>sia</p></li>
+<li><p>fmeca</p></li>
+<li><p>stakeholder</p></li>
+<li><p>ffmeca</p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>RAMSTK_COLORS</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – <p>Dictionary containing the colors to use for
+various widgets.  Keys for this dictionary are:</p>
+<blockquote>
+<div><ul>
+<li><p>revisionbg - Revision Tree background</p></li>
+<li><p>revisionfg - Revision Tree foreground</p></li>
+<li><p>functionbg - Function Tree background</p></li>
+<li><p>functionfg - Function Tree foreground</p></li>
+<li><p>requirementbg - Requirement Tree background</p></li>
+<li><p>requirementfg - Requirement Tree foreground</p></li>
+<li><p>hardwarebg - Hardware Tree background</p></li>
+<li><p>hardwarefg - Hardware Tree foreground</p></li>
+<li><p>validationbg - Validation Tree background</p></li>
+<li><p>validationfg - Validation Tree foreground</p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>RAMSTK_COM_INFO</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – <p>Dictionary for the RAMSTK common database
+connection information.  The information contained is:</p>
+<blockquote>
+<div><table class="docutils align-center">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 76%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Information</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>host</p></td>
+<td><p>Host name (MySQL only)</p></td>
+</tr>
+<tr class="row-odd"><td><p>socket</p></td>
+<td><p>Host port (MySQL only)</p></td>
+</tr>
+<tr class="row-even"><td><p>database</p></td>
+<td><p>Database name</p></td>
+</tr>
+<tr class="row-odd"><td><p>user</p></td>
+<td><p>User name (MySQL only)</p></td>
+</tr>
+<tr class="row-even"><td><p>password</p></td>
+<td><p>User password (MySQL only)</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</p></li>
+<li><p><strong>RAMSTK_PROG_INFO</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – <p>Dictionary for RAMSTK Program database
+connection information.  The information contained is:</p>
+<blockquote>
+<div><table class="docutils align-center">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 76%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Information</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>host</p></td>
+<td><p>Host name (MySQL only)</p></td>
+</tr>
+<tr class="row-odd"><td><p>socket</p></td>
+<td><p>Host port (MySQL only)</p></td>
+</tr>
+<tr class="row-even"><td><p>database</p></td>
+<td><p>Database name</p></td>
+</tr>
+<tr class="row-odd"><td><p>user</p></td>
+<td><p>User name (MySQL only)</p></td>
+</tr>
+<tr class="row-even"><td><p>password</p></td>
+<td><p>User password (MySQL only)</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</p></li>
+<li><p><strong>RAMSTK_TABPOS</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – <p>Dictionary containing the location of tabs in the
+three main Gtk.Notebook() widgets.  Can be one of:</p>
+<blockquote>
+<div><ul>
+<li><p>Top</p></li>
+<li><p>Bottom</p></li>
+<li><p>Left</p></li>
+<li><p>Right</p></li>
+</ul>
+<table class="docutils align-center">
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 41%" />
+<col style="width: 27%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Notebook</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>listbook</p></td>
+<td><p>Module Book</p></td>
+<td><p><em>top</em></p></td>
+</tr>
+<tr class="row-odd"><td><p>modulebook</p></td>
+<td><p>Work Book</p></td>
+<td><p><em>bottom</em></p></td>
+</tr>
+<tr class="row-even"><td><p>workbook</p></td>
+<td><p>List Book</p></td>
+<td><p><em>bottom</em></p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</p></li>
+<li><p><strong>RAMSTK_SEVERITY</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Dictionary for failure severity categories.</p></li>
+<li><p><strong>RAMSTK_HAZARDS</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Dictionary for potential hazards.</p></li>
+<li><p><strong>RAMSTK_REQUIREMENT_TYPES</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Dictionary of requirement types.</p></li>
+<li><p><strong>RAMSTK_RPN_SEVERITY</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Dictionary for RPN Severity categories.</p></li>
+<li><p><strong>RAMSTK_RPN_OCCURRENCE</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Dictionary for RPN Occurrence categories.</p></li>
+<li><p><strong>RAMSTK_RPN_DETECTION</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Dictionary for RPN Detection categories.</p></li>
+<li><p><strong>RAMSTK_MODULES</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – <p>Dictionary of active modules in the open RAMSTK
+Program database.  Where 1 = active and 0 = inactive.  Keys are:</p>
+<blockquote>
+<div><ul>
+<li><p>Function</p></li>
+<li><p>Hardware</p></li>
+<li><p>Requirements</p></li>
+<li><p>Revision</p></li>
+<li><p>Validation</p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>RAMSTK_PAGE_NUMBER</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List indicating which page each RAMSTK
+module occupies in the ModuleBook.</p></li>
+<li><p><strong>RAMSTK_RISK_POINTS</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – <p>List for risk level cutoffs.  Cutoffs are:</p>
+<table class="docutils align-center">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 79%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Index</p></th>
+<th class="head"><p>Risk Level Cutoff Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>Low to medium</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>Medium to high</p></td>
+</tr>
+</tbody>
+</table>
+</p></li>
+<li><p><strong>RAMSTK_HR_MULTIPLIER</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – The failure rate multiplier.  All failure
+rates will be multiplied by this value for display.  This allows
+failure rates to display without using scientific notation.  Set to one
+to use scientific notation.  Default value is <em>1000000.0</em>.</p></li>
+<li><p><strong>RAMSTK_MTIME</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – The default mission time for new RAMSTK Programs.</p></li>
+<li><p><strong>RAMSTK_DEC_PLACES</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Number of decimal places to show in numerical
+results.  Default value is <em>6</em>.</p></li>
+<li><p><strong>RAMSTK_MODE_SOURCE</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – <p>Indicator variable used to determine which
+failure mode source to use.  Sources are:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>FMD-97</p></li>
+<li><p>MIL-STD-338</p></li>
+</ol>
+</div></blockquote>
+</p></li>
+<li><p><strong>RAMSTK_CONF_DIR</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – <p>Path to the directory containing configuration
+files used by RAMSTK.  Default values are:</p>
+<blockquote>
+<div><ul>
+<li><p>POSIX default: <em>$HOME/.config/RAMSTK</em></p></li>
+<li><p>Windows default: <em>C:\Users\&lt;USER NAME&gt;\config\RAMSTK</em></p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>RAMSTK_DATA_DIR</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – <p>Path to the directory containing data files used
+by RAMSTK.  Default values are:</p>
+<blockquote>
+<div><ul>
+<li><p>POSIX default: <em>/usr/share/RAMSTK</em></p></li>
+<li><p>Windows default: <em>None</em></p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>RAMSTK_ICON_DIR</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – <p>Path to the directory containing icon files used
+by RAMSTK.  Default values are:</p>
+<blockquote>
+<div><ul>
+<li><p>POSIX default: <em>/usr/share/RAMSTK/icons</em></p></li>
+<li><p>Windows default: <em>None</em></p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>RAMSTK_LOG_DIR</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – <p>Path to the directory containing log files used
+by RAMSTK.  Default values are:</p>
+<blockquote>
+<div><ul>
+<li><p>POSIX default: <em>/var/log</em></p></li>
+<li><p>Windows default: <em>C:\Users\&lt;USER NAME&gt;\config\RAMSTK\logs</em></p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>RAMSTK_PROG_DIR</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – <p>Path to the base directory containing RAMSTK
+Program database files.  This is only used when the backend is SQLite3.
+Default values are:</p>
+<blockquote>
+<div><ul>
+<li><p>POSIX default: <em>$HOME/analyses/ramstk</em></p></li>
+<li><p>Windows default: <em>C:\Users\&lt;USER NAME&gt;\analyses\ramstk</em></p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>RAMSTK_GUI_LAYOUT</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – <p>Layout of the GUI to use.  Possible options
+are:</p>
+<blockquote>
+<div><ul>
+<li><dl class="simple">
+<dt>basic - a single window embedded with the Module Book, Work Book,</dt><dd><p>and List Book.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>advanced - multiple windows; one each for the Module Book, Work</dt><dd><p>Book, and List Book.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p>Default value is <em>basic</em>.</p>
+</p></li>
+<li><p><strong>RAMSTK_COM_BACKEND</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – <p>RAMSTK common database backend to use.
+Options are:</p>
+<blockquote>
+<div><ul>
+<li><p>mysql (future)</p></li>
+<li><p>sqlite</p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>RAMSTK_BACKEND</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – <p>RAMSTK Program database backend to use.  Options
+are:</p>
+<blockquote>
+<div><ul>
+<li><p>mysql (future)</p></li>
+<li><p>sqlite</p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>RAMSTK_LOCALE</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The language locale to use with RAMSTK.  Default
+value is <em>en_US</em>.</p></li>
+<li><p><strong>RAMSTK_OS</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The operating system RAMSTK is currently running on.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="ramstk.Configuration.Configuration._set_site_configuration">
+<code class="descname">_set_site_configuration</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Configuration.html#Configuration._set_site_configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Configuration.Configuration._set_site_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the default site configuration file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>False if successful or True if an error is encountered.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ramstk.Configuration.Configuration.create_user_configuration">
+<code class="descname">create_user_configuration</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Configuration.html#Configuration.create_user_configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Configuration.Configuration.create_user_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the default user configuration file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>False if successful or True if an error is encountered.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ramstk.Configuration.Configuration.get_site_configuration">
+<code class="descname">get_site_configuration</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Configuration.html#Configuration.get_site_configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Configuration.Configuration.get_site_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the site configuration file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>False of successful or True if an error is encountered.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ramstk.Configuration.Configuration.get_user_configuration">
+<code class="descname">get_user_configuration</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Configuration.html#Configuration.get_user_configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Configuration.Configuration.get_user_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the RAMSTK configuration file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>False if successful or True if an error is encountered.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ramstk.Configuration.Configuration.set_site_variables">
+<code class="descname">set_site_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Configuration.html#Configuration.set_site_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Configuration.Configuration.set_site_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the site configuration variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>False if successful or True if an error is encountered.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ramstk.Configuration.Configuration.set_user_configuration">
+<code class="descname">set_user_configuration</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Configuration.html#Configuration.set_user_configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Configuration.Configuration.set_user_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write changes to the user’s configuration file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>False if successful or True if an error is encountered.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ramstk.Configuration.Configuration.set_user_variables">
+<code class="descname">set_user_variables</code><span class="sig-paren">(</span><em>first_run=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Configuration.html#Configuration.set_user_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Configuration.Configuration.set_user_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the user-specific configuration variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>False if successful or True if an error is encountered.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ramstk.Utilities">
+<span id="utilities-module"></span><h3>Utilities Module<a class="headerlink" href="#module-ramstk.Utilities" title="Permalink to this headline">¶</a></h3>
+<p>Utility functions for interacting with the RAMSTK application.</p>
+<dl class="exception">
+<dt id="ramstk.Utilities.NoMatrixError">
+<em class="property">exception </em><code class="descclassname">ramstk.Utilities.</code><code class="descname">NoMatrixError</code><a class="reference internal" href="_modules/ramstk/Utilities.html#NoMatrixError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Utilities.NoMatrixError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Exception raised when no Matrices are returned.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="ramstk.Utilities.NoParentError">
+<em class="property">exception </em><code class="descclassname">ramstk.Utilities.</code><code class="descname">NoParentError</code><a class="reference internal" href="_modules/ramstk/Utilities.html#NoParentError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Utilities.NoParentError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Exception raised when a parent element does not exist.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="ramstk.Utilities.OutOfRangeError">
+<em class="property">exception </em><code class="descclassname">ramstk.Utilities.</code><code class="descname">OutOfRangeError</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Utilities.html#OutOfRangeError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Utilities.OutOfRangeError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Exception raised when an input value is outside legal limits.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ramstk.Utilities.boolean_to_integer">
+<code class="descclassname">ramstk.Utilities.</code><code class="descname">boolean_to_integer</code><span class="sig-paren">(</span><em>boolean</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Utilities.html#boolean_to_integer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Utilities.boolean_to_integer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert boolean representations of TRUE/FALSE to an integer value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>boolean</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – the boolean to convert.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>_result</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ramstk.Utilities.create_logger">
+<code class="descclassname">ramstk.Utilities.</code><code class="descname">create_logger</code><span class="sig-paren">(</span><em>log_name</em>, <em>log_level</em>, <em>log_file</em>, <em>to_tty=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Utilities.html#create_logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Utilities.create_logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a logger instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the name of the log used in the application.</p></li>
+<li><p><strong>log_level</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the level of messages to log.</p></li>
+<li><p><strong>log_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the full path of the log file for this logger instance
+to write to.</p></li>
+<li><p><strong>to_tty</strong> (<em>boolean</em>) – boolean indicating whether this logger will also
+dump messages to the terminal.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>_logger</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ramstk.Utilities.date_to_ordinal">
+<code class="descclassname">ramstk.Utilities.</code><code class="descname">date_to_ordinal</code><span class="sig-paren">(</span><em>date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Utilities.html#date_to_ordinal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Utilities.date_to_ordinal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert date strings to ordinal dates for use in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the date string to convert.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>ordinal representation of the passed date.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ramstk.Utilities.dir_exists">
+<code class="descclassname">ramstk.Utilities.</code><code class="descname">dir_exists</code><span class="sig-paren">(</span><em>directory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Utilities.html#dir_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Utilities.dir_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a directory exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>directory</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – a string representing the directory path to check
+for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>False if the directory does not exist, True otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ramstk.Utilities.error_handler">
+<code class="descclassname">ramstk.Utilities.</code><code class="descname">error_handler</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Utilities.html#error_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Utilities.error_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert string errors to integer error codes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>message</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the message to convert to an error code.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>_err_code</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ramstk.Utilities.file_exists">
+<code class="descclassname">ramstk.Utilities.</code><code class="descname">file_exists</code><span class="sig-paren">(</span><em>_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Utilities.html#file_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Utilities.file_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a file exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – a string representing the filepath to check for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the file exists, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ramstk.Utilities.integer_to_boolean">
+<code class="descclassname">ramstk.Utilities.</code><code class="descname">integer_to_boolean</code><span class="sig-paren">(</span><em>integer</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Utilities.html#integer_to_boolean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Utilities.integer_to_boolean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert an integer to boolean value.</p>
+<p>Any value greater than zero is returned as True, all others are returned as
+False.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>integer</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the integer to convert.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>_result</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ramstk.Utilities.missing_to_default">
+<code class="descclassname">ramstk.Utilities.</code><code class="descname">missing_to_default</code><span class="sig-paren">(</span><em>field</em>, <em>default</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Utilities.html#missing_to_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Utilities.missing_to_default" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert missing values into default values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field</strong> – the original, missing, value.</p></li>
+<li><p><strong>default</strong> – the new, default, value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>field; the new value if field is an empty string, the old value
+otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ramstk.Utilities.name">
+<code class="descclassname">ramstk.Utilities.</code><code class="descname">name</code><span class="sig-paren">(</span><em>pop</em>, <em>suffix=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Utilities.html#name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Utilities.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of this particular project.</p>
+<p>If pop is a list containing more than one element, name() will remove those
+items from the path tail before deciding on the project name. If there is
+an element which does not exist in the path tail, then raise.  If a suffix
+is specified, then it is removed if found at end.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ramstk.Utilities.none_to_default">
+<code class="descclassname">ramstk.Utilities.</code><code class="descname">none_to_default</code><span class="sig-paren">(</span><em>field</em>, <em>default</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Utilities.html#none_to_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Utilities.none_to_default" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert None values into default values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field</strong> – the original value that may be None.</p></li>
+<li><p><strong>default</strong> – the new, default, value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>field; the new value if field is None, the old value
+otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ramstk.Utilities.none_to_string">
+<code class="descclassname">ramstk.Utilities.</code><code class="descname">none_to_string</code><span class="sig-paren">(</span><em>string</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Utilities.html#none_to_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Utilities.none_to_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert None types to an empty string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>string</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the string to convert.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>string; the converted string.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ramstk.Utilities.ordinal_to_date">
+<code class="descclassname">ramstk.Utilities.</code><code class="descname">ordinal_to_date</code><span class="sig-paren">(</span><em>ordinal</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Utilities.html#ordinal_to_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Utilities.ordinal_to_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert ordinal dates to date strings in ISO-8601 format.</p>
+<p>Defaults to the current date if a bad value is passed as the argument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ordinal</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the ordinal date to convert.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the ISO-8601 date representation of the passed ordinal.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>date</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ramstk.Utilities.prefix">
+<code class="descclassname">ramstk.Utilities.</code><code class="descname">prefix</code><span class="sig-paren">(</span><em>join=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Utilities.html#prefix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Utilities.prefix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the prefix that this code was installed into.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ramstk.Utilities.split_string">
+<code class="descclassname">ramstk.Utilities.</code><code class="descname">split_string</code><span class="sig-paren">(</span><em>string</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Utilities.html#split_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Utilities.split_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split a colon-delimited string into its constituent parts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>string</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – the colon delimited string that needs to be split into
+a list.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>_strlist</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of strings</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ramstk.Utilities.string_to_boolean">
+<code class="descclassname">ramstk.Utilities.</code><code class="descname">string_to_boolean</code><span class="sig-paren">(</span><em>string</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ramstk/Utilities.html#string_to_boolean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.Utilities.string_to_boolean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert string representations of TRUE/FALSE to an boolean value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>string</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the string to convert.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>_result</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="models-package">
+<h3>Models Package<a class="headerlink" href="#models-package" title="Permalink to this headline">¶</a></h3>
+=======
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 <div class="toctree-wrapper compound">
 <ul>
+<<<<<<< HEAD
 <li class="toctree-l1"><a class="reference internal" href="CODING_STDS.html">Coding Conventions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="CODING_STDS.html#naming-conventions">Naming Conventions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="CODING_STDS.html#constants-and-variables">Constants and Variables</a></li>
@@ -98,8 +1104,29 @@ good place to look.</p>
 <li class="toctree-l3"><a class="reference internal" href="CODING_STDS.html#attributes">Attributes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CODING_STDS.html#functions-and-methods">Functions and Methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CODING_STDS.html#tags">Tags</a></li>
+||||||| merged common ancestors
+<li class="toctree-l1"><a class="reference internal" href="api/models/commondb.html">RAMSTK Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/models/commondb.html#module-ramstk.dao.commondb.RAMSTKCondition">RAMSTKCondition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models/commondb.html#module-ramstk.dao.commondb.RAMSTKGroup">RAMSTKGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models/commondb.html#module-ramstk.dao.commondb.RAMSTKMeasurement">RAMSTKMeasurement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models/commondb.html#module-ramstk.dao.commondb.RAMSTKMethod">RAMSTKMethod</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models/commondb.html#module-ramstk.dao.commondb.RAMSTKModel">RAMSTKModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models/commondb.html#module-ramstk.dao.commondb.RAMSTKStatus">RAMSTKStatus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models/commondb.html#module-ramstk.dao.commondb.RAMSTKType">RAMSTKType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models/commondb.html#module-ramstk.dao.commondb.RAMSTKUser">RAMSTKUser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models/commondb.html#module-ramstk.models.programdb.RAMSTKMatrix">RAMSTKMatrix</a></li>
+=======
+<li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contributing to the RAMS ToolKit (RAMSTK)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="CONTRIBUTING.html#id1">Code of Conduct</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CONTRIBUTING.html#id2">How Can I Contribute?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CONTRIBUTING.html#id3">For Everyone</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CONTRIBUTING.html#id4">Reporting Issues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CONTRIBUTING.html#before-submitting-an-issue-report">Before Submitting an Issue Report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CONTRIBUTING.html#how-to-submit-a-useful-issue-report">How to Submit a Useful Issue Report</a></li>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </ul>
 </li>
+<<<<<<< HEAD
 <li class="toctree-l2"><a class="reference internal" href="CODING_STDS.html#design-conventions">Design Conventions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="CODING_STDS.html#data-models">Data Models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CODING_STDS.html#data-controllers">Data Controllers</a></li>
@@ -108,13 +1135,46 @@ good place to look.</p>
 <li class="toctree-l4"><a class="reference internal" href="CODING_STDS.html#matrix-views">Matrix Views</a></li>
 <li class="toctree-l4"><a class="reference internal" href="CODING_STDS.html#module-views">Module Views</a></li>
 <li class="toctree-l4"><a class="reference internal" href="CODING_STDS.html#work-views">Work Views</a></li>
+||||||| merged common ancestors
+<li class="toctree-l1"><a class="reference internal" href="api/models/fmea.html">FMEA Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/models/fmea.html#common-database-models">Common Database Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/models/fmea.html#module-ramstk.dao.commondb.RAMSTKFailureMode">RAMSTKFailureMode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/fmea.html#module-ramstk.dao.commondb.RAMSTKRPN">RAMSTKRPN</a></li>
+=======
+<li class="toctree-l2"><a class="reference internal" href="CONTRIBUTING.html#id7">For Developers’ Eyes Only</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CONTRIBUTING.html#pull-requests">Pull Requests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CONTRIBUTING.html#git-commit-messages">Git Commit Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CONTRIBUTING.html#always-add-descriptive-log-messages">Always Add Descriptive Log Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CONTRIBUTING.html#use-issue-system-numbers">Use Issue System Numbers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CONTRIBUTING.html#todo-comments">TODO Comments</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="CONTRIBUTING.html#id8">Process Guidelines</a></li>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
+</ul>
+</li>
+<<<<<<< HEAD
+||||||| merged common ancestors
+<li class="toctree-l2"><a class="reference internal" href="api/models/fmea.html#program-database-models">Program Database Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/models/fmea.html#module-ramstk.dao.programdb.RAMSTKAction">RAMSTKAction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/fmea.html#module-ramstk.dao.programdb.RAMSTKCause">RAMSTKCause</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/fmea.html#module-ramstk.dao.programdb.RAMSTKControl">RAMSTKControl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/fmea.html#module-ramstk.dao.programdb.RAMSTKMechanism">RAMSTKMechanism</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/fmea.html#module-ramstk.dao.programdb.RAMSTKMode">RAMSTKMode</a></li>
+=======
+<li class="toctree-l3"><a class="reference internal" href="CONTRIBUTING.html#never-write-a-test-that-doesn-t-have-an-engineering-specification">Never Write a Test That Doesn’t Have an Engineering Specification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CONTRIBUTING.html#never-write-code-that-doesn-t-have-a-test">Never Write Code That Doesn’t Have a Test</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CONTRIBUTING.html#never-commit-code-that-doesn-t-run">Never Commit Code That Doesn’t Run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CONTRIBUTING.html#always-statically-check-your-code">Always Statically Check Your Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CONTRIBUTING.html#double-check-before-you-create-a-pull-request">Double Check Before You Create a Pull Request</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CONTRIBUTING.html#code-review-by-other-developers">Code Review by Other Developers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CONTRIBUTING.html#don-t-create-a-pull-request-for-code-you-don-t-understand">Don’t Create a Pull Request for Code You Don’t Understand</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CONTRIBUTING.html#commit-complete-changesets">Commit Complete Changesets</a></li>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </ul>
 </li>
 </ul>
 </li>
 </ul>
-</li>
-</ul>
+<<<<<<< HEAD
 </div>
 </div>
 <div class="section" id="development-environment">
@@ -187,21 +1247,103 @@ pull requests.</p>
 <li class="toctree-l5"><a class="reference internal" href="api/ramstk.analyses.html#module-ramstk.analyses.similaritem">ramstk.analyses.similaritem module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="api/ramstk.analyses.html#module-ramstk.analyses.stress">ramstk.analyses.stress module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="api/ramstk.analyses.html#module-ramstk.analyses">Module contents</a></li>
+||||||| merged common ancestors
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/models/function.html#program-database-models">Program Database Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/models/function.html#module-ramstk.dao.programdb.RAMSTKFunction">RAMSTKFunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/function.html#module-ramstk.dao.programdb.RAMSTKHazardAnalysis">RAMSTKHazardAnalysis</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/models/hardware.html">Hardware Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/models/hardware.html#common-database-models">Common Database Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/models/hardware.html#module-ramstk.dao.commondb.RAMSTKCategory">RAMSTKCategory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/hardware.html#module-ramstk.dao.commondb.RAMSTKLoadHistory">RAMSTKLoadHistory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/hardware.html#module-ramstk.dao.commondb.RAMSTKManufacturer">RAMSTKManufacturer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/hardware.html#module-ramstk.dao.commondb.RAMSTKSubCategory">RAMSTKSubCategory</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/models/hardware.html#program-database-models">Program Database Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/models/hardware.html#module-ramstk.models.programdb.RAMSTKAllocation">RAMSTKAllocation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/hardware.html#module-ramstk.models.programdb.RAMSTKDesignElectric">RAMSTKDesignElectric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/hardware.html#module-ramstk.models.programdb.RAMSTKDesignMechanic">RAMSTKDesignMechanic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/hardware.html#module-ramstk.models.programdb.RAMSTKHardware">RAMSTKHardware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/hardware.html#module-ramstk.models.programdb.RAMSTKMilHdbkF">RAMSTKMilHdbkF</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/hardware.html#module-ramstk.models.programdb.RAMSTKNSWC">RAMSTKNSWC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/hardware.html#module-ramstk.dao.programdb.RAMSTKOpLoad">RAMSTKOpLoad</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/hardware.html#module-ramstk.dao.programdb.RAMSTKOpStress">RAMSTKOpStress</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/hardware.html#module-ramstk.models.programdb.RAMSTKReliability">RAMSTKReliability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/hardware.html#module-ramstk.models.programdb.RAMSTKSimilarItem">RAMSTKSimilarItem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/hardware.html#module-ramstk.dao.programdb.RAMSTKTestMethod">RAMSTKTestMethod</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/models/requirement.html">Requirement Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/models/requirement.html#common-database-models">Common Database Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/models/requirement.html#module-ramstk.dao.commondb.RAMSTKStakeholders">RAMSTKStakeholders</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/models/requirement.html#program-database-models">Program Database Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/models/requirement.html#module-ramstk.dao.programdb.RAMSTKRequirement">RAMSTKRequirement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/requirement.html#module-ramstk.dao.programdb.RAMSTKStakeholder">RAMSTKStakeholder</a></li>
+=======
+</div>
+</div>
+<div class="section" id="coding-standards">
+<h2>Coding Standards<a class="headerlink" href="#coding-standards" title="Permalink to this headline">¶</a></h2>
+<p>The coding standards below are probably out of date so you might review some of the existing code base to see how
+badly I haven’t followed my own standards.  I also open issues to document conventions and standards.  That’d be another
+good place to look.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="CODING_STDS.html">Coding Conventions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="CODING_STDS.html#id1">Naming Conventions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CODING_STDS.html#id2">Constants and Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CODING_STDS.html#id3">Classes and Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CODING_STDS.html#id4">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CODING_STDS.html#id5">Functions and Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CODING_STDS.html#id6">Tags</a></li>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
+</ul>
+</li>
+<<<<<<< HEAD
 <li class="toctree-l4"><a class="reference internal" href="api/ramstk.controllers.html">ramstk.controllers package</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="api/ramstk.controllers.html#subpackages">Subpackages</a><ul>
 <li class="toctree-l6"><a class="reference internal" href="api/ramstk.controllers.failure_definition.html">ramstk.controllers.failure_definition package</a><ul>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.failure_definition.html#submodules">Submodules</a></li>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.failure_definition.html#module-ramstk.controllers.failure_definition.datamanager">ramstk.controllers.failure_definition.datamanager module</a></li>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.failure_definition.html#module-ramstk.controllers.failure_definition">Module contents</a></li>
+||||||| merged common ancestors
+=======
+<li class="toctree-l2"><a class="reference internal" href="CODING_STDS.html#id7">Design Conventions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CODING_STDS.html#id8">Data Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CODING_STDS.html#id9">Data Controllers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CODING_STDS.html#id10">GUI Components</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="CODING_STDS.html#id11">List Views</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CODING_STDS.html#id12">Matrix Views</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CODING_STDS.html#id13">Module Views</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CODING_STDS.html#id14">Work Views</a></li>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </ul>
 </li>
+<<<<<<< HEAD
 <li class="toctree-l6"><a class="reference internal" href="api/ramstk.controllers.fmea.html">ramstk.controllers.fmea package</a><ul>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.fmea.html#submodules">Submodules</a></li>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.fmea.html#module-ramstk.controllers.fmea.analysismanager">ramstk.controllers.fmea.analysismanager module</a></li>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.fmea.html#module-ramstk.controllers.fmea.datamanager">ramstk.controllers.fmea.datamanager module</a></li>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.fmea.html#module-ramstk.controllers.fmea">Module contents</a></li>
+||||||| merged common ancestors
+<li class="toctree-l1"><a class="reference internal" href="api/models/revision.html">Revision Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/models/revision.html#program-database-models">Program Database Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/models/revision.html#ramstkenvironment">RAMSTKEnvironment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/revision.html#module-ramstk.models.programdb.RAMSTKFailureDefinition">RAMSTKFailureDefinition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/revision.html#ramstkmission">RAMSTKMission</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/revision.html#ramstkmissionphase">RAMSTKMissionPhase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/models/revision.html#module-ramstk.models.programdb.RAMSTKRevision">RAMSTKRevision</a></li>
+=======
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </ul>
 </li>
 <li class="toctree-l6"><a class="reference internal" href="api/ramstk.controllers.function.html">ramstk.controllers.function package</a><ul>
@@ -211,13 +1353,21 @@ pull requests.</p>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.function.html#module-ramstk.controllers.function">Module contents</a></li>
 </ul>
 </li>
+<<<<<<< HEAD
 <li class="toctree-l6"><a class="reference internal" href="api/ramstk.controllers.hardware.html">ramstk.controllers.hardware package</a><ul>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.hardware.html#submodules">Submodules</a></li>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.hardware.html#module-ramstk.controllers.hardware.analysismanager">ramstk.controllers.hardware.analysismanager module</a></li>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.hardware.html#module-ramstk.controllers.hardware.datamanager">ramstk.controllers.hardware.datamanager module</a></li>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.hardware.html#module-ramstk.controllers.hardware.matrixmanager">ramstk.controllers.hardware.matrixmanager module</a></li>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.hardware.html#module-ramstk.controllers.hardware">Module contents</a></li>
+||||||| merged common ancestors
+<li class="toctree-l1"><a class="reference internal" href="api/models/validation.html">Validation Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/models/validation.html#program-database-models">Program Database Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/models/validation.html#module-ramstk.dao.programdb.RAMSTKValidation">RAMSTKValidation</a></li>
+=======
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </ul>
+<<<<<<< HEAD
 </li>
 <li class="toctree-l6"><a class="reference internal" href="api/ramstk.controllers.hazards.html">ramstk.controllers.hazards package</a><ul>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.hazards.html#submodules">Submodules</a></li>
@@ -256,6 +1406,23 @@ pull requests.</p>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.stakeholder.html#module-ramstk.controllers.stakeholder.analysismanager">ramstk.controllers.stakeholder.analysismanager module</a></li>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.stakeholder.html#module-ramstk.controllers.stakeholder.datamanager">ramstk.controllers.stakeholder.datamanager module</a></li>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.stakeholder.html#module-ramstk.controllers.stakeholder">Module contents</a></li>
+||||||| merged common ancestors
+</li>
+=======
+</div>
+</div>
+<div class="section" id="development-environment">
+<h2>Development Environment<a class="headerlink" href="#development-environment" title="Permalink to this headline">¶</a></h2>
+<p>Another document that is likely out of date, but might be helpful if you’re interested in hacking on RAMSTK and opening
+pull requests.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="DEVELOPMENT_ENV.html">Establishing a Development Environment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="DEVELOPMENT_ENV.html#required-tools">Required Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DEVELOPMENT_ENV.html#create-the-virtual-environment">Create the Virtual Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DEVELOPMENT_ENV.html#install-python-packages">Install Python Packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DEVELOPMENT_ENV.html#install-and-test-ramstk">Install and Test RAMSTK</a></li>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </ul>
 </li>
 <li class="toctree-l6"><a class="reference internal" href="api/ramstk.controllers.usage_profile.html">ramstk.controllers.usage_profile package</a><ul>
@@ -263,6 +1430,7 @@ pull requests.</p>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.usage_profile.html#module-ramstk.controllers.usage_profile.datamanager">ramstk.controllers.usage_profile.datamanager module</a></li>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.usage_profile.html#module-ramstk.controllers.usage_profile">Module contents</a></li>
 </ul>
+<<<<<<< HEAD
 </li>
 <li class="toctree-l6"><a class="reference internal" href="api/ramstk.controllers.validation.html">ramstk.controllers.validation package</a><ul>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.validation.html#submodules">Submodules</a></li>
@@ -426,70 +1594,373 @@ pull requests.</p>
 <li class="toctree-l11"><a class="reference internal" href="api/ramstk.views.gtk3.hardware.components.html#module-ramstk.views.gtk3.hardware.components.semiconductor">ramstk.views.gtk3.hardware.components.semiconductor module</a></li>
 <li class="toctree-l11"><a class="reference internal" href="api/ramstk.views.gtk3.hardware.components.html#module-ramstk.views.gtk3.hardware.components.switch">ramstk.views.gtk3.hardware.components.switch module</a></li>
 <li class="toctree-l11"><a class="reference internal" href="api/ramstk.views.gtk3.hardware.components.html#module-ramstk.views.gtk3.hardware.components">Module contents</a></li>
+||||||| merged common ancestors
+</div>
+</div>
+<div class="section" id="controllers-package">
+<h3>Controllers Package<a class="headerlink" href="#controllers-package" title="Permalink to this headline">¶</a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/controllers/metaclasses.html">RAMSTK Data Manager</a><ul class="simple">
+=======
+</div>
+</div>
+<div class="section" id="api-documentation">
+<h2>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/modules.html">ramstk</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/ramstk.html">ramstk package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/ramstk.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/ramstk.analyses.html">ramstk.analyses package</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.analyses.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="api/ramstk.analyses.milhdbk217f.html">ramstk.analyses.milhdbk217f package</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.analyses.milhdbk217f.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l8"><a class="reference internal" href="api/ramstk.analyses.milhdbk217f.models.html">ramstk.analyses.milhdbk217f.models package</a><ul>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.analyses.milhdbk217f.models.html#submodules">Submodules</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.analyses.milhdbk217f.models.html#ramstk-analyses-milhdbk217f-models-capacitor-module">ramstk.analyses.milhdbk217f.models.capacitor module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.analyses.milhdbk217f.models.html#ramstk-analyses-milhdbk217f-models-connection-module">ramstk.analyses.milhdbk217f.models.connection module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.analyses.milhdbk217f.models.html#ramstk-analyses-milhdbk217f-models-crystal-module">ramstk.analyses.milhdbk217f.models.crystal module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.analyses.milhdbk217f.models.html#ramstk-analyses-milhdbk217f-models-efilter-module">ramstk.analyses.milhdbk217f.models.efilter module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.analyses.milhdbk217f.models.html#ramstk-analyses-milhdbk217f-models-fuse-module">ramstk.analyses.milhdbk217f.models.fuse module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.analyses.milhdbk217f.models.html#ramstk-analyses-milhdbk217f-models-inductor-module">ramstk.analyses.milhdbk217f.models.inductor module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.analyses.milhdbk217f.models.html#ramstk-analyses-milhdbk217f-models-integratedcircuit-module">ramstk.analyses.milhdbk217f.models.integratedcircuit module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.analyses.milhdbk217f.models.html#ramstk-analyses-milhdbk217f-models-lamp-module">ramstk.analyses.milhdbk217f.models.lamp module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.analyses.milhdbk217f.models.html#ramstk-analyses-milhdbk217f-models-meter-module">ramstk.analyses.milhdbk217f.models.meter module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.analyses.milhdbk217f.models.html#ramstk-analyses-milhdbk217f-models-relay-module">ramstk.analyses.milhdbk217f.models.relay module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.analyses.milhdbk217f.models.html#ramstk-analyses-milhdbk217f-models-resistor-module">ramstk.analyses.milhdbk217f.models.resistor module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.analyses.milhdbk217f.models.html#ramstk-analyses-milhdbk217f-models-semiconductor-module">ramstk.analyses.milhdbk217f.models.semiconductor module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.analyses.milhdbk217f.models.html#ramstk-analyses-milhdbk217f-models-switch-module">ramstk.analyses.milhdbk217f.models.switch module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.analyses.milhdbk217f.models.html#module-contents">Module contents</a></li>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </ul>
 </li>
 </ul>
 </li>
+<<<<<<< HEAD
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.hardware.html#submodules">Submodules</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.hardware.html#module-ramstk.views.gtk3.hardware.listview">ramstk.views.gtk3.hardware.listview module</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.hardware.html#module-ramstk.views.gtk3.hardware.moduleview">ramstk.views.gtk3.hardware.moduleview module</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.hardware.html#module-ramstk.views.gtk3.hardware.workview">ramstk.views.gtk3.hardware.workview module</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.hardware.html#module-ramstk.views.gtk3.hardware">Module contents</a></li>
+||||||| merged common ancestors
+<li class="toctree-l1"><a class="reference internal" href="api/controllers/hardware.html">Hardware Controllers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/controllers/hardware.html#module-ramstk.controllers.hardware.AnalysisManager">Analysis Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/controllers/hardware.html#module-ramstk.controllers.hardware.DataManager">Data Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/controllers/hardware.html#module-ramstk.controllers.hardware.MatrixManager">Matrix Manager</a></li>
+=======
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.analyses.milhdbk217f.html#submodules">Submodules</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.analyses.milhdbk217f.html#ramstk-analyses-milhdbk217f-milhdbk217f-module">ramstk.analyses.milhdbk217f.milhdbk217f module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.analyses.milhdbk217f.html#module-contents">Module contents</a></li>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </ul>
 </li>
+<<<<<<< HEAD
 <li class="toctree-l8"><a class="reference internal" href="api/ramstk.views.gtk3.hazard_analysis.html">ramstk.views.gtk3.hazard_analysis package</a><ul>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.hazard_analysis.html#submodules">Submodules</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.hazard_analysis.html#module-ramstk.views.gtk3.hazard_analysis.workview">ramstk.views.gtk3.hazard_analysis.workview module</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.hazard_analysis.html#module-ramstk.views.gtk3.hazard_analysis">Module contents</a></li>
+||||||| merged common ancestors
+<li class="toctree-l1"><a class="reference internal" href="api/controllers/revision.html">Revision Controllers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/controllers/revision.html#module-ramstk.controllers.revision.DataManager">Data Manager</a></li>
+=======
+<li class="toctree-l6"><a class="reference internal" href="api/ramstk.analyses.statistics.html">ramstk.analyses.statistics package</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.analyses.statistics.html#submodules">Submodules</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.analyses.statistics.html#ramstk-analyses-statistics-bounds-module">ramstk.analyses.statistics.bounds module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.analyses.statistics.html#module-contents">Module contents</a></li>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </ul>
 </li>
+<<<<<<< HEAD
 <li class="toctree-l8"><a class="reference internal" href="api/ramstk.views.gtk3.pof.html">ramstk.views.gtk3.pof package</a><ul>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.pof.html#submodules">Submodules</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.pof.html#module-ramstk.views.gtk3.pof.workview">ramstk.views.gtk3.pof.workview module</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.pof.html#module-ramstk.views.gtk3.pof">Module contents</a></li>
 </ul>
+||||||| merged common ancestors
+</ul>
+</div>
+</div>
+<div class="section" id="views-package">
+<h3>Views Package<a class="headerlink" href="#views-package" title="Permalink to this headline">¶</a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/views.html">PyGobject Interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/gui/gtk.widgets.html">Widgets Package</a><ul class="simple">
+</ul>
+=======
+</ul>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </li>
+<<<<<<< HEAD
 <li class="toctree-l8"><a class="reference internal" href="api/ramstk.views.gtk3.requirement.html">ramstk.views.gtk3.requirement package</a><ul>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.requirement.html#submodules">Submodules</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.requirement.html#module-ramstk.views.gtk3.requirement.listview">ramstk.views.gtk3.requirement.listview module</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.requirement.html#module-ramstk.views.gtk3.requirement.moduleview">ramstk.views.gtk3.requirement.moduleview module</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.requirement.html#module-ramstk.views.gtk3.requirement.workview">ramstk.views.gtk3.requirement.workview module</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.requirement.html#module-ramstk.views.gtk3.requirement">Module contents</a></li>
+||||||| merged common ancestors
+<li class="toctree-l2"><a class="reference internal" href="api/gui/gtk.mwi.html">Multi-Window Interface (MWI) Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.mwi.html#module-ramstk.gui.gtk.ramstk.Book">Book Meta-Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.mwi.html#module-ramstk.gui.gtk.mwi.ListBook">Lists and Matrices Book</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.mwi.html#module-ramstk.gui.gtk.mwi.ModuleBook">Module Book</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.mwi.html#module-ramstk.gui.gtk.mwi.WorkBook">Work Book</a></li>
+=======
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.analyses.html#submodules">Submodules</a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.analyses.html#ramstk-analyses-allocation-module">ramstk.analyses.allocation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.analyses.html#ramstk-analyses-criticality-module">ramstk.analyses.criticality module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.analyses.html#ramstk-analyses-derating-module">ramstk.analyses.derating module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.analyses.html#ramstk-analyses-dormancy-module">ramstk.analyses.dormancy module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.analyses.html#ramstk-analyses-fha-module">ramstk.analyses.fha module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.analyses.html#ramstk-analyses-improvementfactor-module">ramstk.analyses.improvementfactor module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.analyses.html#ramstk-analyses-similaritem-module">ramstk.analyses.similaritem module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.analyses.html#ramstk-analyses-stress-module">ramstk.analyses.stress module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.analyses.html#module-contents">Module contents</a></li>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </ul>
 </li>
+<<<<<<< HEAD
 <li class="toctree-l8"><a class="reference internal" href="api/ramstk.views.gtk3.revision.html">ramstk.views.gtk3.revision package</a><ul>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.revision.html#submodules">Submodules</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.revision.html#module-ramstk.views.gtk3.revision.moduleview">ramstk.views.gtk3.revision.moduleview module</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.revision.html#module-ramstk.views.gtk3.revision.workview">ramstk.views.gtk3.revision.workview module</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.revision.html#module-ramstk.views.gtk3.revision">Module contents</a></li>
+||||||| merged common ancestors
+<li class="toctree-l2"><a class="reference internal" href="api/gui/gtk.moduleview.html">Module View Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.moduleview.html#module-ramstk.gui.gtk.moduleviews.ModuleView">Module View Meta-Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.moduleview.html#module-ramstk.gui.gtk.moduleviews.Revision">Revision Module View</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.moduleview.html#module-ramstk.gui.gtk.moduleviews.Requirement">Requirement Module View</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.moduleview.html#module-ramstk.gui.gtk.moduleviews.Function">Function Module View</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.moduleview.html#module-ramstk.gui.gtk.moduleviews.Hardware">Hardware Module View</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.moduleview.html#module-ramstk.gui.gtk.moduleviews.Validation">Validation Module View</a></li>
+=======
+<li class="toctree-l4"><a class="reference internal" href="api/ramstk.controllers.html">ramstk.controllers package</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.controllers.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="api/ramstk.controllers.fmea.html">ramstk.controllers.fmea package</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.fmea.html#submodules">Submodules</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.fmea.html#ramstk-controllers-fmea-analysismanager-module">ramstk.controllers.fmea.analysismanager module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.fmea.html#ramstk-controllers-fmea-datamanager-module">ramstk.controllers.fmea.datamanager module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.fmea.html#module-contents">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l6"><a class="reference internal" href="api/ramstk.controllers.function.html">ramstk.controllers.function package</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.function.html#submodules">Submodules</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.function.html#ramstk-controllers-function-analysismanager-module">ramstk.controllers.function.analysismanager module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.function.html#ramstk-controllers-function-datamanager-module">ramstk.controllers.function.datamanager module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.function.html#ramstk-controllers-function-matrixmanager-module">ramstk.controllers.function.matrixmanager module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.function.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="api/ramstk.controllers.hardware.html">ramstk.controllers.hardware package</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.hardware.html#submodules">Submodules</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.hardware.html#ramstk-controllers-hardware-analysismanager-module">ramstk.controllers.hardware.analysismanager module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.hardware.html#ramstk-controllers-hardware-datamanager-module">ramstk.controllers.hardware.datamanager module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.hardware.html#ramstk-controllers-hardware-matrixmanager-module">ramstk.controllers.hardware.matrixmanager module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.hardware.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="api/ramstk.controllers.options.html">ramstk.controllers.options package</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.options.html#submodules">Submodules</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.options.html#ramstk-controllers-options-datamanager-module">ramstk.controllers.options.datamanager module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.options.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="api/ramstk.controllers.pof.html">ramstk.controllers.pof package</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.pof.html#submodules">Submodules</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.pof.html#ramstk-controllers-pof-datamanager-module">ramstk.controllers.pof.datamanager module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.pof.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="api/ramstk.controllers.requirement.html">ramstk.controllers.requirement package</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.requirement.html#submodules">Submodules</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.requirement.html#ramstk-controllers-requirement-datamanager-module">ramstk.controllers.requirement.datamanager module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.requirement.html#ramstk-controllers-requirement-matrixmanager-module">ramstk.controllers.requirement.matrixmanager module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.requirement.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="api/ramstk.controllers.revision.html">ramstk.controllers.revision package</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.revision.html#submodules">Submodules</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.revision.html#ramstk-controllers-revision-datamanager-module">ramstk.controllers.revision.datamanager module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.revision.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="api/ramstk.controllers.stakeholder.html">ramstk.controllers.stakeholder package</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.stakeholder.html#submodules">Submodules</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.stakeholder.html#ramstk-controllers-stakeholder-analysismanager-module">ramstk.controllers.stakeholder.analysismanager module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.stakeholder.html#ramstk-controllers-stakeholder-datamanager-module">ramstk.controllers.stakeholder.datamanager module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.stakeholder.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="api/ramstk.controllers.validation.html">ramstk.controllers.validation package</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.validation.html#submodules">Submodules</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.validation.html#ramstk-controllers-validation-analysismanager-module">ramstk.controllers.validation.analysismanager module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.validation.html#ramstk-controllers-validation-datamanager-module">ramstk.controllers.validation.datamanager module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.validation.html#ramstk-controllers-validation-matrixmanager-module">ramstk.controllers.validation.matrixmanager module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.controllers.validation.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.controllers.html#submodules">Submodules</a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.controllers.html#ramstk-controllers-managers-module">ramstk.controllers.managers module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.controllers.html#module-contents">Module contents</a></li>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
+</ul>
+</li>
+<<<<<<< HEAD
 <li class="toctree-l8"><a class="reference internal" href="api/ramstk.views.gtk3.similar_item.html">ramstk.views.gtk3.similar_item package</a><ul>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.similar_item.html#submodules">Submodules</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.similar_item.html#module-ramstk.views.gtk3.similar_item.workview">ramstk.views.gtk3.similar_item.workview module</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.similar_item.html#module-ramstk.views.gtk3.similar_item">Module contents</a></li>
+||||||| merged common ancestors
+<li class="toctree-l2"><a class="reference internal" href="api/gui/gtk.listview.html">List View Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.listview.html#module-ramstk.gui.gtk.listviews.ListView">List View Meta-Class Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.listview.html#module-ramstk.gui.gtk.listviews.FailureDefinition">Failure Definition List View</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.listview.html#module-ramstk.gui.gtk.listviews.UsageProfile">Usage Profile List View</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.listview.html#module-ramstk.gui.gtk.listviews.Stakeholder">Stakeholder List View</a></li>
+=======
+<li class="toctree-l4"><a class="reference internal" href="api/ramstk.db.html">ramstk.db package</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.db.html#submodules">Submodules</a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.db.html#ramstk-db-base-module">ramstk.db.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.db.html#ramstk-db-common-module">ramstk.db.common module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.db.html#ramstk-db-program-module">ramstk.db.program module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.db.html#module-contents">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="api/ramstk.exim.html">ramstk.exim package</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.exim.html#submodules">Submodules</a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.exim.html#ramstk-exim-export-module">ramstk.exim.export module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.exim.html#ramstk-exim-imports-module">ramstk.exim.imports module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.exim.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="api/ramstk.models.html">ramstk.models package</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.models.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="api/ramstk.models.commondb.html">ramstk.models.commondb package</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.commondb.html#submodules">Submodules</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.commondb.html#ramstk-models-commondb-ramstkcategory-module">ramstk.models.commondb.ramstkcategory module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.commondb.html#ramstk-models-commondb-ramstkcondition-module">ramstk.models.commondb.ramstkcondition module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.commondb.html#ramstk-models-commondb-ramstkfailuremode-module">ramstk.models.commondb.ramstkfailuremode module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.commondb.html#ramstk-models-commondb-ramstkgroup-module">ramstk.models.commondb.ramstkgroup module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.commondb.html#ramstk-models-commondb-ramstkhazards-module">ramstk.models.commondb.ramstkhazards module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.commondb.html#ramstk-models-commondb-ramstkloadhistory-module">ramstk.models.commondb.ramstkloadhistory module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.commondb.html#ramstk-models-commondb-ramstkmanufacturer-module">ramstk.models.commondb.ramstkmanufacturer module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.commondb.html#ramstk-models-commondb-ramstkmeasurement-module">ramstk.models.commondb.ramstkmeasurement module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.commondb.html#ramstk-models-commondb-ramstkmethod-module">ramstk.models.commondb.ramstkmethod module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.commondb.html#ramstk-models-commondb-ramstkmodel-module">ramstk.models.commondb.ramstkmodel module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.commondb.html#ramstk-models-commondb-ramstkrpn-module">ramstk.models.commondb.ramstkrpn module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.commondb.html#ramstk-models-commondb-ramstksiteinfo-module">ramstk.models.commondb.ramstksiteinfo module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.commondb.html#ramstk-models-commondb-ramstkstakeholders-module">ramstk.models.commondb.ramstkstakeholders module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.commondb.html#ramstk-models-commondb-ramstkstatus-module">ramstk.models.commondb.ramstkstatus module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.commondb.html#ramstk-models-commondb-ramstksubcategory-module">ramstk.models.commondb.ramstksubcategory module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.commondb.html#ramstk-models-commondb-ramstktype-module">ramstk.models.commondb.ramstktype module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.commondb.html#ramstk-models-commondb-ramstkuser-module">ramstk.models.commondb.ramstkuser module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.commondb.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="api/ramstk.models.programdb.html">ramstk.models.programdb package</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#submodules">Submodules</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkaction-module">ramstk.models.programdb.ramstkaction module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkallocation-module">ramstk.models.programdb.ramstkallocation module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkcause-module">ramstk.models.programdb.ramstkcause module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkcontrol-module">ramstk.models.programdb.ramstkcontrol module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkdesignelectric-module">ramstk.models.programdb.ramstkdesignelectric module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkdesignmechanic-module">ramstk.models.programdb.ramstkdesignmechanic module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkenvironment-module">ramstk.models.programdb.ramstkenvironment module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkfailuredefinition-module">ramstk.models.programdb.ramstkfailuredefinition module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkfunction-module">ramstk.models.programdb.ramstkfunction module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkhardware-module">ramstk.models.programdb.ramstkhardware module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkhazardanalysis-module">ramstk.models.programdb.ramstkhazardanalysis module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkmatrix-module">ramstk.models.programdb.ramstkmatrix module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkmechanism-module">ramstk.models.programdb.ramstkmechanism module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkmilhdbk217f-module">ramstk.models.programdb.ramstkmilhdbk217f module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkmission-module">ramstk.models.programdb.ramstkmission module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkmissionphase-module">ramstk.models.programdb.ramstkmissionphase module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkmode-module">ramstk.models.programdb.ramstkmode module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstknswc-module">ramstk.models.programdb.ramstknswc module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkopload-module">ramstk.models.programdb.ramstkopload module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkopstress-module">ramstk.models.programdb.ramstkopstress module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkprograminfo-module">ramstk.models.programdb.ramstkprograminfo module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkprogramstatus-module">ramstk.models.programdb.ramstkprogramstatus module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkreliability-module">ramstk.models.programdb.ramstkreliability module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkrequirement-module">ramstk.models.programdb.ramstkrequirement module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkrevision-module">ramstk.models.programdb.ramstkrevision module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstksimilaritem-module">ramstk.models.programdb.ramstksimilaritem module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkstakeholder-module">ramstk.models.programdb.ramstkstakeholder module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstktestmethod-module">ramstk.models.programdb.ramstktestmethod module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#ramstk-models-programdb-ramstkvalidation-module">ramstk.models.programdb.ramstkvalidation module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.models.programdb.html#module-contents">Module contents</a></li>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
+</ul>
+</li>
+<<<<<<< HEAD
 <li class="toctree-l8"><a class="reference internal" href="api/ramstk.views.gtk3.stakeholder.html">ramstk.views.gtk3.stakeholder package</a><ul>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.stakeholder.html#submodules">Submodules</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.stakeholder.html#module-ramstk.views.gtk3.stakeholder.listview">ramstk.views.gtk3.stakeholder.listview module</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.stakeholder.html#module-ramstk.views.gtk3.stakeholder">Module contents</a></li>
+||||||| merged common ancestors
+<li class="toctree-l2"><a class="reference internal" href="api/gui/gtk.matrixview.html">Matrix View Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.matrixview.html#module-ramstk.gui.gtk.matrixviews.MatrixView">Matrix View Meta-Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.matrixview.html#module-ramstk.gui.gtk.matrixviews.Function">Function Matrix Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.matrixview.html#module-ramstk.gui.gtk.matrixviews.Requirement">Requirement Matrix Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.matrixview.html#module-ramstk.gui.gtk.matrixviews.Hardware">Hardware Matrix Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.matrixview.html#module-ramstk.gui.gtk.matrixviews.Validation">Validation Matrix Views</a></li>
+=======
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </ul>
 </li>
+<<<<<<< HEAD
 <li class="toctree-l8"><a class="reference internal" href="api/ramstk.views.gtk3.usage_profile.html">ramstk.views.gtk3.usage_profile package</a><ul>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.usage_profile.html#submodules">Submodules</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.usage_profile.html#module-ramstk.views.gtk3.usage_profile.listview">ramstk.views.gtk3.usage_profile.listview module</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.usage_profile.html#module-ramstk.views.gtk3.usage_profile">Module contents</a></li>
+||||||| merged common ancestors
+<li class="toctree-l2"><a class="reference internal" href="api/gui/gtk.workview.html">Work View Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.workview.html#module-ramstk.gui.gtk.workviews.WorkView">Work View Meta-Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.workview.html#module-ramstk.gui.gtk.workviews.Revision">Revision Work View</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.workview.html#module-ramstk.gui.gtk.workviews.Function">Function Work View</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.workview.html#module-ramstk.gui.gtk.workviews.Requirement">Requirement Work View</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.workview.html#module-ramstk.gui.gtk.workviews.Hardware">Hardware Work View</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/gui/gtk.workview.html#module-ramstk.gui.gtk.workviews.components.Component">Component Base Work View</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/gui/gtk.workview.html#module-ramstk.gui.gtk.workviews.components.Capacitor">Capacitor Work View</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/gui/gtk.workview.html#module-ramstk.gui.gtk.workviews.components.Connection">Connection Work View</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/gui/gtk.workview.html#module-ramstk.gui.gtk.workviews.components.Inductor">Inductor Work View</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/gui/gtk.workview.html#module-ramstk.gui.gtk.workviews.components.IntegratedCircuit">Integrated Circuit Work View</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/gui/gtk.workview.html#module-ramstk.gui.gtk.workviews.components.Meter">Meter Work View</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/gui/gtk.workview.html#module-ramstk.gui.gtk.workviews.components.Miscellaneous">Miscellaneous Components Work View</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/gui/gtk.workview.html#module-ramstk.gui.gtk.workviews.components.Relay">Relay Work View</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/gui/gtk.workview.html#module-ramstk.gui.gtk.workviews.components.Resistor">Resistor Work View</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/gui/gtk.workview.html#module-ramstk.gui.gtk.workviews.components.Semiconductor">Semiconductor Work View</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/gui/gtk.workview.html#module-ramstk.gui.gtk.workviews.components.Switch">Switch Work View</a></li>
+=======
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.models.html#submodules">Submodules</a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.models.html#ramstk-models-tables-module">ramstk.models.tables module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.models.html#module-contents">Module contents</a></li>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </ul>
 </li>
+<<<<<<< HEAD
 <li class="toctree-l8"><a class="reference internal" href="api/ramstk.views.gtk3.validation.html">ramstk.views.gtk3.validation package</a><ul>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.validation.html#submodules">Submodules</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.validation.html#module-ramstk.views.gtk3.validation.listview">ramstk.views.gtk3.validation.listview module</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.validation.html#module-ramstk.views.gtk3.validation.moduleview">ramstk.views.gtk3.validation.moduleview module</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.validation.html#module-ramstk.views.gtk3.validation.workview">ramstk.views.gtk3.validation.workview module</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.validation.html#module-ramstk.views.gtk3.validation">Module contents</a></li>
+||||||| merged common ancestors
+<li class="toctree-l3"><a class="reference internal" href="api/gui/gtk.workview.html#module-ramstk.gui.gtk.workviews.Validation">Validation Work View</a></li>
+=======
+<li class="toctree-l4"><a class="reference internal" href="api/ramstk.views.html">ramstk.views package</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.views.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="api/ramstk.views.gtk3.html">ramstk.views.gtk3 package</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.views.gtk3.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l8"><a class="reference internal" href="api/ramstk.views.gtk3.assistants.html">ramstk.views.gtk3.assistants package</a><ul>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.assistants.html#submodules">Submodules</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.assistants.html#ramstk-views-gtk3-assistants-project-module">ramstk.views.gtk3.assistants.project module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.assistants.html#module-contents">Module contents</a></li>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </ul>
 </li>
+<<<<<<< HEAD
 <li class="toctree-l8"><a class="reference internal" href="api/ramstk.views.gtk3.widgets.html">ramstk.views.gtk3.widgets package</a><ul>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.widgets.html#submodules">Submodules</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.widgets.html#module-ramstk.views.gtk3.widgets.basebook">ramstk.views.gtk3.widgets.basebook module</a></li>
@@ -507,22 +1978,139 @@ pull requests.</p>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.widgets.html#module-ramstk.views.gtk3.widgets.treeview">ramstk.views.gtk3.widgets.treeview module</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.widgets.html#module-ramstk.views.gtk3.widgets.widget">ramstk.views.gtk3.widgets.widget module</a></li>
 <li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.widgets.html#module-ramstk.views.gtk3.widgets">Module contents</a></li>
+||||||| merged common ancestors
+=======
+<li class="toctree-l8"><a class="reference internal" href="api/ramstk.views.gtk3.books.html">ramstk.views.gtk3.books package</a><ul>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.books.html#submodules">Submodules</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.books.html#ramstk-views-gtk3-books-listbook-module">ramstk.views.gtk3.books.listbook module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.books.html#ramstk-views-gtk3-books-modulebook-module">ramstk.views.gtk3.books.modulebook module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.books.html#ramstk-views-gtk3-books-workbook-module">ramstk.views.gtk3.books.workbook module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.books.html#module-contents">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l8"><a class="reference internal" href="api/ramstk.views.gtk3.function.html">ramstk.views.gtk3.function package</a><ul>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.function.html#submodules">Submodules</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.function.html#ramstk-views-gtk3-function-listview-module">ramstk.views.gtk3.function.listview module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.function.html#ramstk-views-gtk3-function-moduleview-module">ramstk.views.gtk3.function.moduleview module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.function.html#ramstk-views-gtk3-function-workview-module">ramstk.views.gtk3.function.workview module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.function.html#module-contents">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l8"><a class="reference internal" href="api/ramstk.views.gtk3.requirement.html">ramstk.views.gtk3.requirement package</a><ul>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.requirement.html#submodules">Submodules</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.requirement.html#ramstk-views-gtk3-requirement-listview-module">ramstk.views.gtk3.requirement.listview module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.requirement.html#ramstk-views-gtk3-requirement-moduleview-module">ramstk.views.gtk3.requirement.moduleview module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.requirement.html#ramstk-views-gtk3-requirement-workview-module">ramstk.views.gtk3.requirement.workview module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.requirement.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l8"><a class="reference internal" href="api/ramstk.views.gtk3.revision.html">ramstk.views.gtk3.revision package</a><ul>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.revision.html#submodules">Submodules</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.revision.html#ramstk-views-gtk3-revision-listview-module">ramstk.views.gtk3.revision.listview module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.revision.html#ramstk-views-gtk3-revision-moduleview-module">ramstk.views.gtk3.revision.moduleview module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.revision.html#ramstk-views-gtk3-revision-workview-module">ramstk.views.gtk3.revision.workview module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.revision.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l8"><a class="reference internal" href="api/ramstk.views.gtk3.validation.html">ramstk.views.gtk3.validation package</a><ul>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.validation.html#submodules">Submodules</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.validation.html#ramstk-views-gtk3-validation-listview-module">ramstk.views.gtk3.validation.listview module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.validation.html#ramstk-views-gtk3-validation-moduleview-module">ramstk.views.gtk3.validation.moduleview module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.validation.html#ramstk-views-gtk3-validation-workview-module">ramstk.views.gtk3.validation.workview module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.validation.html#module-contents">Module contents</a></li>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
+</ul>
+</li>
+<<<<<<< HEAD
+</ul>
+||||||| merged common ancestors
+</ul>
+</div>
+</div>
+<div class="section" id="data-access-package">
+<h3>Data Access Package<a class="headerlink" href="#data-access-package" title="Permalink to this headline">¶</a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/dao.html">Data Access Object Package</a><ul class="simple">
+</ul>
+=======
+<li class="toctree-l8"><a class="reference internal" href="api/ramstk.views.gtk3.widgets.html">ramstk.views.gtk3.widgets package</a><ul>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.widgets.html#submodules">Submodules</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.widgets.html#ramstk-views-gtk3-widgets-basebook-module">ramstk.views.gtk3.widgets.basebook module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.widgets.html#ramstk-views-gtk3-widgets-baseview-module">ramstk.views.gtk3.widgets.baseview module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.widgets.html#ramstk-views-gtk3-widgets-button-module">ramstk.views.gtk3.widgets.button module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.widgets.html#ramstk-views-gtk3-widgets-combo-module">ramstk.views.gtk3.widgets.combo module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.widgets.html#ramstk-views-gtk3-widgets-dialog-module">ramstk.views.gtk3.widgets.dialog module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.widgets.html#ramstk-views-gtk3-widgets-entry-module">ramstk.views.gtk3.widgets.entry module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.widgets.html#ramstk-views-gtk3-widgets-frame-module">ramstk.views.gtk3.widgets.frame module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.widgets.html#ramstk-views-gtk3-widgets-label-module">ramstk.views.gtk3.widgets.label module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.widgets.html#ramstk-views-gtk3-widgets-matrixview-module">ramstk.views.gtk3.widgets.matrixview module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.widgets.html#ramstk-views-gtk3-widgets-plot-module">ramstk.views.gtk3.widgets.plot module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.widgets.html#ramstk-views-gtk3-widgets-scrolledwindow-module">ramstk.views.gtk3.widgets.scrolledwindow module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.widgets.html#ramstk-views-gtk3-widgets-treeview-module">ramstk.views.gtk3.widgets.treeview module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="api/ramstk.views.gtk3.widgets.html#module-contents">Module contents</a></li>
+</ul>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
+</li>
+<<<<<<< HEAD
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.views.gtk3.html#submodules">Submodules</a></li>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.views.gtk3.html#module-ramstk.views.gtk3.desktop">ramstk.views.gtk3.desktop module</a></li>
 <li class="toctree-l7"><a class="reference internal" href="api/ramstk.views.gtk3.html#module-ramstk.views.gtk3">Module contents</a></li>
 </ul>
+||||||| merged common ancestors
+</ul>
+</div>
+</div>
+<div class="section" id="analyses-package">
+<h3>Analyses Package<a class="headerlink" href="#analyses-package" title="Permalink to this headline">¶</a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/analyses/allocation.html">Reliability Allocation</a><ul class="simple">
+</ul>
+=======
+</ul>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </li>
+<<<<<<< HEAD
+||||||| merged common ancestors
+<li class="toctree-l1"><a class="reference internal" href="api/analyses/derating.html">Derating</a><ul class="simple">
+=======
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.views.gtk3.html#submodules">Submodules</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.views.gtk3.html#ramstk-views-gtk3-desktop-module">ramstk.views.gtk3.desktop module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="api/ramstk.views.gtk3.html#module-contents">Module contents</a></li>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </ul>
 </li>
+<<<<<<< HEAD
 <li class="toctree-l5"><a class="reference internal" href="api/ramstk.views.html#module-ramstk.views">Module contents</a></li>
+||||||| merged common ancestors
+<li class="toctree-l1"><a class="reference internal" href="api/analyses/dormancy.html">Dormancy</a><ul class="simple">
+=======
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </ul>
 </li>
+<<<<<<< HEAD
+||||||| merged common ancestors
+<li class="toctree-l1"><a class="reference internal" href="api/analyses/milhdbk217f.html">MIL-HDBK-217F Reliability Prediction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/analyses/milhdbk217f.html#module-ramstk.analyses.milhdbk217f.models.Capacitor">Capacitor Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/analyses/milhdbk217f.html#module-ramstk.analyses.milhdbk217f.models.Connection">Connection Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/analyses/milhdbk217f.html#module-ramstk.analyses.milhdbk217f.models.Crystal">Crystal Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/analyses/milhdbk217f.html#module-ramstk.analyses.milhdbk217f.models.Filter">Filter Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/analyses/milhdbk217f.html#module-ramstk.analyses.milhdbk217f.models.Fuse">Fuse Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/analyses/milhdbk217f.html#module-ramstk.analyses.milhdbk217f.models.Inductor">Inductor Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/analyses/milhdbk217f.html#module-ramstk.analyses.milhdbk217f.models.IntegratedCircuit">Integrated Circuit Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/analyses/milhdbk217f.html#module-ramstk.analyses.milhdbk217f.models.Lamp">Lamp Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/analyses/milhdbk217f.html#module-ramstk.analyses.milhdbk217f.models.Meter">Meter Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/analyses/milhdbk217f.html#module-ramstk.analyses.milhdbk217f.models.Relay">Relay Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/analyses/milhdbk217f.html#module-ramstk.analyses.milhdbk217f.models.Resistor">Resistor Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/analyses/milhdbk217f.html#module-ramstk.analyses.milhdbk217f.models.Semiconductor">Semicondcutor Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/analyses/milhdbk217f.html#module-ramstk.analyses.milhdbk217f.models.Switch">Switch Models</a></li>
+=======
+<li class="toctree-l5"><a class="reference internal" href="api/ramstk.views.html#module-contents">Module contents</a></li>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </ul>
 </li>
+<<<<<<< HEAD
 <li class="toctree-l3"><a class="reference internal" href="api/ramstk.html#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/ramstk.html#module-ramstk.configuration">ramstk.configuration module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/ramstk.html#module-ramstk.exceptions">ramstk.exceptions module</a></li>
@@ -530,13 +2118,48 @@ pull requests.</p>
 <li class="toctree-l3"><a class="reference internal" href="api/ramstk.html#module-ramstk.ramstk">ramstk.ramstk module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/ramstk.html#module-ramstk.utilities">ramstk.utilities module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/ramstk.html#module-ramstk">Module contents</a></li>
+||||||| merged common ancestors
+<li class="toctree-l1"><a class="reference internal" href="api/analyses/similaritem.html">Similar Item Analysis</a><ul class="simple">
+=======
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
+</ul>
+</li>
+<<<<<<< HEAD
+||||||| merged common ancestors
+<li class="toctree-l1"><a class="reference internal" href="api/analyses/stress.html">Stress Analysis</a><ul class="simple">
+=======
+<li class="toctree-l3"><a class="reference internal" href="api/ramstk.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/ramstk.html#ramstk-configuration-module">ramstk.configuration module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/ramstk.html#ramstk-exceptions-module">ramstk.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/ramstk.html#ramstk-logger-module">ramstk.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/ramstk.html#ramstk-ramstk-module">ramstk.ramstk module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/ramstk.html#ramstk-utilities-module">ramstk.utilities module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/ramstk.html#module-contents">Module contents</a></li>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </ul>
 </li>
 </ul>
+<<<<<<< HEAD
+</div>
+</div>
+||||||| merged common ancestors
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h3>Indices and Tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+</div>
+=======
 </li>
 </ul>
 </div>
 </div>
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
 </div>
 
 
@@ -594,10 +2217,19 @@ pull requests.</p>
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+<<<<<<< HEAD
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
           <a href="CONTRIBUTING.html" title="Contributing to the RAMS ToolKit (RAMSTK)"
+||||||| merged common ancestors
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api/models/commondb.html" title="RAMSTK Models"
+=======
+          <a href="CONTRIBUTING.html" title="Contributing to the RAMS ToolKit (RAMSTK)"
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="user/validation.html" title="The Validation Module"
@@ -606,8 +2238,16 @@ pull requests.</p>
     </div>
 
     <div class="footer" role="contentinfo">
+<<<<<<< HEAD
         &#169; Copyright 2007 - 2020, Doyle Rowland.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+||||||| merged common ancestors
+        &#169; Copyright 2007 - 2019, Doyle Rowland.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
+=======
+        &#169; Copyright 2007 - 2020, Doyle Rowland.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
     </div>
   </body>
 </html>

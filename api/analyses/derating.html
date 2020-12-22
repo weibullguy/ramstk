@@ -46,80 +46,6 @@
 <h1>Derating<a class="headerlink" href="#derating" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<span class="target" id="module-ramstk.analyses.Derating"></span><p>Component Derating Calculations Module.</p>
-<dl class="function">
-<dt id="ramstk.analyses.Derating.check_overstress">
-<code class="descclassname">ramstk.analyses.Derating.</code><code class="descname">check_overstress</code><span class="sig-paren">(</span><em>op_stress</em>, <em>limits</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/analyses/Derating.html#check_overstress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.Derating.check_overstress" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if an operating condition results in an overstressed condition.</p>
-<p>Checks if the operating stress is less than the lower limit or greater than
-the upper limit.  Limits and operating stresses may be integers or floats.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">check_overstress</span><span class="p">(</span><span class="mf">0.625</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;mild&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span> <span class="s1">&#39;harsh&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">]})</span>
-<span class="go">{&#39;mild&#39;: [False, False], &#39;harsh&#39;: [False, False]}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">check_overstress</span><span class="p">(</span><span class="o">-</span><span class="mf">0.625</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;mild&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span> <span class="s1">&#39;harsh&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">]})</span>
-<span class="go">{&#39;mild&#39;: [True, False], &#39;harsh&#39;: [True, False]}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">check_overstress</span><span class="p">(</span><span class="mf">0.825</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;mild&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span> <span class="s1">&#39;harsh&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">]})</span>
-<span class="go">{&#39;mild&#39;: [False, False], &#39;harsh&#39;: [False, True]}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">check_overstress</span><span class="p">(</span><span class="mf">0.825</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;mild&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span> <span class="s1">&#39;harsh&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">]})</span>
-<span class="go">{&#39;mild&#39;: [False, False], &#39;harsh&#39;: [False, True]}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">check_overstress</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;mild&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span> <span class="s1">&#39;harsh&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">]})</span>
-<span class="go">{&#39;mild&#39;: [False, True], &#39;harsh&#39;: [False, True]}</span>
-</pre></div>
-</div>
-<p>Limits must be lists:
-&gt;&gt;&gt; check_overstress(0.825, {‘mild’: 0.9, ‘harsh’: 0.75})
-Traceback (most recent call last):</p>
-<blockquote>
-<div><p>…</p>
-</div></blockquote>
-<p>TypeError: ‘float’ object is not subscriptable</p>
-<p>And those lists must contain a lower and upper limit:
-check_overstress(0.825, {‘mild’: [0.9], ‘harsh’: [0.75]})
-Traceback (most recent call last):</p>
-<blockquote>
-<div><p>…</p>
-</div></blockquote>
-<p>IndexError: list index out of range</p>
-<p>Limit values must not be strings:
-check_overstress(0.825, {‘mild’: [0.0, ‘0.9’], ‘harsh’: [0.0, 0.75]})
-Traceback (most recent call last):</p>
-<blockquote>
-<div><p>…</p>
-</div></blockquote>
-<p>TypeError: ‘&gt;’ not supported between instances of ‘float’ and ‘str’</p>
-<p>The programmer must ensure the operating stress and limits are provided in
-the proper format.  For example:</p>
-<blockquote>
-<div><p>op_stress = (operating current / rated current) with limits provided as
-decimals.
-op_stress = (operating temperature - maximum junction temperature) with
-limits provided as a delta T.</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>op_stress</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the level of the operating stress.</p></li>
-<li><p><strong>limits</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – a dict containing the stress limits.  Key is the name
-of the environment (mild, harsh, protected, etc.) and the value is a
-list of [lower limit, upper limit].</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>_overstress; dict of indicators whether or not an overstress
-condition exists.  Key is the environment type (mild, harsh, protected,
-etc.) and the value is a list of booleans for each limit.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
-</dd>
-<dt class="field-even">Raise</dt>
-<dd class="field-even"><p>IndexError if a limit value has too few items in the list.</p>
-</dd>
-<dt class="field-odd">Raise</dt>
-<dd class="field-odd"><p>TypeError if a limit value is not a list of numericals.</p>
-</dd>
-</dl>
-</dd></dl>
-
 </div>
 
 
@@ -145,10 +71,10 @@ etc.) and the value is a list of booleans for each limit.</p>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -165,9 +91,6 @@ etc.) and the value is a list of booleans for each limit.</p>
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="dormancy.html" title="Dormancy"
              accesskey="N">next</a> |</li>
         <li class="right" >
@@ -178,7 +101,7 @@ etc.) and the value is a list of booleans for each limit.</p>
 
     <div class="footer" role="contentinfo">
         &#169; Copyright 2007 - 2019, Doyle Rowland.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
     </div>
   </body>
 </html>

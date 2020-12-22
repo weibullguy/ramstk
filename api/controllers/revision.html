@@ -17,8 +17,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="PyGobject Interface" href="../views.html" />
-    <link rel="prev" title="Hardware Controllers" href="hardware.html" />
+    <link rel="next" title="Stakeholder Controllers" href="stakeholder.html" />
+    <link rel="prev" title="Requirement Controllers" href="requirement.html" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <link rel="shortcut icon" type="image/png" href="../../_static/favicon.png" />
     <meta name="viewport" content="width=device-width,initial-scale=0.8">
@@ -46,288 +46,8 @@
 <h1>Revision Controllers<a class="headerlink" href="#revision-controllers" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<div class="section" id="module-ramstk.controllers.revision.DataManager">
-<span id="data-manager"></span><h2>Data Manager<a class="headerlink" href="#module-ramstk.controllers.revision.DataManager" title="Permalink to this headline">¶</a></h2>
-<p>Revision Package Data Model.</p>
-<dl class="class">
-<dt id="ramstk.controllers.revision.DataManager.DataManager">
-<em class="property">class </em><code class="descclassname">ramstk.controllers.revision.DataManager.</code><code class="descname">DataManager</code><span class="sig-paren">(</span><em>dao</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/controllers/revision/DataManager.html#DataManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.revision.DataManager.DataManager" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="metaclasses.html#ramstk.controllers.RAMSTKDataManager.RAMSTKDataManager" title="ramstk.controllers.RAMSTKDataManager.RAMSTKDataManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.controllers.RAMSTKDataManager.RAMSTKDataManager</span></code></a></p>
-<p>Contain the attributes and methods of the Revision data manager.</p>
-<p>This class manages the revision data from the RAMSTKRevision,
-RAMSTKFailureDefinition, RAMSTKMission, RAMSTKMissionPhase, and
-RAMSKTEnvironment data models.</p>
-<dl class="method">
-<dt id="ramstk.controllers.revision.DataManager.DataManager._do_delete">
-<code class="descname">_do_delete</code><span class="sig-paren">(</span><em>node_id</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/controllers/revision/DataManager.html#DataManager._do_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.revision.DataManager.DataManager._do_delete" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove a revision.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>node_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the node (revision) ID to be removed from the
-RAMSTK Program database.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.controllers.revision.DataManager.DataManager._do_select_usage_profile">
-<code class="descname">_do_select_usage_profile</code><span class="sig-paren">(</span><em>revision_id</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/controllers/revision/DataManager.html#DataManager._do_select_usage_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.revision.DataManager.DataManager._do_select_usage_profile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve the usage profile data from the RAMSTK Program database.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>revision_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the Revision ID to select the Usage Profile
-for.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>_tree; the usage profile treelib Tree().</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">treelib.Tree()</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.controllers.revision.DataManager.DataManager._do_set_failure_definition">
-<code class="descname">_do_set_failure_definition</code><span class="sig-paren">(</span><em>node_id</em>, <em>key</em>, <em>value</em>, <em>definition_id</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/controllers/revision/DataManager.html#DataManager._do_set_failure_definition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.revision.DataManager.DataManager._do_set_failure_definition" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the attributes of the record associated with definition ID.</p>
-<p>This is a helper method to set the desired failure definition attribute
-since the failure definitions are carried in a dict and we need to
-select the correct record to update.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>node_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the ID of the record in the RAMSTK Program
-database table whose attributes are to be set.</p></li>
-<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the key in the attributes dict.</p></li>
-<li><p><strong>value</strong> – the new value of the attribute to set.</p></li>
-<li><p><strong>definition_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the failure definition ID if the attribute
-being set is a failure definition attribute.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.controllers.revision.DataManager.DataManager._do_set_usage_profile">
-<code class="descname">_do_set_usage_profile</code><span class="sig-paren">(</span><em>node_id</em>, <em>key</em>, <em>value</em>, <em>usage_id</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/controllers/revision/DataManager.html#DataManager._do_set_usage_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.revision.DataManager.DataManager._do_set_usage_profile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the attributes of the record associated with usage ID.</p>
-<p>This is a helper method to set the desired usage profile attribute
-since the usage profile is carried as a treelib Tree() and we need to
-select the correct node (record) to update.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>node_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the ID of the revision in the RAMSTK Program
-database table whose attributes are to be set.</p></li>
-<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the key in the attributes dict.</p></li>
-<li><p><strong>value</strong> – the new value of the attribute to set.</p></li>
-<li><p><strong>usage_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the usage profile ID of the element (mission,
-mission phase, or environment) whose attribute is being set.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.controllers.revision.DataManager.DataManager._root">
-<code class="descname">_root</code><em class="property"> = 0</em><a class="headerlink" href="#ramstk.controllers.revision.DataManager.DataManager._root" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.controllers.revision.DataManager.DataManager._tag">
-<code class="descname">_tag</code><em class="property"> = 'revision'</em><a class="headerlink" href="#ramstk.controllers.revision.DataManager.DataManager._tag" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="ramstk.controllers.revision.DataManager.DataManager.do_get_all_attributes">
-<code class="descname">do_get_all_attributes</code><span class="sig-paren">(</span><em>node_id</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/controllers/revision/DataManager.html#DataManager.do_get_all_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.revision.DataManager.DataManager.do_get_all_attributes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve all RAMSTK data tables’ attributes for the revision.</p>
-<p>This is a helper method to be able to retrieve all the revision’s
-attributes in a single call.  It’s used primarily by the
-AnalysisManager.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>node_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the node (revision) ID of the revision item to
-get the attributes for.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.controllers.revision.DataManager.DataManager.do_get_attributes">
-<code class="descname">do_get_attributes</code><span class="sig-paren">(</span><em>node_id</em>, <em>table</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/controllers/revision/DataManager.html#DataManager.do_get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.revision.DataManager.DataManager.do_get_attributes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve the RAMSTK data table attributes for the revision.</p>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>the failure definition will return a dict of all the
-failure definitions associated with the node (revision) ID.  This
-dict uses the definition ID as the key and the instance of the
-RAMSTKFailureDefinition as the value.  The subscibing methods and
-functions will need to unpack this dict.</p>
-</div>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>the usage profile will return a treelib Tree() of all
-the usage profiles associated with the node (revision) ID.  The
-subscribing methods and functions will need to parse this Tree().</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>node_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the node (revision) ID of the revision to get the
-attributes for.</p></li>
-<li><p><strong>table</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the RAMSTK data table to retrieve the attributes
-from.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.controllers.revision.DataManager.DataManager.do_get_tree">
-<code class="descname">do_get_tree</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/controllers/revision/DataManager.html#DataManager.do_get_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.revision.DataManager.DataManager.do_get_tree" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve the revision treelib Tree.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.controllers.revision.DataManager.DataManager.do_insert">
-<code class="descname">do_insert</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/controllers/revision/DataManager.html#DataManager.do_insert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.revision.DataManager.DataManager.do_insert" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a new revision.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.controllers.revision.DataManager.DataManager.do_select_all">
-<code class="descname">do_select_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/controllers/revision/DataManager.html#DataManager.do_select_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.revision.DataManager.DataManager.do_select_all" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve all the Revision data from the RAMSTK Program database.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.controllers.revision.DataManager.DataManager.do_set_all_attributes">
-<code class="descname">do_set_all_attributes</code><span class="sig-paren">(</span><em>attributes</em>, <em>definition_id=None</em>, <em>usage_id=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/controllers/revision/DataManager.html#DataManager.do_set_all_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.revision.DataManager.DataManager.do_set_all_attributes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set all the attributes of the record associated with the Module ID.</p>
-<p>This is a helper function to set a group of attributes in a single
-call.  Used mainly by the AnalysisManager.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>attributes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – the aggregate attributes dict for the revision.</p></li>
-<li><p><strong>definition_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the failure definition ID if the attribute
-being set is a failure definition attribute.</p></li>
-<li><p><strong>usage_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the usage profile ID if the attribute being set
-is a usage profile (mission, mission phase, or environment)
-attribute.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.controllers.revision.DataManager.DataManager.do_set_attributes">
-<code class="descname">do_set_attributes</code><span class="sig-paren">(</span><em>node_id</em>, <em>key</em>, <em>value</em>, <em>definition_id=None</em>, <em>usage_id=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/controllers/revision/DataManager.html#DataManager.do_set_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.revision.DataManager.DataManager.do_set_attributes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the attributes of the record associated with the Module ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>node_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the ID of the record in the RAMSTK Program
-database table whose attributes are to be set.</p></li>
-<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the key in the attributes dict.</p></li>
-<li><p><strong>value</strong> – the new value of the attribute to set.</p></li>
-<li><p><strong>definition_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the failure definition ID if the attribute
-being set is a failure definition attribute.</p></li>
-<li><p><strong>usage_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the usage profile ID if the attribute being set
-is a usage profile (mission, mission phase, or environment)
-attribute.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.controllers.revision.DataManager.DataManager.do_update">
-<code class="descname">do_update</code><span class="sig-paren">(</span><em>node_id</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/controllers/revision/DataManager.html#DataManager.do_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.controllers.revision.DataManager.DataManager.do_update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the record associated with node ID in RAMSTK Program database.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>node_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the node (revision) ID of the revision to save.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="data-manager">
+<h2>Data Manager<a class="headerlink" href="#data-manager" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -343,17 +63,17 @@ attribute.</p></li>
   <h3><a href="../../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Revision Controllers</a><ul>
-<li><a class="reference internal" href="#module-ramstk.controllers.revision.DataManager">Data Manager</a></li>
+<li><a class="reference internal" href="#data-manager">Data Manager</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="hardware.html"
-                        title="previous chapter">Hardware Controllers</a></p>
+  <p class="topless"><a href="requirement.html"
+                        title="previous chapter">Requirement Controllers</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="../views.html"
-                        title="next chapter">PyGobject Interface</a></p>
+  <p class="topless"><a href="stakeholder.html"
+                        title="next chapter">Stakeholder Controllers</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -362,10 +82,10 @@ attribute.</p></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -382,20 +102,17 @@ attribute.</p></li>
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="../views.html" title="PyGobject Interface"
+          <a href="stakeholder.html" title="Stakeholder Controllers"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="hardware.html" title="Hardware Controllers"
+          <a href="requirement.html" title="Requirement Controllers"
              accesskey="P">previous</a> |</li>
       </ul>
     </div>
 
     <div class="footer" role="contentinfo">
         &#169; Copyright 2007 - 2019, Doyle Rowland.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
     </div>
   </body>
 </html>

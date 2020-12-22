@@ -46,251 +46,6 @@
 <h1>Data Access Object Package<a class="headerlink" href="#data-access-object-package" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<span class="target" id="module-ramstk.dao.DAO"></span><p>Data Access Object (DAO) Package.</p>
-<dl class="class">
-<dt id="ramstk.dao.DAO.DAO">
-<em class="property">class </em><code class="descclassname">ramstk.dao.DAO.</code><code class="descname">DAO</code><a class="reference internal" href="../_modules/ramstk/dao/DAO.html#DAO"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.dao.DAO.DAO" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>This is the data access controller class.</p>
-<dl class="attribute">
-<dt id="ramstk.dao.DAO.DAO.RAMSTK_SESSION">
-<code class="descname">RAMSTK_SESSION</code><em class="property"> = sessionmaker(class_='Session', bind=None, autoflush=True, autocommit=False, expire_on_commit=True)</em><a class="headerlink" href="#ramstk.dao.DAO.DAO.RAMSTK_SESSION" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="ramstk.dao.DAO.DAO._db_table_create">
-<code class="descname">_db_table_create</code><span class="sig-paren">(</span><em>table</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/dao/DAO.html#DAO._db_table_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.dao.DAO.DAO._db_table_create" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if the passed table exists and create it if not.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>table</strong> – the table to check for.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.DAO.DAO.database">
-<code class="descname">database</code><em class="property"> = None</em><a class="headerlink" href="#ramstk.dao.DAO.DAO.database" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="ramstk.dao.DAO.DAO.db_add">
-<code class="descname">db_add</code><span class="sig-paren">(</span><em>item</em>, <em>session=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/dao/DAO.html#DAO.db_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.dao.DAO.DAO.db_add" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a new item to the RAMSTK Program database.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>item</strong> – the object to add to the RAMSTK Program database.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>(_error_code, _msg); the error code and associated error
-message.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.dao.DAO.DAO.db_close">
-<code class="descname">db_close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/dao/DAO.html#DAO.db_close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.dao.DAO.DAO.db_close" title="Permalink to this definition">¶</a></dt>
-<dd><p>Close the current session.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.dao.DAO.DAO.db_connect">
-<code class="descname">db_connect</code><span class="sig-paren">(</span><em>database</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/dao/DAO.html#DAO.db_connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.dao.DAO.DAO.db_connect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Connect to the database using settings from the configuration file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>database</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the absolute path to the database to connect to.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="ramstk.dao.DAO.DAO.db_create_common">
-<em class="property">static </em><code class="descname">db_create_common</code><span class="sig-paren">(</span><em>database</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/dao/DAO.html#DAO.db_create_common"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.dao.DAO.DAO.db_create_common" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a new RAMSTK Common database.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>database</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the RFC1738 URL path to the database to connect
-with.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>False if successful or True if an error occurs.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="ramstk.dao.DAO.DAO.db_create_program">
-<em class="property">static </em><code class="descname">db_create_program</code><span class="sig-paren">(</span><em>database</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/dao/DAO.html#DAO.db_create_program"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.dao.DAO.DAO.db_create_program" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a new RAMSTK Program database.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>database</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the RFC1738 URL path to the database to connect
-with.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>False if successful or True if an error occurs.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.dao.DAO.DAO.db_delete">
-<code class="descname">db_delete</code><span class="sig-paren">(</span><em>item</em>, <em>session=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/dao/DAO.html#DAO.db_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.dao.DAO.DAO.db_delete" title="Permalink to this definition">¶</a></dt>
-<dd><p>Delete a record from the RAMSTK Program database.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>item</strong> (<em>Object</em><em>(</em><em>)</em>) – the item to remove from the RAMSTK Program database.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>(_error_code, _Msg); the error code and associated error
-message.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.DAO.DAO.db_last_id">
-<code class="descname">db_last_id</code><a class="headerlink" href="#ramstk.dao.DAO.DAO.db_last_id" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve the value of the last ID column from a table in the database.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>_last_id; the last value of the ID column.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="ramstk.dao.DAO.DAO.db_query">
-<em class="property">static </em><code class="descname">db_query</code><span class="sig-paren">(</span><em>query</em>, <em>session=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/dao/DAO.html#DAO.db_query"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.dao.DAO.DAO.db_query" title="Permalink to this definition">¶</a></dt>
-<dd><p>Execute an SQL query against the connected database.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>query</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the SQL query string to execute</p></li>
-<li><p><strong>session</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.orm.scoped_session</span></code>) – the SQLAlchemy scoped_session instance used to
-communicate with the RAMSTK Program database.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.dao.DAO.DAO.db_update">
-<code class="descname">db_update</code><span class="sig-paren">(</span><em>session=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/dao/DAO.html#DAO.db_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.dao.DAO.DAO.db_update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the RAMSTK Program database with any pending changes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>(_error_code, _Msg); the error code and associated error
-message.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.DAO.DAO.engine">
-<code class="descname">engine</code><em class="property"> = None</em><a class="headerlink" href="#ramstk.dao.DAO.DAO.engine" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.DAO.DAO.metadata">
-<code class="descname">metadata</code><em class="property"> = None</em><a class="headerlink" href="#ramstk.dao.DAO.DAO.metadata" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.DAO.DAO.session">
-<code class="descname">session</code><em class="property"> = None</em><a class="headerlink" href="#ramstk.dao.DAO.DAO.session" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="ramstk.dao.DAO.do_create_common_db">
-<code class="descclassname">ramstk.dao.DAO.</code><code class="descname">do_create_common_db</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/dao/DAO.html#do_create_common_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.dao.DAO.do_create_common_db" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create and populate the RAMSTK Common database.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="ramstk.dao.DAO.do_create_program_db">
-<code class="descclassname">ramstk.dao.DAO.</code><code class="descname">do_create_program_db</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/dao/DAO.html#do_create_program_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.dao.DAO.do_create_program_db" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create and initialize a RAMSTK Program database.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="ramstk.dao.DAO.do_create_test_database">
-<code class="descclassname">ramstk.dao.DAO.</code><code class="descname">do_create_test_database</code><span class="sig-paren">(</span><em>database</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/dao/DAO.html#do_create_test_database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.dao.DAO.do_create_test_database" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a new RAMSTK Program test database.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>database</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the RFC1738 URL path to the database to connect
-with.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>False if successful or True if an error occurs.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="ramstk.dao.DAO.do_make_commondb_tables">
-<code class="descclassname">ramstk.dao.DAO.</code><code class="descname">do_make_commondb_tables</code><span class="sig-paren">(</span><em>engine</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/dao/DAO.html#do_make_commondb_tables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.dao.DAO.do_make_commondb_tables" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make all the tables in the RAMSTK Common database.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="ramstk.dao.DAO.do_make_programdb_tables">
-<code class="descclassname">ramstk.dao.DAO.</code><code class="descname">do_make_programdb_tables</code><span class="sig-paren">(</span><em>engine</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ramstk/dao/DAO.html#do_make_programdb_tables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.dao.DAO.do_make_programdb_tables" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make all the tables in the RAMSTK Program database.</p>
-</dd></dl>
-
 </div>
 
 
@@ -316,10 +71,10 @@ with.</p>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -336,9 +91,6 @@ with.</p>
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="analyses/allocation.html" title="Reliability Allocation"
              accesskey="N">next</a> |</li>
         <li class="right" >
@@ -349,7 +101,7 @@ with.</p>
 
     <div class="footer" role="contentinfo">
         &#169; Copyright 2007 - 2019, Doyle Rowland.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
     </div>
   </body>
 </html>

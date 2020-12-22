@@ -47,445 +47,17 @@
 <h1>Multi-Window Interface (MWI) Package<a class="headerlink" href="#multi-window-interface-mwi-package" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<div class="section" id="module-ramstk.gui.gtk.ramstk.Book">
-<span id="book-meta-class"></span><h2>Book Meta-Class<a class="headerlink" href="#module-ramstk.gui.gtk.ramstk.Book" title="Permalink to this headline">¶</a></h2>
-<p>The Base RAMSTK Book.</p>
-<dl class="class">
-<dt id="ramstk.gui.gtk.ramstk.Book.RAMSTKBook">
-<em class="property">class </em><code class="descclassname">ramstk.gui.gtk.ramstk.Book.</code><code class="descname">RAMSTKBook</code><span class="sig-paren">(</span><em>configuration</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/ramstk/Book.html#RAMSTKBook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.ramstk.Book.RAMSTKBook" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gi.overrides.Gtk.Window</span></code></p>
-<p>The base view for the multiple window interface Books.</p>
-<p>This is the base class for the List Book, Module Book, and Work Book.
-Attributes of the RAMSTKBook are:</p>
-<dl class="field-list simple">
-<dt class="field-odd">Variables</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><a class="reference internal" href="#ramstk.gui.gtk.ramstk.Book.RAMSTKBook.RAMSTK_CONFIGURATION" title="ramstk.gui.gtk.ramstk.Book.RAMSTKBook.RAMSTK_CONFIGURATION"><strong>RAMSTK_CONFIGURATION</strong></a> – the instance of the RAMSTK Configuration class.</p></li>
-<li><p><a class="reference internal" href="#ramstk.gui.gtk.ramstk.Book.RAMSTKBook.dic_books" title="ramstk.gui.gtk.ramstk.Book.RAMSTKBook.dic_books"><strong>dic_books</strong></a> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – dictionary holding a reference to each RAMSTK book.</p></li>
-<li><p><strong>dic_tab_pos</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – dictionary holding the Gtk.PositionType()s for each
-of left, right, top, and botton.</p></li>
-<li><p><strong>_lst_handler_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – the list of widget callback handler IDs.</p></li>
-<li><p><strong>_n_screens</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the number of monitors attached to the machine
-running RAMSTK.</p></li>
-<li><p><strong>_height</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the height of the monitors attached to the machine
-running RAMSTK.</p></li>
-<li><p><strong>_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the average width of each monitor attached to the
-machine running RAMSTK.</p></li>
-<li><p><strong>notebook</strong> – the Gtk.Notebook() widget used to hold each of the RAMSTK
-module WorkViews.</p></li>
-<li><p><strong>menubar</strong> – the Gtk.MenuBar() for the RAMSTK ModuleBook menu.</p></li>
-<li><p><strong>progressbar</strong> – the Gtk.Progressbar() for displaying progress counters.</p></li>
-<li><p><strong>statusbar</strong> – the Gtk.Statusbar() for displaying messages.</p></li>
-<li><p><strong>toolbar</strong> – the Gtk.Toolbar() for the RAMSTK ModuleBook tools.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="attribute">
-<dt id="ramstk.gui.gtk.ramstk.Book.RAMSTKBook.RAMSTK_CONFIGURATION">
-<code class="descname">RAMSTK_CONFIGURATION</code><em class="property"> = None</em><a class="headerlink" href="#ramstk.gui.gtk.ramstk.Book.RAMSTKBook.RAMSTK_CONFIGURATION" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.ramstk.Book.RAMSTKBook._RAMSTKBook__set_callbacks">
-<code class="descname">_RAMSTKBook__set_callbacks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ramstk.gui.gtk.ramstk.Book.RAMSTKBook._RAMSTKBook__set_callbacks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the callback functions/methods for the RAMSTKListBook and widgets.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.ramstk.Book.RAMSTKBook._on_request_open">
-<code class="descname">_on_request_open</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/ramstk/Book.html#RAMSTKBook._on_request_open"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.ramstk.Book.RAMSTKBook._on_request_open" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the status bar and update the progress bar.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.ramstk.Book.RAMSTKBook._on_window_state_event">
-<code class="descname">_on_window_state_event</code><span class="sig-paren">(</span><em>window</em>, <em>event</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/ramstk/Book.html#RAMSTKBook._on_window_state_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.ramstk.Book.RAMSTKBook._on_window_state_event" title="Permalink to this definition">¶</a></dt>
-<dd><p>Iconify or deiconify all three books together.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.gui.gtk.ramstk.Book.RAMSTKBook.dic_books">
-<code class="descname">dic_books</code><em class="property"> = {}</em><a class="headerlink" href="#ramstk.gui.gtk.ramstk.Book.RAMSTKBook.dic_books" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.gui.gtk.ramstk.Book.RAMSTKBook.dic_tab_position">
-<code class="descname">dic_tab_position</code><em class="property"> = {'bottom': &lt;enum GTK_POS_BOTTOM of type GtkPositionType&gt;, 'left': &lt;enum GTK_POS_LEFT of type GtkPositionType&gt;, 'right': &lt;enum GTK_POS_RIGHT of type GtkPositionType&gt;, 'top': &lt;enum GTK_POS_TOP of type GtkPositionType&gt;}</em><a class="headerlink" href="#ramstk.gui.gtk.ramstk.Book.RAMSTKBook.dic_tab_position" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.ramstk.Book.RAMSTKBook.on_module_change">
-<code class="descname">on_module_change</code><span class="sig-paren">(</span><em>module=''</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/ramstk/Book.html#RAMSTKBook.on_module_change"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.ramstk.Book.RAMSTKBook.on_module_change" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load the correct Views for the RAMSTK module selected in the Module Book.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="ramstk.gui.gtk.ramstk.Book.destroy">
-<code class="descclassname">ramstk.gui.gtk.ramstk.Book.</code><code class="descname">destroy</code><span class="sig-paren">(</span><em>__widget</em>, <em>__event=None</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/ramstk/Book.html#destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.ramstk.Book.destroy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Quit the RAMSTK application.</p>
-<p>This function quits the RAMSTK application when the X in the upper right
-corner is pressed or if this function is called as a callback.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>__widget</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Gtk.Widget</span></code>) – the Gtk.Widget() that called this method.</p></li>
-<li><p><strong>__event</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Gdk.Event</span></code>) – the Gdk.Event() that called this method.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>False if successful or True if an error is encountered.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
-</dd>
-</dl>
-</dd></dl>
-
+<div class="section" id="book-meta-class">
+<h2>Book Meta-Class<a class="headerlink" href="#book-meta-class" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-ramstk.gui.gtk.mwi.ListBook">
-<span id="lists-and-matrices-book"></span><h2>Lists and Matrices Book<a class="headerlink" href="#module-ramstk.gui.gtk.mwi.ListBook" title="Permalink to this headline">¶</a></h2>
-<p>RAMSTK List Book Module.</p>
-<dl class="class">
-<dt id="ramstk.gui.gtk.mwi.ListBook.ListBook">
-<em class="property">class </em><code class="descclassname">ramstk.gui.gtk.mwi.ListBook.</code><code class="descname">ListBook</code><span class="sig-paren">(</span><em>configuration</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/mwi/ListBook.html#ListBook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.mwi.ListBook.ListBook" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#ramstk.gui.gtk.ramstk.Book.RAMSTKBook" title="ramstk.gui.gtk.ramstk.Book.RAMSTKBook"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.gui.gtk.ramstk.Book.RAMSTKBook</span></code></a></p>
-<p>This is the List Book class for the pyGTK multiple window interface.</p>
-<p>The List Book provides the container for any List Views and Matrix Views
-associated with the RAMSTK module selected in the RAMSTK Module View.
-Attributes of the List Book are:</p>
-<dl class="field-list simple">
-<dt class="field-odd">Variables</dt>
-<dd class="field-odd"><p><strong>dic_list_view</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – dictionary containing the List Views and/or
-Matrix Views to load into the RAMSTK List Book
-for each RAMSTK module.  Key is the RAMSTK module
-name; value is a list of Views associated with
-that RAMSTK module.</p>
-</dd>
-</dl>
-<dl class="method">
-<dt id="ramstk.gui.gtk.mwi.ListBook.ListBook._ListBook__make_ui">
-<code class="descname">_ListBook__make_ui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ramstk.gui.gtk.mwi.ListBook.ListBook._ListBook__make_ui" title="Permalink to this definition">¶</a></dt>
-<dd><p>Build the user interface.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.mwi.ListBook.ListBook._ListBook__set_properties">
-<code class="descname">_ListBook__set_properties</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ramstk.gui.gtk.mwi.ListBook.ListBook._ListBook__set_properties" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set properties of the RAMSTKListBook and widgets.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.mwi.ListBook.ListBook._on_close">
-<code class="descname">_on_close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/mwi/ListBook.html#ListBook._on_close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.mwi.ListBook.ListBook._on_close" title="Permalink to this definition">¶</a></dt>
-<dd><p>Clear the List Views when a RAMSTK Program database is closed.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.mwi.ListBook.ListBook._on_module_change">
-<code class="descname">_on_module_change</code><span class="sig-paren">(</span><em>module=''</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/mwi/ListBook.html#ListBook._on_module_change"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.mwi.ListBook.ListBook._on_module_change" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load the List Views for the RAMSTK module selected in the Module Book.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="lists-and-matrices-book">
+<h2>Lists and Matrices Book<a class="headerlink" href="#lists-and-matrices-book" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-ramstk.gui.gtk.mwi.ModuleBook">
-<span id="module-book"></span><h2>Module Book<a class="headerlink" href="#module-ramstk.gui.gtk.mwi.ModuleBook" title="Permalink to this headline">¶</a></h2>
-<p>RAMSTK Module Book Module.</p>
-<dl class="class">
-<dt id="ramstk.gui.gtk.mwi.ModuleBook.ModuleBook">
-<em class="property">class </em><code class="descclassname">ramstk.gui.gtk.mwi.ModuleBook.</code><code class="descname">ModuleBook</code><span class="sig-paren">(</span><em>configuration</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/mwi/ModuleBook.html#ModuleBook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.mwi.ModuleBook.ModuleBook" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#ramstk.gui.gtk.ramstk.Book.RAMSTKBook" title="ramstk.gui.gtk.ramstk.Book.RAMSTKBook"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.gui.gtk.ramstk.Book.RAMSTKBook</span></code></a></p>
-<p>Display Module Views for the RAMSTK modules.</p>
-<p>Attributes of the Module Book are:</p>
-<dl class="field-list simple">
-<dt class="field-odd">Variables</dt>
-<dd class="field-odd"><p><strong>_dic_module_views</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – dictionary containing the Module View to
-load into the RAMSTK Module Book for each
-RAMSTK module.  Key is the RAMSTK module
-name; value is the View associated with
-that RAMSTK module.</p>
-</dd>
-</dl>
-<dl class="method">
-<dt id="ramstk.gui.gtk.mwi.ModuleBook.ModuleBook._ModuleBook__make_menu">
-<code class="descname">_ModuleBook__make_menu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ramstk.gui.gtk.mwi.ModuleBook.ModuleBook._ModuleBook__make_menu" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make the menu for the Module Book.</p>
-<p>:
-:type None</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.mwi.ModuleBook.ModuleBook._ModuleBook__make_toolbar">
-<code class="descname">_ModuleBook__make_toolbar</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ramstk.gui.gtk.mwi.ModuleBook.ModuleBook._ModuleBook__make_toolbar" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make the toolbar for the Module Book.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return _toolbar</dt>
-<dd class="field-odd"><p>the Gtk.Toolbar() for the RAMSTK ModuleBook.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.mwi.ModuleBook.ModuleBook._ModuleBook__make_ui">
-<code class="descname">_ModuleBook__make_ui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ramstk.gui.gtk.mwi.ModuleBook.ModuleBook._ModuleBook__make_ui" title="Permalink to this definition">¶</a></dt>
-<dd><p>Build the user interface.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.mwi.ModuleBook.ModuleBook._ModuleBook__set_callbacks">
-<code class="descname">_ModuleBook__set_callbacks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ramstk.gui.gtk.mwi.ModuleBook.ModuleBook._ModuleBook__set_callbacks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the callback functions/methods for the RAMSTKListBook and widgets.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.mwi.ModuleBook.ModuleBook._ModuleBook__set_properties">
-<code class="descname">_ModuleBook__set_properties</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ramstk.gui.gtk.mwi.ModuleBook.ModuleBook._ModuleBook__set_properties" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set properties of the RAMSTKListBook and widgets.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="ramstk.gui.gtk.mwi.ModuleBook.ModuleBook._do_request_close_project">
-<em class="property">static </em><code class="descname">_do_request_close_project</code><span class="sig-paren">(</span><em>_ModuleBook__widget</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/mwi/ModuleBook.html#ModuleBook._do_request_close_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.mwi.ModuleBook.ModuleBook._do_request_close_project" title="Permalink to this definition">¶</a></dt>
-<dd><p>Request to close the open RAMSTK Program.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>__widget</strong> (<em>Gtk.Widget</em>) – the Gtk.Widget() that called this method.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.mwi.ModuleBook.ModuleBook._do_request_save_project">
-<code class="descname">_do_request_save_project</code><span class="sig-paren">(</span><em>widget</em>, <em>end=False</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/mwi/ModuleBook.html#ModuleBook._do_request_save_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.mwi.ModuleBook.ModuleBook._do_request_save_project" title="Permalink to this definition">¶</a></dt>
-<dd><p>Request to save the open RAMSTK Program.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>widget</strong> (<em>Gtk.Widget</em>) – the Gtk.Widget() that called this method.</p></li>
-<li><p><strong>end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – indicates whether or not to quit RAMSTK after saving
-the project.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.mwi.ModuleBook.ModuleBook._on_close">
-<code class="descname">_on_close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/mwi/ModuleBook.html#ModuleBook._on_close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.mwi.ModuleBook.ModuleBook._on_close" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the Module View when a RAMSTK Program database is closed.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.mwi.ModuleBook.ModuleBook._on_open">
-<code class="descname">_on_open</code><span class="sig-paren">(</span><em>tree</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/mwi/ModuleBook.html#ModuleBook._on_open"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.mwi.ModuleBook.ModuleBook._on_open" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the status bar and clear the progress bar.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.mwi.ModuleBook.ModuleBook._on_switch_page">
-<code class="descname">_on_switch_page</code><span class="sig-paren">(</span><em>_ModuleBook__notebook</em>, <em>_ModuleBook__page</em>, <em>page_num</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/mwi/ModuleBook.html#ModuleBook._on_switch_page"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.mwi.ModuleBook.ModuleBook._on_switch_page" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handle page changes in the Module Book Gtk.Notebook().</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>__notebook</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Gtk.Notebook</span></code>) – the Tree Book notebook widget.</p></li>
-<li><p><strong>__page</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Gtk.Widget</span></code>) – the newly selected page’s child widget.</p></li>
-<li><p><strong>page_num</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – <p>the newly selected page number.</p>
-<p>0 = Revision Tree
-1 = Requirements Tree
-2 = Function Tree
-3 = Hardware Tree
-4 = Software Tree
-5 = Testing Tree
-6 = Validation Tree
-7 = Incident Tree
-8 = Survival Analyses Tree</p>
-</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="module-book">
+<h2>Module Book<a class="headerlink" href="#module-book" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-ramstk.gui.gtk.mwi.WorkBook">
-<span id="work-book"></span><h2>Work Book<a class="headerlink" href="#module-ramstk.gui.gtk.mwi.WorkBook" title="Permalink to this headline">¶</a></h2>
-<p>RAMSTKWorkBook Module.</p>
-<dl class="class">
-<dt id="ramstk.gui.gtk.mwi.WorkBook.WorkBook">
-<em class="property">class </em><code class="descclassname">ramstk.gui.gtk.mwi.WorkBook.</code><code class="descname">WorkBook</code><span class="sig-paren">(</span><em>configuration</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/mwi/WorkBook.html#WorkBook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.mwi.WorkBook.WorkBook" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#ramstk.gui.gtk.ramstk.Book.RAMSTKBook" title="ramstk.gui.gtk.ramstk.Book.RAMSTKBook"><code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.gui.gtk.ramstk.Book.RAMSTKBook</span></code></a></p>
-<p>This is the Work Book for the pyGTK multiple window interface.</p>
-<dl class="method">
-<dt id="ramstk.gui.gtk.mwi.WorkBook.WorkBook._WorkBook__make_ui">
-<code class="descname">_WorkBook__make_ui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ramstk.gui.gtk.mwi.WorkBook.WorkBook._WorkBook__make_ui" title="Permalink to this definition">¶</a></dt>
-<dd><p>Build the user interface.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.mwi.WorkBook.WorkBook._WorkBook__set_properties">
-<code class="descname">_WorkBook__set_properties</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ramstk.gui.gtk.mwi.WorkBook.WorkBook._WorkBook__set_properties" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set properties of the RAMSTKListBook and widgets.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.mwi.WorkBook.WorkBook._on_module_change">
-<code class="descname">_on_module_change</code><span class="sig-paren">(</span><em>module=''</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/mwi/WorkBook.html#WorkBook._on_module_change"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.mwi.WorkBook.WorkBook._on_module_change" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load the Work Views for the RAMSTK module selected in the Module Book.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="work-book">
+<h2>Work Book<a class="headerlink" href="#work-book" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -501,10 +73,10 @@ the project.</p></li>
   <h3><a href="../../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Multi-Window Interface (MWI) Package</a><ul>
-<li><a class="reference internal" href="#module-ramstk.gui.gtk.ramstk.Book">Book Meta-Class</a></li>
-<li><a class="reference internal" href="#module-ramstk.gui.gtk.mwi.ListBook">Lists and Matrices Book</a></li>
-<li><a class="reference internal" href="#module-ramstk.gui.gtk.mwi.ModuleBook">Module Book</a></li>
-<li><a class="reference internal" href="#module-ramstk.gui.gtk.mwi.WorkBook">Work Book</a></li>
+<li><a class="reference internal" href="#book-meta-class">Book Meta-Class</a></li>
+<li><a class="reference internal" href="#lists-and-matrices-book">Lists and Matrices Book</a></li>
+<li><a class="reference internal" href="#module-book">Module Book</a></li>
+<li><a class="reference internal" href="#work-book">Work Book</a></li>
 </ul>
 </li>
 </ul>
@@ -523,10 +95,10 @@ the project.</p></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -543,9 +115,6 @@ the project.</p></li>
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="gtk.moduleview.html" title="Module View Package"
              accesskey="N">next</a> |</li>
         <li class="right" >
@@ -556,7 +125,7 @@ the project.</p></li>
 
     <div class="footer" role="contentinfo">
         &#169; Copyright 2007 - 2019, Doyle Rowland.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
     </div>
   </body>
 </html>

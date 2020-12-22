@@ -46,122 +46,6 @@
 <h1>Dormancy<a class="headerlink" href="#dormancy" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<span class="target" id="module-ramstk.analyses.Dormancy"></span><p>Dormancy Calculations Module.</p>
-<dl class="function">
-<dt id="ramstk.analyses.Dormancy.do_calculate_dormant_hazard_rate">
-<code class="descclassname">ramstk.analyses.Dormancy.</code><code class="descname">do_calculate_dormant_hazard_rate</code><span class="sig-paren">(</span><em>category_id</em>, <em>subcategory_id</em>, <em>environment_active_id</em>, <em>environment_dormant_id</em>, <em>hazard_rate_active</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/analyses/Dormancy.html#do_calculate_dormant_hazard_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.Dormancy.do_calculate_dormant_hazard_rate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the dormant hazard rate for a hardware item.</p>
-<div class="admonition attention">
-<p class="admonition-title">Attention</p>
-<p>The semiconductor category will return a list of two
-dormancy multipliers.  The value at index 0 is for diodes and the
-value at index 1 is for transistors.</p>
-</div>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>The calling object is responsible for handling any
-exceptions raised by or passed through this method.</p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>All conversion factors come from Reliability Toolkit:
-Commercial Practices Edition, Section 6.3.4, Table 6.3.4-1.</p>
-</div>
-<p>Environment indexes are:</p>
-<table class="docutils align-center">
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><dl class="simple">
-<dt>environment_active_id </dt><dd><p>in attributes</p>
-</dd>
-</dl>
-</th>
-<th class="head"><dl class="simple">
-<dt>Active Environment </dt><dd><p>Type</p>
-</dd>
-</dl>
-</th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>1 - 3</p></td>
-<td><p>Ground</p></td>
-</tr>
-<tr class="row-odd"><td><p>4 - 5</p></td>
-<td><p>Naval</p></td>
-</tr>
-<tr class="row-even"><td><p>6 - 10</p></td>
-<td><p>Airborne</p></td>
-</tr>
-<tr class="row-odd"><td><p>11</p></td>
-<td><p>Space</p></td>
-</tr>
-<tr class="row-even"><td><p>12 - 13</p></td>
-<td><p>Missile  (no conversion factors)</p></td>
-</tr>
-</tbody>
-</table>
-<table class="docutils align-center">
-<colgroup>
-<col style="width: 51%" />
-<col style="width: 49%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><dl class="simple">
-<dt>environment_dormant_id </dt><dd><p>in attributes</p>
-</dd>
-</dl>
-</th>
-<th class="head"><dl class="simple">
-<dt>Active Environment </dt><dd><p>Type</p>
-</dd>
-</dl>
-</th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>1</p></td>
-<td><p>Ground</p></td>
-</tr>
-<tr class="row-odd"><td><p>2</p></td>
-<td><p>Naval</p></td>
-</tr>
-<tr class="row-even"><td><p>3</p></td>
-<td><p>Airborne</p></td>
-</tr>
-<tr class="row-odd"><td><p>4</p></td>
-<td><p>Space</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>category_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the component category ID; used as index 0.</p></li>
-<li><p><strong>subcategory_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the component subcategory ID; used as index
-3 for semiconductors.</p></li>
-<li><p><strong>environment_active_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the active environment ID per the
-table above; used as index 1.</p></li>
-<li><p><strong>environment_dormant_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the dormant (storage) environment ID
-per the table above; used as index 2.</p></li>
-<li><p><strong>hazard_rate_active</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the active hazard rate of the component.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>_hr_dormant; the calculated dormant hazard rate.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></p>
-</dd>
-<dt class="field-even">Raise</dt>
-<dd class="field-even"><p>IndexError if an indexing argument asks for a non-existent index.</p>
-</dd>
-</dl>
-</dd></dl>
-
 </div>
 
 
@@ -187,10 +71,10 @@ per the table above; used as index 2.</p></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -207,9 +91,6 @@ per the table above; used as index 2.</p></li>
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="milhdbk217f.html" title="MIL-HDBK-217F Reliability Prediction"
              accesskey="N">next</a> |</li>
         <li class="right" >
@@ -220,7 +101,7 @@ per the table above; used as index 2.</p></li>
 
     <div class="footer" role="contentinfo">
         &#169; Copyright 2007 - 2019, Doyle Rowland.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
     </div>
   </body>
 </html>

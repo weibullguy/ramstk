@@ -46,245 +46,6 @@
 <h1>Reliability Allocation<a class="headerlink" href="#reliability-allocation" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<span class="target" id="module-ramstk.analyses.Allocation"></span><p>Reliability Allocation Module.</p>
-<dl class="function">
-<dt id="ramstk.analyses.Allocation._calculate_agree_apportionment">
-<code class="descclassname">ramstk.analyses.Allocation.</code><code class="descname">_calculate_agree_apportionment</code><span class="sig-paren">(</span><em>time_i</em>, <em>weight_factor</em>, <em>n_sub_systems</em>, <em>n_sub_elements</em>, <em>parent_goal</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/analyses/Allocation.html#_calculate_agree_apportionment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.Allocation._calculate_agree_apportionment" title="Permalink to this definition">¶</a></dt>
-<dd><p>Perform an AGREE apportionment of a reliability requirement.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>the AGREE method uses MTBF as the parent goal.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>time_i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the mission time for the subsystem being calculated.</p></li>
-<li><p><strong>weight_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the importance factor for the sub-system
-currently being allocated.</p></li>
-<li><p><strong>n_sub_systems</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the total number of sub-elements in all the
-sub-systems comprising the hardware item to be allocated.</p></li>
-<li><p><strong>n_sub_elements</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the number of sub-elements in the sub-system
-currently being allocated.</p></li>
-<li><p><strong>parent_goal</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the reliability goal of the parent hardware
-item.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>(_mtbf_alloc, _hazard_rate_alloc, _reliability_alloc); the
-allocated values for each reliability measure.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></p>
-</dd>
-<dt class="field-even">Raise</dt>
-<dd class="field-even"><p>TypeError if passed a string for any argument.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="ramstk.analyses.Allocation._calculate_arinc_apportionment">
-<code class="descclassname">ramstk.analyses.Allocation.</code><code class="descname">_calculate_arinc_apportionment</code><span class="sig-paren">(</span><em>mission_time</em>, <em>weight_factor</em>, <em>parent_goal</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/analyses/Allocation.html#_calculate_arinc_apportionment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.Allocation._calculate_arinc_apportionment" title="Permalink to this definition">¶</a></dt>
-<dd><p>Perform an ARINC apportionment of the reliability requirement.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>mission_time</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the mission time of the system.</p></li>
-<li><p><strong>weight_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the ratio of the hardware item’s current hazard
-rate and the current system hazard rate.</p></li>
-<li><p><strong>parent_goal</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the goal hazard rate of the parent hardware
-item.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>(_mtbf_alloc, _hazard_rate_alloc, _reliability_alloc); the
-allocated values for each reliability measure.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></p>
-</dd>
-<dt class="field-even">Raise</dt>
-<dd class="field-even"><p>TypeError if passed a string for any argument.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="ramstk.analyses.Allocation._calculate_equal_apportionment">
-<code class="descclassname">ramstk.analyses.Allocation.</code><code class="descname">_calculate_equal_apportionment</code><span class="sig-paren">(</span><em>mission_time</em>, <em>weight_factor</em>, <em>parent_goal</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/analyses/Allocation.html#_calculate_equal_apportionment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.Allocation._calculate_equal_apportionment" title="Permalink to this definition">¶</a></dt>
-<dd><p>Perform an equal apportionment of the reliability goal.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>weight_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the inverse of the number of child hardware
-items to allocate the goal.</p></li>
-<li><p><strong>parent_goal</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the reliability goal of the parent hardware
-item.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>(_mtbf_alloc, _hazard_rate_alloc, _reliability_alloc); the
-allocated values for each reliability measure.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></p>
-</dd>
-<dt class="field-even">Raise</dt>
-<dd class="field-even"><p>TypeError if passed a string for any argument.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="ramstk.analyses.Allocation._calculate_foo_apportionment">
-<code class="descclassname">ramstk.analyses.Allocation.</code><code class="descname">_calculate_foo_apportionment</code><span class="sig-paren">(</span><em>factors</em>, <em>mission_time</em>, <em>cum_weight</em>, <em>parent_goal</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/analyses/Allocation.html#_calculate_foo_apportionment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.Allocation._calculate_foo_apportionment" title="Permalink to this definition">¶</a></dt>
-<dd><p>Perform a feasibility of objectives (FOO) apportionment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>cum_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – the cumulative weight factor for all subordinate
-assemblies.</p></li>
-<li><p><strong>parent_goal</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the failure rate requirement to allocate.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>(_mtbf_alloc, _hazard_rate_alloc, _reliability_alloc,
-_weight_factor, _percent_weight_factor); the allocated values for each
-reliability measure and the weighting factors.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></p>
-</dd>
-<dt class="field-even">Raise</dt>
-<dd class="field-even"><p>TypeError if passed a string for any argument.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="ramstk.analyses.Allocation._from_hazard_rate_goal">
-<code class="descclassname">ramstk.analyses.Allocation.</code><code class="descname">_from_hazard_rate_goal</code><span class="sig-paren">(</span><em>mission_time</em>, <em>hazard_rate_goal</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/analyses/Allocation.html#_from_hazard_rate_goal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.Allocation._from_hazard_rate_goal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the MTBF and reliability goals given the hazard rate goal.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>mission_time</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the mission time of the hardware item.</p></li>
-<li><p><strong>hazard_rate_goal</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the hazard rate goal for the hardware item.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>_mtbf_goal, _reliability_goal; the calculate dMTBF and reliability
-goals.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="ramstk.analyses.Allocation._from_mtbf_goal">
-<code class="descclassname">ramstk.analyses.Allocation.</code><code class="descname">_from_mtbf_goal</code><span class="sig-paren">(</span><em>mission_time</em>, <em>mtbf_goal</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/analyses/Allocation.html#_from_mtbf_goal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.Allocation._from_mtbf_goal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the hazard rate and reliability goals given the MTBF goal.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>mission_time</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the mission time of the hardware item.</p></li>
-<li><p><strong>mtbf_goal</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the MTBF goal for the hardware item.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>_hazard_rate_goal, _reliability_goal; the calculated hazard rate
-and reliability goals.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="ramstk.analyses.Allocation._from_reliability_goal">
-<code class="descclassname">ramstk.analyses.Allocation.</code><code class="descname">_from_reliability_goal</code><span class="sig-paren">(</span><em>mission_time</em>, <em>reliability_goal</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/analyses/Allocation.html#_from_reliability_goal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.Allocation._from_reliability_goal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the MTBF and hazard rate goals given the reliability goal.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>mission_time</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the mission time of the hardware item.</p></li>
-<li><p><strong>reliability_goal</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the reliability goal for the hardware item.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>_mtbf_goal, _hazard_rate_goal; the calculated MTBF and hazard rate
-goals.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="ramstk.analyses.Allocation.do_allocate_reliability">
-<code class="descclassname">ramstk.analyses.Allocation.</code><code class="descname">do_allocate_reliability</code><span class="sig-paren">(</span><em>parent_goal</em>, <em>cumulative_weight</em>, <em>**attributes</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/analyses/Allocation.html#do_allocate_reliability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.Allocation.do_allocate_reliability" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the reliability allocation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>parent_goal</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the parent assembly’s reliability goal.</p></li>
-<li><p><strong>cumulative_weight</strong> – the cumulative weighting of all child assemblies.
-Used for feasibility of objectives method only.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>attributes; the Allocation attributes dict with updated values.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="ramstk.analyses.Allocation.do_calculate_goals">
-<code class="descclassname">ramstk.analyses.Allocation.</code><code class="descname">do_calculate_goals</code><span class="sig-paren">(</span><em>**attributes</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/analyses/Allocation.html#do_calculate_goals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.Allocation.do_calculate_goals" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the other two reliability metrics from the third.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>attributes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – the Allocation attributes dict.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>attributes; the Allocation attributes dict with updated values.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="ramstk.analyses.Allocation.get_allocation_goal">
-<code class="descclassname">ramstk.analyses.Allocation.</code><code class="descname">get_allocation_goal</code><span class="sig-paren">(</span><em>**attributes</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/analyses/Allocation.html#get_allocation_goal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.Allocation.get_allocation_goal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve the reliability goal for the hardware item.</p>
-<p>Used to select the goal for the parent hardware item prior to calling
-the do_allocate_reliability() method.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>attributes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – the selected item’s Allocation attributes dict.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>_goal</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></p>
-</dd>
-<dt class="field-even">Raise</dt>
-<dd class="field-even"><p>KeyError if the passed attributes dict doesn’t contain the
-allocation_method_id, hazard_rate_goal, and/or reliability_goal key.</p>
-</dd>
-</dl>
-</dd></dl>
-
 </div>
 
 
@@ -310,10 +71,10 @@ allocation_method_id, hazard_rate_goal, and/or reliability_goal key.</p>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -330,9 +91,6 @@ allocation_method_id, hazard_rate_goal, and/or reliability_goal key.</p>
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="derating.html" title="Derating"
              accesskey="N">next</a> |</li>
         <li class="right" >
@@ -343,7 +101,7 @@ allocation_method_id, hazard_rate_goal, and/or reliability_goal key.</p>
 
     <div class="footer" role="contentinfo">
         &#169; Copyright 2007 - 2019, Doyle Rowland.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
     </div>
   </body>
 </html>

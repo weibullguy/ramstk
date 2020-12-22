@@ -47,227 +47,20 @@
 <h1>Matrix View Package<a class="headerlink" href="#matrix-view-package" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<div class="section" id="module-ramstk.gui.gtk.matrixviews.MatrixView">
-<span id="matrix-view-meta-class"></span><h2>Matrix View Meta-Class<a class="headerlink" href="#module-ramstk.gui.gtk.matrixviews.MatrixView" title="Permalink to this headline">¶</a></h2>
-<p>The RAMSTKMatrixView Meta-Class Module.</p>
-<dl class="class">
-<dt id="ramstk.gui.gtk.matrixviews.MatrixView.RAMSTKMatrixView">
-<em class="property">class </em><code class="descclassname">ramstk.gui.gtk.matrixviews.MatrixView.</code><code class="descname">RAMSTKMatrixView</code><span class="sig-paren">(</span><em>configuration</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/matrixviews/MatrixView.html#RAMSTKMatrixView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.matrixviews.MatrixView.RAMSTKMatrixView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gi.repository.Gtk.HBox</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.gui.gtk.ramstk.Matrix.RAMSTKBaseMatrix</span></code></p>
-<p>This is the meta class for all RAMSTK Matrix View classes.</p>
-<p>Attributes of the RAMSTKMatrixView are:</p>
-<dl class="field-list simple">
-<dt class="field-odd">Variables</dt>
-<dd class="field-odd"><p><strong>hbx_tab_label</strong> – the Gtk.HBox() containing the label for the List and
-Matrix View page.</p>
-</dd>
-</dl>
-</dd></dl>
-
+<div class="section" id="matrix-view-meta-class">
+<h2>Matrix View Meta-Class<a class="headerlink" href="#matrix-view-meta-class" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-ramstk.gui.gtk.matrixviews.Function">
-<span id="function-matrix-views"></span><h2>Function Matrix Views<a class="headerlink" href="#module-ramstk.gui.gtk.matrixviews.Function" title="Permalink to this headline">¶</a></h2>
-<p>The Function:Hardware Matrix View Module.</p>
-<dl class="class">
-<dt id="ramstk.gui.gtk.matrixviews.Function.MatrixView">
-<em class="property">class </em><code class="descclassname">ramstk.gui.gtk.matrixviews.Function.</code><code class="descname">MatrixView</code><span class="sig-paren">(</span><em>configuration</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/matrixviews/Function.html#MatrixView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.matrixviews.Function.MatrixView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gi.repository.Gtk.HBox</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.gui.gtk.ramstk.Matrix.RAMSTKBaseMatrix</span></code></p>
-<p>This is the Function:Hardware RAMSTK Matrix View.</p>
-<p>Attributes of the Function:Hardware Matrix View are:</p>
-<dl class="attribute">
-<dt id="ramstk.gui.gtk.matrixviews.Function.MatrixView._dic_matrix_labels">
-<code class="descname">_dic_matrix_labels</code><em class="property"> = {'fnctn_hrdwr': ['Create or refresh the Function:Hardware Matrix.', 'Function\nHardware', 'Displays function/hardware matrix for the selected revision.']}</em><a class="headerlink" href="#ramstk.gui.gtk.matrixviews.Function.MatrixView._dic_matrix_labels" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.matrixviews.Function.MatrixView._do_request_create">
-<code class="descname">_do_request_create</code><span class="sig-paren">(</span><em>_MatrixView__button</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/matrixviews/Function.html#MatrixView._do_request_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.matrixviews.Function.MatrixView._do_request_create" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create or update the Function:Hardware Matrix.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>__button</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Gtk.ToolButton</span></code>) – the Gtk.ToolButton() that called this method.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.matrixviews.Function.MatrixView._do_request_update">
-<code class="descname">_do_request_update</code><span class="sig-paren">(</span><em>_MatrixView__button</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/matrixviews/Function.html#MatrixView._do_request_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.matrixviews.Function.MatrixView._do_request_update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save the currently selected Function:Hardware Matrix row.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>__button</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Gtk.ToolButton</span></code>) – the Gtk.ToolButton() that called this method.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="function-matrix-views">
+<h2>Function Matrix Views<a class="headerlink" href="#function-matrix-views" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-ramstk.gui.gtk.matrixviews.Requirement">
-<span id="requirement-matrix-views"></span><h2>Requirement Matrix Views<a class="headerlink" href="#module-ramstk.gui.gtk.matrixviews.Requirement" title="Permalink to this headline">¶</a></h2>
-<p>The Requirement:Hardware Matrix View Module.</p>
-<dl class="class">
-<dt id="ramstk.gui.gtk.matrixviews.Requirement.MatrixView">
-<em class="property">class </em><code class="descclassname">ramstk.gui.gtk.matrixviews.Requirement.</code><code class="descname">MatrixView</code><span class="sig-paren">(</span><em>configuration</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/matrixviews/Requirement.html#MatrixView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.matrixviews.Requirement.MatrixView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gi.repository.Gtk.HBox</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.gui.gtk.ramstk.Matrix.RAMSTKBaseMatrix</span></code></p>
-<p>This is the Requirement:Hardware RAMSTK Matrix View.</p>
-<p>Attributes of the Requirement:Hardware Matrix View are:</p>
-<dl class="attribute">
-<dt id="ramstk.gui.gtk.matrixviews.Requirement.MatrixView._dic_matrix_labels">
-<code class="descname">_dic_matrix_labels</code><em class="property"> = {'rqrmnt_hrdwr': ['Create or refresh the Requirement:Hardware Matrix.', 'Requirement\nHardware', 'Displays requirement/hardware matrix for the selected revision.'], 'rqrmnt_sftwr': ['Create or refresh the Requirement:Software Matrix.', 'Requirement\nSoftware', 'Displays requirement/software matrix for the selected revision.'], 'rqrmnt_vldtn': ['Create or refresh the Requirement:Validation Matrix.', 'Requirement\nValidation', 'Displays requirement/validation matrix for the selected revision.']}</em><a class="headerlink" href="#ramstk.gui.gtk.matrixviews.Requirement.MatrixView._dic_matrix_labels" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.matrixviews.Requirement.MatrixView._do_request_create">
-<code class="descname">_do_request_create</code><span class="sig-paren">(</span><em>_MatrixView__button</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/matrixviews/Requirement.html#MatrixView._do_request_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.matrixviews.Requirement.MatrixView._do_request_create" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create or update the Requirement:Hardware matrix.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>__button</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Gtk.ToolButton</span></code>) – the Gtk.ToolButton() that called this method.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.matrixviews.Requirement.MatrixView._do_request_update">
-<code class="descname">_do_request_update</code><span class="sig-paren">(</span><em>_MatrixView__button</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/matrixviews/Requirement.html#MatrixView._do_request_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.matrixviews.Requirement.MatrixView._do_request_update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save the Requirement:Hardware Matrix.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>__button</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Gtk.ToolButton</span></code>) – the Gtk.ToolButton() that called this method.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="requirement-matrix-views">
+<h2>Requirement Matrix Views<a class="headerlink" href="#requirement-matrix-views" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-ramstk.gui.gtk.matrixviews.Hardware">
-<span id="hardware-matrix-views"></span><h2>Hardware Matrix Views<a class="headerlink" href="#module-ramstk.gui.gtk.matrixviews.Hardware" title="Permalink to this headline">¶</a></h2>
-<p>The Hardware:Requirement Matrix View Module.</p>
-<dl class="class">
-<dt id="ramstk.gui.gtk.matrixviews.Hardware.MatrixView">
-<em class="property">class </em><code class="descclassname">ramstk.gui.gtk.matrixviews.Hardware.</code><code class="descname">MatrixView</code><span class="sig-paren">(</span><em>configuration</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/matrixviews/Hardware.html#MatrixView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.matrixviews.Hardware.MatrixView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gi.repository.Gtk.HBox</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.gui.gtk.ramstk.Matrix.RAMSTKBaseMatrix</span></code></p>
-<p>This is the Hardware:Requirement RAMSTK Matrix View.</p>
-<p>Attributes of the Hardware:Requirement Matrix View are:</p>
-<dl class="attribute">
-<dt id="ramstk.gui.gtk.matrixviews.Hardware.MatrixView._dic_matrix_labels">
-<code class="descname">_dic_matrix_labels</code><em class="property"> = {'hrdwr_rqrmnt': ['Create or refresh the Hardware:Requirement Matrix.', 'Hardware\nRequirement', 'Displays hardware/requirement matrix for the selected revision.'], 'hrdwr_tstng': ['Create or refresh the Hardware:Testing Matrix.', 'Hardware\nTesting', 'Displays hardware/testing matrix for the selected revision.'], 'hrdwr_vldtn': ['Create or refresh the Hardware:Validation Matrix.', 'Hardware\nValidation', 'Displays hardware/validation matrix for the selected revision.']}</em><a class="headerlink" href="#ramstk.gui.gtk.matrixviews.Hardware.MatrixView._dic_matrix_labels" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.matrixviews.Hardware.MatrixView._do_request_create">
-<code class="descname">_do_request_create</code><span class="sig-paren">(</span><em>_MatrixView__button</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/matrixviews/Hardware.html#MatrixView._do_request_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.matrixviews.Hardware.MatrixView._do_request_create" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create or update the Hardware Matrix.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>__button</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Gtk.ToolButton</span></code>) – the Gtk.ToolButton() that called this method.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.matrixviews.Hardware.MatrixView._do_request_update">
-<code class="descname">_do_request_update</code><span class="sig-paren">(</span><em>_MatrixView__button</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/matrixviews/Hardware.html#MatrixView._do_request_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.matrixviews.Hardware.MatrixView._do_request_update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save the currently selected Hardware Matrix.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>__button</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Gtk.ToolButton</span></code>) – the Gtk.ToolButton() that called this method.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="hardware-matrix-views">
+<h2>Hardware Matrix Views<a class="headerlink" href="#hardware-matrix-views" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-ramstk.gui.gtk.matrixviews.Validation">
-<span id="validation-matrix-views"></span><h2>Validation Matrix Views<a class="headerlink" href="#module-ramstk.gui.gtk.matrixviews.Validation" title="Permalink to this headline">¶</a></h2>
-<p>The Validation:Hardware Matrix View Module.</p>
-<dl class="class">
-<dt id="ramstk.gui.gtk.matrixviews.Validation.MatrixView">
-<em class="property">class </em><code class="descclassname">ramstk.gui.gtk.matrixviews.Validation.</code><code class="descname">MatrixView</code><span class="sig-paren">(</span><em>configuration</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/matrixviews/Validation.html#MatrixView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.matrixviews.Validation.MatrixView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gi.repository.Gtk.HBox</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ramstk.gui.gtk.ramstk.Matrix.RAMSTKBaseMatrix</span></code></p>
-<p>This is the Validation:Hardware RAMSTK Matrix View.</p>
-<p>Attributes of the Validation:Hardware Matrix View are:</p>
-<dl class="attribute">
-<dt id="ramstk.gui.gtk.matrixviews.Validation.MatrixView._dic_matrix_labels">
-<code class="descname">_dic_matrix_labels</code><em class="property"> = {'vldtn_hrdwr': ['Create or refresh the Validation:Hardware Matrix.', 'Validation\nHardware', 'Displays validation/hardware matrix for the selected revision.'], 'vldtn_rqrmnt': ['Create or refresh the Validation:Requirement Matrix.', 'Validation\nRequirement', 'Displays validation/requirement matrix for the selected revision.']}</em><a class="headerlink" href="#ramstk.gui.gtk.matrixviews.Validation.MatrixView._dic_matrix_labels" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.matrixviews.Validation.MatrixView._do_request_create">
-<code class="descname">_do_request_create</code><span class="sig-paren">(</span><em>_MatrixView__button</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/matrixviews/Validation.html#MatrixView._do_request_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.matrixviews.Validation.MatrixView._do_request_create" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create or update the Validation:Hardware Matrix.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>__button</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Gtk.ToolButton</span></code>) – the Gtk.ToolButton() that called this method.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.gui.gtk.matrixviews.Validation.MatrixView._do_request_update">
-<code class="descname">_do_request_update</code><span class="sig-paren">(</span><em>_MatrixView__button</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/gui/gtk/matrixviews/Validation.html#MatrixView._do_request_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.gui.gtk.matrixviews.Validation.MatrixView._do_request_update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save the currently selected Validation:Hardware Matrix row.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>__button</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Gtk.ToolButton</span></code>) – the Gtk.ToolButton() that called this method.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="validation-matrix-views">
+<h2>Validation Matrix Views<a class="headerlink" href="#validation-matrix-views" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -283,11 +76,11 @@ Matrix View page.</p>
   <h3><a href="../../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Matrix View Package</a><ul>
-<li><a class="reference internal" href="#module-ramstk.gui.gtk.matrixviews.MatrixView">Matrix View Meta-Class</a></li>
-<li><a class="reference internal" href="#module-ramstk.gui.gtk.matrixviews.Function">Function Matrix Views</a></li>
-<li><a class="reference internal" href="#module-ramstk.gui.gtk.matrixviews.Requirement">Requirement Matrix Views</a></li>
-<li><a class="reference internal" href="#module-ramstk.gui.gtk.matrixviews.Hardware">Hardware Matrix Views</a></li>
-<li><a class="reference internal" href="#module-ramstk.gui.gtk.matrixviews.Validation">Validation Matrix Views</a></li>
+<li><a class="reference internal" href="#matrix-view-meta-class">Matrix View Meta-Class</a></li>
+<li><a class="reference internal" href="#function-matrix-views">Function Matrix Views</a></li>
+<li><a class="reference internal" href="#requirement-matrix-views">Requirement Matrix Views</a></li>
+<li><a class="reference internal" href="#hardware-matrix-views">Hardware Matrix Views</a></li>
+<li><a class="reference internal" href="#validation-matrix-views">Validation Matrix Views</a></li>
 </ul>
 </li>
 </ul>
@@ -306,10 +99,10 @@ Matrix View page.</p>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -326,9 +119,6 @@ Matrix View page.</p>
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="gtk.workview.html" title="Work View Package"
              accesskey="N">next</a> |</li>
         <li class="right" >
@@ -339,7 +129,7 @@ Matrix View page.</p>
 
     <div class="footer" role="contentinfo">
         &#169; Copyright 2007 - 2019, Doyle Rowland.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
     </div>
   </body>
 </html>

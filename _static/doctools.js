@@ -285,10 +285,19 @@ var Documentation = {
   initOnKeyListeners: function() {
     $(document).keydown(function(event) {
       var activeElementType = document.activeElement.tagName;
+<<<<<<< HEAD
       // don't navigate when in search box, textarea, dropdown or button
       if (activeElementType !== 'TEXTAREA' && activeElementType !== 'INPUT' && activeElementType !== 'SELECT'
           && activeElementType !== 'BUTTON' && !event.altKey && !event.ctrlKey && !event.metaKey
           && !event.shiftKey) {
+||||||| merged common ancestors
+      // don't navigate when in search box or textarea
+      if (activeElementType !== 'TEXTAREA' && activeElementType !== 'INPUT' && activeElementType !== 'SELECT') {
+=======
+      // don't navigate when in search box or textarea
+      if (activeElementType !== 'TEXTAREA' && activeElementType !== 'INPUT' && activeElementType !== 'SELECT'
+          && !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+>>>>>>> 175882009764a440ba41516407c34ab7bdcf99c6
         switch (event.keyCode) {
           case 37: // left
             var prevHref = $('link[rel="prev"]').prop('href');

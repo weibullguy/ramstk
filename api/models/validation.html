@@ -50,242 +50,8 @@
 <h2>Program Database Models<a class="headerlink" href="#program-database-models" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 </div>
-<div class="section" id="module-ramstk.dao.programdb.RAMSTKValidation">
-<span id="ramstkvalidation"></span><h3>RAMSTKValidation<a class="headerlink" href="#module-ramstk.dao.programdb.RAMSTKValidation" title="Permalink to this headline">¶</a></h3>
-<p>RAMSTKValidation Table.</p>
-<dl class="class">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation">
-<em class="property">class </em><code class="descclassname">ramstk.dao.programdb.RAMSTKValidation.</code><code class="descname">RAMSTKValidation</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/dao/programdb/RAMSTKValidation.html#RAMSTKValidation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code></p>
-<p>Class to represent table ramstk_validation in the RAMSTK Program database.</p>
-<p>This table shares a Many-to-One relationship with ramstk_revision.</p>
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation._sa_class_manager">
-<code class="descname">_sa_class_manager</code><em class="property"> = {'acceptable_maximum': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'acceptable_mean': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'acceptable_minimum': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'acceptable_variance': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'confidence': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'cost_average': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'cost_ll': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'cost_maximum': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'cost_mean': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'cost_minimum': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'cost_ul': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'cost_variance': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'date_end': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'date_start': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'description': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'measurement_unit': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'name': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'revision': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'revision_id': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'status': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'task_specification': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'task_type': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'time_average': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'time_ll': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'time_maximum': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'time_mean': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'time_minimum': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'time_ul': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'time_variance': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;, 'validation_id': &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object&gt;}</em><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation._sa_class_manager" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.acceptable_maximum">
-<code class="descname">acceptable_maximum</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.acceptable_maximum" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.acceptable_mean">
-<code class="descname">acceptable_mean</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.acceptable_mean" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.acceptable_minimum">
-<code class="descname">acceptable_minimum</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.acceptable_minimum" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.acceptable_variance">
-<code class="descname">acceptable_variance</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.acceptable_variance" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.calculate_task_cost">
-<code class="descname">calculate_task_cost</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/dao/programdb/RAMSTKValidation.html#RAMSTKValidation.calculate_task_cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.calculate_task_cost" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the mean, standard error, and bounds on the task cost.</p>
-<p>These values are calculated assuming a beta distribution (typical
-project management assumption).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>False if successful or True if an error is encountered.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.calculate_task_time">
-<code class="descname">calculate_task_time</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/dao/programdb/RAMSTKValidation.html#RAMSTKValidation.calculate_task_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.calculate_task_time" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the mean, standard error, and bounds on the task time.</p>
-<p>These values are calculated assuming a beta distribution (typical
-project management assumption).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>False if successful or True if an error is encountered.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.confidence">
-<code class="descname">confidence</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.confidence" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.cost_average">
-<code class="descname">cost_average</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.cost_average" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.cost_ll">
-<code class="descname">cost_ll</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.cost_ll" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.cost_maximum">
-<code class="descname">cost_maximum</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.cost_maximum" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.cost_mean">
-<code class="descname">cost_mean</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.cost_mean" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.cost_minimum">
-<code class="descname">cost_minimum</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.cost_minimum" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.cost_ul">
-<code class="descname">cost_ul</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.cost_ul" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.cost_variance">
-<code class="descname">cost_variance</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.cost_variance" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.date_end">
-<code class="descname">date_end</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.date_end" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.date_start">
-<code class="descname">date_start</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.date_start" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.description">
-<code class="descname">description</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.description" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.get_attributes">
-<code class="descname">get_attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/dao/programdb/RAMSTKValidation.html#RAMSTKValidation.get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.get_attributes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve the current values of the RAMSTKValidation data model attributes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>{revision_id, validation_id, acceptable_maximum,
-acceptable_mean, acceptable_minimum, acceptable_variance,
-confidence, cost_average, cost_ll. cost_maximum, cost_mean,
-cost_minimum, cost_l, cost_variance, date_end, date_start,
-description, measurement_unit_id, status_id, task_type_id,
-task_specification, time_average, time_ll, time_maximum,
-time_mean, time_minimum, time_ul, time_variance} pairs.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.measurement_unit">
-<code class="descname">measurement_unit</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.measurement_unit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.name">
-<code class="descname">name</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.name" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.revision">
-<code class="descname">revision</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.revision" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.revision_id">
-<code class="descname">revision_id</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.revision_id" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.set_attributes">
-<code class="descname">set_attributes</code><span class="sig-paren">(</span><em>attributes</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/dao/programdb/RAMSTKValidation.html#RAMSTKValidation.set_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.set_attributes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the current value of the RAMSTKValidation data model attributes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>attributes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a>) – dicte of values to assign to the instance
-attributes.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>(_error_code, _msg); the error code and error message.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.status">
-<code class="descname">status</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.status" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.task_specification">
-<code class="descname">task_specification</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.task_specification" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.task_type">
-<code class="descname">task_type</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.task_type" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.time_average">
-<code class="descname">time_average</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.time_average" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.time_ll">
-<code class="descname">time_ll</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.time_ll" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.time_maximum">
-<code class="descname">time_maximum</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.time_maximum" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.time_mean">
-<code class="descname">time_mean</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.time_mean" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.time_minimum">
-<code class="descname">time_minimum</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.time_minimum" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.time_ul">
-<code class="descname">time_ul</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.time_ul" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.time_variance">
-<code class="descname">time_variance</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.time_variance" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.validation_id">
-<code class="descname">validation_id</code><a class="headerlink" href="#ramstk.dao.programdb.RAMSTKValidation.RAMSTKValidation.validation_id" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<div class="section" id="ramstkvalidation">
+<h3>RAMSTKValidation<a class="headerlink" href="#ramstkvalidation" title="Permalink to this headline">¶</a></h3>
 </div>
 </div>
 </div>
@@ -303,7 +69,7 @@ attributes.</p>
   <ul>
 <li><a class="reference internal" href="#">Validation Models</a><ul>
 <li><a class="reference internal" href="#program-database-models">Program Database Models</a><ul>
-<li><a class="reference internal" href="#module-ramstk.dao.programdb.RAMSTKValidation">RAMSTKValidation</a></li>
+<li><a class="reference internal" href="#ramstkvalidation">RAMSTKValidation</a></li>
 </ul>
 </li>
 </ul>
@@ -324,10 +90,10 @@ attributes.</p>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -344,9 +110,6 @@ attributes.</p>
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="../controllers/metaclasses.html" title="RAMSTK Data Manager"
              accesskey="N">next</a> |</li>
         <li class="right" >
@@ -357,7 +120,7 @@ attributes.</p>
 
     <div class="footer" role="contentinfo">
         &#169; Copyright 2007 - 2019, Doyle Rowland.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
     </div>
   </body>
 </html>

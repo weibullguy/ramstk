@@ -46,180 +46,6 @@
 <h1>Similar Item Analysis<a class="headerlink" href="#similar-item-analysis" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<span class="target" id="module-ramstk.analyses.SimilarItem"></span><p>Reliability Similar Item Assessment Module.</p>
-<dl class="function">
-<dt id="ramstk.analyses.SimilarItem.calculate_topic_633">
-<code class="descclassname">ramstk.analyses.SimilarItem.</code><code class="descname">calculate_topic_633</code><span class="sig-paren">(</span><em>environment</em>, <em>quality</em>, <em>temperature</em>, <em>hazard_rate</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/analyses/SimilarItem.html#calculate_topic_633"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.SimilarItem.calculate_topic_633" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the Similar Item analysis using Topic 6.3.3 approach.</p>
-<p>This method calculates the new hazard rate using the approach found
-in The Reliability Toolkit: Commercial Practices Edition, Topic 6.3.3.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>environment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – the active environment ID for the from and to
-environments.</p></li>
-<li><p><strong>quality</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – the quality level ID for the from and to quality.</p></li>
-<li><p><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – the aambient operating temperature (in C) for the
-from and to temperatures.</p></li>
-<li><p><strong>hazard_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – the current hazard rate of the hardware item
-being calculated.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>(_change_factor_1, _change_factor_2, _change_factor_3, _result_1);
-the three change factors (quality, environment, and temperature) and
-the assessment result.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></p>
-</dd>
-<dt class="field-even">Raise</dt>
-<dd class="field-even"><p>KeyError if passed an environment, quality, or temperature dict
-that is missing the from, to, or both keys.</p>
-</dd>
-<dt class="field-odd">Raise</dt>
-<dd class="field-odd"><p>TypeError if passed a string value for either temperature.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="ramstk.analyses.SimilarItem.calculate_user_defined">
-<code class="descclassname">ramstk.analyses.SimilarItem.</code><code class="descname">calculate_user_defined</code><span class="sig-paren">(</span><em>sia</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/analyses/SimilarItem.html#calculate_user_defined"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.SimilarItem.calculate_user_defined" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the user-defined similar item analysis.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>sia</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – <p>the user-defined similar item assessment dict.  The
-calling method/function should create the sia dict as follows:</p>
-<dl>
-<dt>sia = OrderedDict({</dt><dd><p>_key: None
-for _key in [</p>
-<blockquote>
-<div><p>’hr’, ‘pi1’, ‘pi2’, ‘pi3’, ‘pi3’, ‘pi4’, ‘pi5’, ‘pi6’, ‘pi7’,
-‘pi8’, ‘pi9’, ‘pi10’, ‘uf1’, ‘uf2’, ‘uf3’, ‘uf4’, ‘uf5’, ‘ui1’,
-‘ui2’, ‘ui3’, ‘ui4’, ‘ui5’, ‘equation1’, ‘equation2’,
-‘equation3’, ‘equation4’, ‘equation5’, ‘res1’, ‘res2’, ‘res3’,
-‘res4’, ‘res5’
-]</p>
-</div></blockquote>
-<p>})</p>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>sia; the similar item assessment dict with updated results.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="ramstk.analyses.SimilarItem.set_user_defined_change_factors">
-<code class="descclassname">ramstk.analyses.SimilarItem.</code><code class="descname">set_user_defined_change_factors</code><span class="sig-paren">(</span><em>sia</em>, <em>factors</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/analyses/SimilarItem.html#set_user_defined_change_factors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.SimilarItem.set_user_defined_change_factors" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the change factors for the user-defined calculations.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sia</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – the similar item assessment dict.</p></li>
-<li><p><strong>factors</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – the list of change factors; the list items are float
-or int.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>sia; the similar item assessment dict with updated factor values.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="ramstk.analyses.SimilarItem.set_user_defined_floats">
-<code class="descclassname">ramstk.analyses.SimilarItem.</code><code class="descname">set_user_defined_floats</code><span class="sig-paren">(</span><em>sia</em>, <em>floats</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/analyses/SimilarItem.html#set_user_defined_floats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.SimilarItem.set_user_defined_floats" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the user-defined float values for the user-defined calculations.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sia</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – the similar item assessment dict.</p></li>
-<li><p><strong>floats</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – the list of float values.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>sia; the similar item assessment dict with updated float values.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="ramstk.analyses.SimilarItem.set_user_defined_functions">
-<code class="descclassname">ramstk.analyses.SimilarItem.</code><code class="descname">set_user_defined_functions</code><span class="sig-paren">(</span><em>sia</em>, <em>functions</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/analyses/SimilarItem.html#set_user_defined_functions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.SimilarItem.set_user_defined_functions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the user-defined functions for the user-defined calculations.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sia</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – the similar item assessment dict.</p></li>
-<li><p><strong>functions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – the list of functions; list items are str.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>sia; the similar item assessment dict with updated functions.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="ramstk.analyses.SimilarItem.set_user_defined_ints">
-<code class="descclassname">ramstk.analyses.SimilarItem.</code><code class="descname">set_user_defined_ints</code><span class="sig-paren">(</span><em>sia</em>, <em>ints</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/analyses/SimilarItem.html#set_user_defined_ints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.SimilarItem.set_user_defined_ints" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the user-defined integer values for the user-defined calculations.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sia</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – the similar item assessment dict.</p></li>
-<li><p><strong>ints</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – the list of integer values.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>sia; the similar item assessment dict with updated integer values.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="ramstk.analyses.SimilarItem.set_user_defined_results">
-<code class="descclassname">ramstk.analyses.SimilarItem.</code><code class="descname">set_user_defined_results</code><span class="sig-paren">(</span><em>sia</em>, <em>results</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ramstk/analyses/SimilarItem.html#set_user_defined_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ramstk.analyses.SimilarItem.set_user_defined_results" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the user-defined results for the user-defined calculations.</p>
-<p>This allows the use of the results fields to be manually set to float
-values by the user essentially creating five more user-defined float
-values.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sia</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – the similar item assessment dict.</p></li>
-<li><p><strong>results</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – the list of results.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>sia; the similar item assessment dict with updated results.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
-</dd>
-</dl>
-</dd></dl>
-
 </div>
 
 
@@ -245,10 +71,10 @@ values.</p>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -265,9 +91,6 @@ values.</p>
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="stress.html" title="Stress Analysis"
              accesskey="N">next</a> |</li>
         <li class="right" >
@@ -278,7 +101,7 @@ values.</p>
 
     <div class="footer" role="contentinfo">
         &#169; Copyright 2007 - 2019, Doyle Rowland.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
     </div>
   </body>
 </html>
