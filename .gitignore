@@ -48,6 +48,7 @@ _templates/
 _temp/
 pylintout
 coverage.xml
+docs/
 
 # Override settings for some specific files.
 !/license.txt
